@@ -1356,7 +1356,7 @@ There is a clear midday **plateau** in utility solar output (orange boxplots), l
 In Victoria, the curtailment plateau is especially pronounced. This is likely due to utility-scale solar farms being situated in parts of the network that experience congestion. Congestion arises when the network’s ability to transmit electricity is constrained, requiring operators to curtail solar generation despite sufficient solar resources being available.
 
 <div style="text-align: center;">
-![Operating utility solar in Victoria (Open Electricity)](images/vic1-solar-Operating.png)
+![Operating utility solar in Victoria (Open Electricity)](images/vic1-solar-operating.png)
 </div>
 
  > Under near-term operating conditions, connection points in Victoria have on average close to 50% curtailment for solar and 30% curtailment for wind. - AEMO, 2025 Enhanced Locational Information (ELI) Report [[link]](https://aemo.com.au/-/media/files/electricity/nem/planning_and_forecasting/enhanced-locational-information/2025/2025-enhanced-locational-information-report.pdf?la=en)
