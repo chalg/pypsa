@@ -10,8 +10,8 @@ format:
     df-print: paged         # <— turn on HTML-paged DataFrame printing
     df-print-paged:
       page-length: 10       #   rows per page
-  pdf:
-    df-print: kable    
+  #pdf:
+  #  df-print: kable    
 ---
 
 
