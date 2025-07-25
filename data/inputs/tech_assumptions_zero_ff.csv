@@ -1,0 +1,237 @@
+scenario,component,bus,carrier,scale_factor,comments
+0_2024_baseline,generator,NSW1,Black Coal,1,Baseline
+0_2024_baseline,generator,NSW1,Rooftop Solar,1,Baseline
+0_2024_baseline,generator,NSW1,Solar,1,Baseline
+0_2024_baseline,generator,NSW1,Wind,1,Baseline
+0_2024_baseline,storage_unit,NSW1,Battery,1,Baseline
+0_2024_baseline,generator,QLD1,Black Coal,1,Baseline
+0_2024_baseline,generator,QLD1,Rooftop Solar,1,Baseline
+0_2024_baseline,generator,QLD1,Solar,1,Baseline
+0_2024_baseline,generator,QLD1,Wind,1,Baseline
+0_2024_baseline,storage_unit,QLD1,Battery,1,Baseline
+0_2024_baseline,generator,SA1,Rooftop Solar,1,Baseline
+0_2024_baseline,generator,SA1,Solar,1,Baseline
+0_2024_baseline,generator,SA1,Wind,1,Baseline
+0_2024_baseline,storage_unit,SA1,Battery,1,Baseline
+0_2024_baseline,generator,VIC1,Brown Coal,1,Baseline
+0_2024_baseline,generator,VIC1,Rooftop Solar,1,Baseline
+0_2024_baseline,generator,VIC1,Solar,1,Baseline
+0_2024_baseline,generator,VIC1,Wind,1,Baseline
+0_2024_baseline,storage_unit,VIC1,Battery,1,Baseline
+1.0_6xVre&BatteryZeroFF,generator,NSW1,Black Coal,0,Zero Coal
+1.0_6xVre&BatteryZeroFF,generator,NSW1,Diesel,0,Zero Diesel
+1.0_6xVre&BatteryZeroFF,generator,NSW1,Gas,0,Zero Gas
+1.0_6xVre&BatteryZeroFF,generator,NSW1,Rooftop Solar,6,
+1.0_6xVre&BatteryZeroFF,generator,NSW1,Solar,6,
+1.0_6xVre&BatteryZeroFF,generator,NSW1,Wind,6,
+1.0_6xVre&BatteryZeroFF,storage_unit,NSW1,Battery,6,
+1.0_6xVre&BatteryZeroFF,generator,QLD1,Black Coal,0,Zero Coal
+1.0_6xVre&BatteryZeroFF,generator,QLD1,Diesel,0,Zero Diesel
+1.0_6xVre&BatteryZeroFF,generator,QLD1,Gas,0,Zero Gas
+1.0_6xVre&BatteryZeroFF,generator,QLD1,Rooftop Solar,6,
+1.0_6xVre&BatteryZeroFF,generator,QLD1,Solar,6,
+1.0_6xVre&BatteryZeroFF,generator,QLD1,Wind,6,
+1.0_6xVre&BatteryZeroFF,storage_unit,QLD1,Battery,6,
+1.0_6xVre&BatteryZeroFF,generator,SA1,Gas,0,Zero Gas
+1.0_6xVre&BatteryZeroFF,generator,SA1,Diesel,0,Zero Diesel
+1.0_6xVre&BatteryZeroFF,generator,SA1,Rooftop Solar,6,
+1.0_6xVre&BatteryZeroFF,generator,SA1,Solar,6,
+1.0_6xVre&BatteryZeroFF,generator,SA1,Wind,6,
+1.0_6xVre&BatteryZeroFF,generator,VIC1,Gas,0,Zero Gas
+1.0_6xVre&BatteryZeroFF,storage_unit,SA1,Battery,6,
+1.0_6xVre&BatteryZeroFF,generator,VIC1,Brown Coal,0,Zero coal
+1.0_6xVre&BatteryZeroFF,generator,VIC1,Gas,0,Zero Gas
+1.0_6xVre&BatteryZeroFF,generator,VIC1,Rooftop Solar,6,
+1.0_6xVre&BatteryZeroFF,generator,VIC1,Solar,6,
+1.0_6xVre&BatteryZeroFF,generator,VIC1,Wind,6,
+1.0_6xVre&BatteryZeroFF,storage_unit,VIC1,Battery,6,
+1.0_6xVre&BatteryZeroFF,generator,TAS1,Gas,0,Zero Gas
+1.0_6xVre&BatteryZeroFF,generator,TAS1,Diesel,0,Zero Diesel
+1.0_6xVre&BatteryZeroFF,generator,TAS1,Wind,6,
+1.0_6xVre&BatteryZeroFF,storage_unit,TAS1,Battery,6,
+1.1_7xVre&BatteryZeroFF,generator,NSW1,Black Coal,0,Zero Coal
+1.1_7xVre&BatteryZeroFF,generator,NSW1,Gas,0,Zero Gas
+1.1_7xVre&BatteryZeroFF,generator,NSW1,Diesel,0,Zero Diesel
+1.1_7xVre&BatteryZeroFF,generator,NSW1,Rooftop Solar,7,
+1.1_7xVre&BatteryZeroFF,generator,NSW1,Solar,7,
+1.1_7xVre&BatteryZeroFF,generator,NSW1,Wind,7,
+1.1_7xVre&BatteryZeroFF,storage_unit,NSW1,Battery,7,
+1.1_7xVre&BatteryZeroFF,generator,QLD1,Black Coal,0,Zero Coal
+1.1_7xVre&BatteryZeroFF,generator,QLD1,Diesel,0,Zero Diesel
+1.1_7xVre&BatteryZeroFF,generator,QLD1,Gas,0,Zero Gas
+1.1_7xVre&BatteryZeroFF,generator,QLD1,Rooftop Solar,7,
+1.1_7xVre&BatteryZeroFF,generator,QLD1,Solar,7,
+1.1_7xVre&BatteryZeroFF,generator,QLD1,Wind,7,
+1.1_7xVre&BatteryZeroFF,storage_unit,QLD1,Battery,7,
+1.1_7xVre&BatteryZeroFF,generator,SA1,Gas,0,Zero Gas
+1.1_7xVre&BatteryZeroFF,generator,SA1,Diesel,0,Zero Diesel
+1.1_7xVre&BatteryZeroFF,generator,SA1,Rooftop Solar,7,
+1.1_7xVre&BatteryZeroFF,generator,SA1,Solar,7,
+1.1_7xVre&BatteryZeroFF,generator,SA1,Wind,7,
+1.1_7xVre&BatteryZeroFF,generator,VIC1,Gas,0,Zero Gas
+1.1_7xVre&BatteryZeroFF,storage_unit,SA1,Battery,7,
+1.1_7xVre&BatteryZeroFF,generator,VIC1,Brown Coal,0,Zero Coal
+1.1_7xVre&BatteryZeroFF,generator,VIC1,Gas,0,Zero Gas
+1.1_7xVre&BatteryZeroFF,generator,VIC1,Rooftop Solar,7,
+1.1_7xVre&BatteryZeroFF,generator,VIC1,Solar,7,
+1.1_7xVre&BatteryZeroFF,generator,VIC1,Wind,7,
+1.1_7xVre&BatteryZeroFF,storage_unit,VIC1,Battery,7,
+1.1_7xVre&BatteryZeroFF,generator,TAS1,Gas,0,Zero Gas
+1.1_7xVre&BatteryZeroFF,generator,TAS1,Diesel,0,Zero Diesel
+1.1_7xVre&BatteryZeroFF,generator,TAS1,Wind,7,
+1.1_7xVre&BatteryZeroFF,storage_unit,TAS1,Battery,7,
+1.2_8xVre&BatteryZeroFF,generator,NSW1,Black Coal,0,Zero Coal
+1.2_8xVre&BatteryZeroFF,generator,NSW1,Diesel,0,Zero Diesel
+1.2_8xVre&BatteryZeroFF,generator,NSW1,Gas,0,Zero Gas
+1.2_8xVre&BatteryZeroFF,generator,NSW1,Rooftop Solar,8,
+1.2_8xVre&BatteryZeroFF,generator,NSW1,Solar,8,
+1.2_8xVre&BatteryZeroFF,generator,NSW1,Wind,8,
+1.2_8xVre&BatteryZeroFF,storage_unit,NSW1,Battery,8,
+1.2_8xVre&BatteryZeroFF,generator,QLD1,Black Coal,0,Zero Coal
+1.2_8xVre&BatteryZeroFF,generator,QLD1,Diesel,0,Zero Diesel
+1.2_8xVre&BatteryZeroFF,generator,QLD1,Gas,0,Zero Gas
+1.2_8xVre&BatteryZeroFF,generator,QLD1,Rooftop Solar,8,
+1.2_8xVre&BatteryZeroFF,generator,QLD1,Solar,8,
+1.2_8xVre&BatteryZeroFF,generator,QLD1,Wind,8,
+1.2_8xVre&BatteryZeroFF,storage_unit,QLD1,Battery,8,
+1.2_8xVre&BatteryZeroFF,generator,SA1,Gas,0,Zero Gas
+1.2_8xVre&BatteryZeroFF,generator,SA1,Diesel,0,Zero Diesel
+1.2_8xVre&BatteryZeroFF,generator,SA1,Rooftop Solar,8,
+1.2_8xVre&BatteryZeroFF,generator,SA1,Solar,8,
+1.2_8xVre&BatteryZeroFF,generator,SA1,Wind,8,
+1.2_8xVre&BatteryZeroFF,generator,VIC1,Gas,0,Zero Gas
+1.2_8xVre&BatteryZeroFF,storage_unit,SA1,Battery,8,
+1.2_8xVre&BatteryZeroFF,generator,VIC1,Brown Coal,0,Zero Coal
+1.2_8xVre&BatteryZeroFF,generator,VIC1,Gas,0,Zero Gas
+1.2_8xVre&BatteryZeroFF,generator,VIC1,Rooftop Solar,8,
+1.2_8xVre&BatteryZeroFF,generator,VIC1,Solar,8,
+1.2_8xVre&BatteryZeroFF,generator,VIC1,Wind,8,
+1.2_8xVre&BatteryZeroFF,storage_unit,VIC1,Battery,8,
+1.2_8xVre&BatteryZeroFF,generator,TAS1,Gas,0,Zero Gas
+1.2_8xVre&BatteryZeroFF,generator,TAS1,Diesel,0,Zero Diesel
+1.2_8xVre&BatteryZeroFF,generator,TAS1,Wind,8,
+1.2_8xVre&BatteryZeroFF,storage_unit,TAS1,Battery,8,
+1.3_9xVre&BatteryZeroFF,generator,NSW1,Black Coal,0,Zero Coal
+1.3_9xVre&BatteryZeroFF,generator,NSW1,Diesel,0,Zero Diesel
+1.3_9xVre&BatteryZeroFF,generator,NSW1,Gas,0,Zero Gas
+1.3_9xVre&BatteryZeroFF,generator,NSW1,Rooftop Solar,9,
+1.3_9xVre&BatteryZeroFF,generator,NSW1,Solar,9,
+1.3_9xVre&BatteryZeroFF,generator,NSW1,Wind,9,
+1.3_9xVre&BatteryZeroFF,storage_unit,NSW1,Battery,9,
+1.3_9xVre&BatteryZeroFF,generator,QLD1,Black Coal,0,Zero Coal
+1.3_9xVre&BatteryZeroFF,generator,QLD1,Diesel,0,Zero Diesel
+1.3_9xVre&BatteryZeroFF,generator,QLD1,Gas,0,Zero Gas
+1.3_9xVre&BatteryZeroFF,generator,QLD1,Rooftop Solar,9,
+1.3_9xVre&BatteryZeroFF,generator,QLD1,Solar,9,
+1.3_9xVre&BatteryZeroFF,generator,QLD1,Wind,9,
+1.3_9xVre&BatteryZeroFF,storage_unit,QLD1,Battery,9,
+1.3_9xVre&BatteryZeroFF,generator,SA1,Gas,0,Zero Gas
+1.3_9xVre&BatteryZeroFF,generator,SA1,Diesel,0,Zero Diesel
+1.3_9xVre&BatteryZeroFF,generator,SA1,Rooftop Solar,9,
+1.3_9xVre&BatteryZeroFF,generator,SA1,Solar,9,
+1.3_9xVre&BatteryZeroFF,generator,SA1,Wind,9,
+1.3_9xVre&BatteryZeroFF,generator,VIC1,Gas,0,Zero Gas
+1.3_9xVre&BatteryZeroFF,storage_unit,SA1,Battery,9,
+1.3_9xVre&BatteryZeroFF,generator,VIC1,Brown Coal,0,Zero Coal
+1.3_9xVre&BatteryZeroFF,generator,VIC1,Gas,0,Zero Gas
+1.3_9xVre&BatteryZeroFF,generator,VIC1,Rooftop Solar,9,
+1.3_9xVre&BatteryZeroFF,generator,VIC1,Solar,9,
+1.3_9xVre&BatteryZeroFF,generator,VIC1,Wind,9,
+1.3_9xVre&BatteryZeroFF,storage_unit,VIC1,Battery,9,
+1.3_9xVre&BatteryZeroFF,generator,TAS1,Gas,0,Zero Gas
+1.3_9xVre&BatteryZeroFF,generator,TAS1,Diesel,0,Zero Diesel
+1.3_9xVre&BatteryZeroFF,generator,TAS1,Wind,9,
+1.3_9xVre&BatteryZeroFF,storage_unit,TAS1,Battery,9,
+1.4_10xVre&BatteryZeroFF,generator,NSW1,Black Coal,0,Zero Coal
+1.4_10xVre&BatteryZeroFF,generator,NSW1,Diesel,0,Zero Diesel
+1.4_10xVre&BatteryZeroFF,generator,NSW1,Gas,0,Zero Gas
+1.4_10xVre&BatteryZeroFF,generator,NSW1,Rooftop Solar,10,
+1.4_10xVre&BatteryZeroFF,generator,NSW1,Solar,10,
+1.4_10xVre&BatteryZeroFF,generator,NSW1,Wind,10,
+1.4_10xVre&BatteryZeroFF,storage_unit,NSW1,Battery,10,
+1.4_10xVre&BatteryZeroFF,generator,QLD1,Black Coal,0,Zero Coal
+1.4_10xVre&BatteryZeroFF,generator,QLD1,Diesel,0,Zero Diesel
+1.4_10xVre&BatteryZeroFF,generator,QLD1,Gas,0,Zero Gas
+1.4_10xVre&BatteryZeroFF,generator,QLD1,Rooftop Solar,10,
+1.4_10xVre&BatteryZeroFF,generator,QLD1,Solar,10,
+1.4_10xVre&BatteryZeroFF,generator,QLD1,Wind,10,
+1.4_10xVre&BatteryZeroFF,storage_unit,QLD1,Battery,10,
+1.4_10xVre&BatteryZeroFF,generator,SA1,Gas,0,Zero Gas
+1.4_10xVre&BatteryZeroFF,generator,SA1,Diesel,0,Zero Diesel
+1.4_10xVre&BatteryZeroFF,generator,SA1,Rooftop Solar,10,
+1.4_10xVre&BatteryZeroFF,generator,SA1,Solar,10,
+1.4_10xVre&BatteryZeroFF,generator,SA1,Wind,10,
+1.4_10xVre&BatteryZeroFF,generator,VIC1,Gas,0,Zero Gas
+1.4_10xVre&BatteryZeroFF,storage_unit,SA1,Battery,10,
+1.4_10xVre&BatteryZeroFF,generator,VIC1,Brown Coal,0,Zero Coal
+1.4_10xVre&BatteryZeroFF,generator,VIC1,Gas,0,Zero Gas
+1.4_10xVre&BatteryZeroFF,generator,VIC1,Rooftop Solar,10,
+1.4_10xVre&BatteryZeroFF,generator,VIC1,Solar,10,
+1.4_10xVre&BatteryZeroFF,generator,VIC1,Wind,10,
+1.4_10xVre&BatteryZeroFF,storage_unit,VIC1,Battery,10,
+1.4_10xVre&BatteryZeroFF,generator,TAS1,Gas,0,Zero Gas
+1.4_10xVre&BatteryZeroFF,generator,TAS1,Diesel,0,Zero Diesel
+1.4_10xVre&BatteryZeroFF,generator,TAS1,Wind,10,
+1.4_10xVre&BatteryZeroFF,storage_unit,TAS1,Battery,10,
+1.5_10xVre&9xBatteryZeroFF,generator,NSW1,Black Coal,0,Zero Coal
+1.5_10xVre&9xBatteryZeroFF,generator,NSW1,Diesel,0,Zero Diesel
+1.5_10xVre&9xBatteryZeroFF,generator,NSW1,Gas,0,Zero Gas
+1.5_10xVre&9xBatteryZeroFF,generator,NSW1,Rooftop Solar,10,
+1.5_10xVre&9xBatteryZeroFF,generator,NSW1,Solar,10,
+1.5_10xVre&9xBatteryZeroFF,generator,NSW1,Wind,10,
+1.5_10xVre&9xBatteryZeroFF,storage_unit,NSW1,Battery,9,
+1.5_10xVre&9xBatteryZeroFF,generator,QLD1,Black Coal,0,Zero Coal
+1.5_10xVre&9xBatteryZeroFF,generator,QLD1,Diesel,0,Zero Diesel
+1.5_10xVre&9xBatteryZeroFF,generator,QLD1,Gas,0,Zero Gas
+1.5_10xVre&9xBatteryZeroFF,generator,QLD1,Rooftop Solar,10,
+1.5_10xVre&9xBatteryZeroFF,generator,QLD1,Solar,10,
+1.5_10xVre&9xBatteryZeroFF,generator,QLD1,Wind,10,
+1.5_10xVre&9xBatteryZeroFF,storage_unit,QLD1,Battery,9,
+1.5_10xVre&9xBatteryZeroFF,generator,SA1,Gas,0,Zero Gas
+1.5_10xVre&9xBatteryZeroFF,generator,SA1,Diesel,0,Zero Diesel
+1.5_10xVre&9xBatteryZeroFF,generator,SA1,Rooftop Solar,10,
+1.5_10xVre&9xBatteryZeroFF,generator,SA1,Solar,10,
+1.5_10xVre&9xBatteryZeroFF,generator,SA1,Wind,10,
+1.5_10xVre&9xBatteryZeroFF,generator,VIC1,Gas,0,Zero Gas
+1.5_10xVre&9xBatteryZeroFF,storage_unit,SA1,Battery,9,
+1.5_10xVre&9xBatteryZeroFF,generator,VIC1,Brown Coal,0,Zero Coal
+1.5_10xVre&9xBatteryZeroFF,generator,VIC1,Gas,0,Zero Gas
+1.5_10xVre&9xBatteryZeroFF,generator,VIC1,Rooftop Solar,10,
+1.5_10xVre&9xBatteryZeroFF,generator,VIC1,Solar,10,
+1.5_10xVre&9xBatteryZeroFF,generator,VIC1,Wind,10,
+1.5_10xVre&9xBatteryZeroFF,storage_unit,VIC1,Battery,10,Leave 10x
+1.5_10xVre&9xBatteryZeroFF,generator,TAS1,Gas,0,Zero Gas
+1.5_10xVre&9xBatteryZeroFF,generator,TAS1,Diesel,0,Zero Diesel
+1.5_10xVre&9xBatteryZeroFF,generator,TAS1,Wind,10,
+1.5_10xVre&9xBatteryZeroFF,storage_unit,TAS1,Battery,9,
+1.6_10xVre&8xBatteryZeroFF,generator,NSW1,Black Coal,0,Zero Coal
+1.6_10xVre&8xBatteryZeroFF,generator,NSW1,Diesel,0,Zero Diesel
+1.6_10xVre&8xBatteryZeroFF,generator,NSW1,Gas,0,Zero Gas
+1.6_10xVre&8xBatteryZeroFF,generator,NSW1,Rooftop Solar,10,
+1.6_10xVre&8xBatteryZeroFF,generator,NSW1,Solar,10,
+1.6_10xVre&8xBatteryZeroFF,generator,NSW1,Wind,10,
+1.6_10xVre&8xBatteryZeroFF,storage_unit,NSW1,Battery,8,
+1.6_10xVre&8xBatteryZeroFF,generator,QLD1,Black Coal,0,Zero Coal
+1.6_10xVre&8xBatteryZeroFF,generator,QLD1,Diesel,0,Zero Diesel
+1.6_10xVre&8xBatteryZeroFF,generator,QLD1,Gas,0,Zero Gas
+1.6_10xVre&8xBatteryZeroFF,generator,QLD1,Rooftop Solar,10,
+1.6_10xVre&8xBatteryZeroFF,generator,QLD1,Solar,10,
+1.6_10xVre&8xBatteryZeroFF,generator,QLD1,Wind,10,
+1.6_10xVre&8xBatteryZeroFF,storage_unit,QLD1,Battery,8,
+1.6_10xVre&8xBatteryZeroFF,generator,SA1,Gas,0,Zero Gas
+1.6_10xVre&8xBatteryZeroFF,generator,SA1,Diesel,0,Zero Diesel
+1.6_10xVre&8xBatteryZeroFF,generator,SA1,Rooftop Solar,10,
+1.6_10xVre&8xBatteryZeroFF,generator,SA1,Solar,10,
+1.6_10xVre&8xBatteryZeroFF,generator,SA1,Wind,10,
+1.6_10xVre&8xBatteryZeroFF,generator,VIC1,Gas,0,Zero Gas
+1.6_10xVre&8xBatteryZeroFF,storage_unit,SA1,Battery,8,
+1.6_10xVre&8xBatteryZeroFF,generator,VIC1,Brown Coal,0,Zero Coal
+1.6_10xVre&8xBatteryZeroFF,generator,VIC1,Gas,0,Zero Gas
+1.6_10xVre&8xBatteryZeroFF,generator,VIC1,Rooftop Solar,10,
+1.6_10xVre&8xBatteryZeroFF,generator,VIC1,Solar,10,
+1.6_10xVre&8xBatteryZeroFF,generator,VIC1,Wind,10,
+1.6_10xVre&8xBatteryZeroFF,storage_unit,VIC1,Battery,10,Leave 10x
+1.6_10xVre&8xBatteryZeroFF,generator,TAS1,Gas,0,Zero Gas
+1.6_10xVre&8xBatteryZeroFF,generator,TAS1,Diesel,0,Zero Diesel
+1.6_10xVre&8xBatteryZeroFF,generator,TAS1,Wind,10,
+1.6_10xVre&8xBatteryZeroFF,storage_unit,TAS1,Battery,8,

@@ -1,0 +1,485 @@
+Scenario,Objective,Gas Generation (GWh),Battery Capacity (GW),Wind & Solar Curtailment (GWh),Unserved Energy (GWh),Unserved by Region (GWh)
+0_2024_baseline,"NSW1-Black Coal: x1.0
+NSW1-Rooftop Solar: x1.0
+NSW1-Solar: x1.0
+NSW1-Wind: x1.0
+NSW1-Battery: x1.0
+QLD1-Black Coal: x1.0
+QLD1-Rooftop Solar: x1.0
+QLD1-Solar: x1.0
+QLD1-Wind: x1.0
+QLD1-Battery: x1.0
+SA1-Rooftop Solar: x1.0
+SA1-Solar: x1.0
+SA1-Wind: x1.0
+SA1-Battery: x1.0
+VIC1-Brown Coal: x1.0
+VIC1-Rooftop Solar: x1.0
+VIC1-Solar: x1.0
+VIC1-Wind: x1.0
+VIC1-Battery: x1.0",1658.536,12.101,3650.659,0.0,"{'NSW1': 0.0, 'QLD1': 0.0, 'SA1': 0.0, 'TAS1': 0.0, 'VIC1': 0.0}"
+1_BalancedTransition,"NSW1-Black Coal: x0.5
+NSW1-Rooftop Solar: x1.2
+NSW1-Solar: x1.2
+NSW1-Wind: x1.25
+NSW1-Battery: x1.5
+QLD1-Black Coal: x0.5
+QLD1-Rooftop Solar: x1.2
+QLD1-Solar: x1.2
+QLD1-Wind: x1.25
+QLD1-Battery: x1.5
+SA1-Rooftop Solar: x1.2
+SA1-Solar: x1.2
+SA1-Wind: x1.25
+SA1-Battery: x1.5
+TAS1-Wind: x1.25
+TAS1-Battery: x1.5
+VIC1-Brown Coal: x0.5
+VIC1-Rooftop Solar: x1.2
+VIC1-Solar: x1.2
+VIC1-Wind: x1.25
+VIC1-Battery: x1.5",6729.924,18.152,5243.938,0.0,"{'NSW1': 0.0, 'QLD1': 0.0, 'SA1': 0.0, 'TAS1': 0.0, 'VIC1': 0.0}"
+2_BalancedAggressiveTransition,"NSW1-Black Coal: x0.25
+NSW1-Rooftop Solar: x1.25
+NSW1-Solar: x1.25
+NSW1-Wind: x1.3
+NSW1-Battery: x2.0
+QLD1-Black Coal: x0.25
+QLD1-Rooftop Solar: x1.25
+QLD1-Solar: x1.25
+QLD1-Wind: x1.3
+QLD1-Battery: x2.0
+SA1-Rooftop Solar: x1.25
+SA1-Solar: x1.25
+SA1-Wind: x1.3
+SA1-Battery: x2.0
+TAS1-Wind: x1.3
+TAS1-Battery: x2.0
+VIC1-Brown Coal: x0.25
+VIC1-Rooftop Solar: x1.25
+VIC1-Solar: x1.25
+VIC1-Wind: x1.3
+VIC1-Battery: x2.0",22719.985,24.202,3640.076,0.0,"{'NSW1': 0.0, 'QLD1': 0.0, 'SA1': 0.0, 'TAS1': 0.0, 'VIC1': 0.0}"
+3.0_VreStorageRampTransition,"NSW1-Black Coal: x0.15
+NSW1-Rooftop Solar: x1.3
+NSW1-Solar: x1.3
+NSW1-Wind: x1.5
+NSW1-Battery: x4.0
+QLD1-Black Coal: x0.15
+QLD1-Rooftop Solar: x1.3
+QLD1-Solar: x1.3
+QLD1-Wind: x1.5
+QLD1-Battery: x4.0
+SA1-Rooftop Solar: x1.3
+SA1-Solar: x1.3
+SA1-Wind: x1.5
+SA1-Battery: x4.0
+TAS1-Wind: x1.5
+TAS1-Battery: x4.0
+VIC1-Brown Coal: x0.15
+VIC1-Rooftop Solar: x1.3
+VIC1-Solar: x1.3
+VIC1-Wind: x1.5
+VIC1-Battery: x4.0",21850.697,48.404,584.292,0.0,"{'NSW1': 0.0, 'QLD1': 0.0, 'SA1': 0.0, 'TAS1': 0.0, 'VIC1': 0.0}"
+3.1_VreStorageRampGasReduction,"NSW1-Black Coal: x0.15
+NSW1-Gas: x0.9
+NSW1-Rooftop Solar: x1.3
+NSW1-Solar: x1.3
+NSW1-Wind: x1.5
+NSW1-Battery: x4.0
+QLD1-Black Coal: x0.15
+QLD1-Gas: x0.9
+QLD1-Rooftop Solar: x1.3
+QLD1-Solar: x1.3
+QLD1-Wind: x1.5
+QLD1-Battery: x4.0
+SA1-Gas: x0.9
+SA1-Rooftop Solar: x1.3
+SA1-Solar: x1.3
+SA1-Wind: x1.5
+SA1-Battery: x4.0
+TAS1-Gas: x0.9
+TAS1-Wind: x1.5
+TAS1-Battery: x4.0
+VIC1-Brown Coal: x0.15
+VIC1-Gas: x0.9
+VIC1-Rooftop Solar: x1.3
+VIC1-Solar: x1.3
+VIC1-Wind: x1.5
+VIC1-Battery: x4.0",21748.088,48.404,579.735,11.38,"{'NSW1': 3.911, 'QLD1': 4.05, 'SA1': 0.0, 'TAS1': 0.0, 'VIC1': 3.418}"
+3.1.1_VreStorageRampGasReduction,"NSW1-Black Coal: x0.15
+NSW1-Gas: x0.9
+NSW1-Rooftop Solar: x1.3
+NSW1-Solar: x1.3
+NSW1-Wind: x1.5
+NSW1-Battery: x5.0
+QLD1-Black Coal: x0.15
+QLD1-Gas: x0.9
+QLD1-Rooftop Solar: x1.3
+QLD1-Solar: x1.3
+QLD1-Wind: x1.5
+QLD1-Battery: x4.0
+SA1-Gas: x0.9
+SA1-Rooftop Solar: x1.3
+SA1-Solar: x1.3
+SA1-Wind: x1.5
+SA1-Battery: x4.0
+TAS1-Gas: x0.9
+TAS1-Wind: x1.5
+TAS1-Battery: x4.0
+VIC1-Brown Coal: x0.15
+VIC1-Gas: x0.9
+VIC1-Rooftop Solar: x1.3
+VIC1-Solar: x1.3
+VIC1-Wind: x1.5
+VIC1-Battery: x5.0",21003.497,55.103,333.624,0.689,"{'NSW1': 0.689, 'QLD1': 0.0, 'SA1': 0.0, 'TAS1': 0.0, 'VIC1': 0.0}"
+3.1.2_VreStorageRampGasReduction,"NSW1-Black Coal: x0.15
+NSW1-Gas: x0.9
+NSW1-Rooftop Solar: x1.3
+NSW1-Solar: x1.3
+NSW1-Wind: x1.5
+NSW1-Battery: x6.0
+QLD1-Black Coal: x0.15
+QLD1-Gas: x0.9
+QLD1-Rooftop Solar: x1.3
+QLD1-Solar: x1.3
+QLD1-Wind: x1.5
+QLD1-Battery: x4.0
+SA1-Gas: x0.9
+SA1-Rooftop Solar: x1.3
+SA1-Solar: x1.3
+SA1-Wind: x1.5
+SA1-Battery: x4.0
+TAS1-Gas: x0.9
+TAS1-Wind: x1.5
+TAS1-Battery: x4.0
+VIC1-Brown Coal: x0.15
+VIC1-Gas: x0.9
+VIC1-Rooftop Solar: x1.3
+VIC1-Solar: x1.3
+VIC1-Wind: x1.5
+VIC1-Battery: x6.0",20596.053,61.802,219.632,0.0,"{'NSW1': 0.0, 'QLD1': 0.0, 'SA1': 0.0, 'TAS1': 0.0, 'VIC1': 0.0}"
+3.2_VreStorageRampGasReduction,"NSW1-Black Coal: x0.15
+NSW1-Gas: x0.75
+NSW1-Rooftop Solar: x1.3
+NSW1-Solar: x1.3
+NSW1-Wind: x1.5
+NSW1-Battery: x4.0
+QLD1-Black Coal: x0.15
+QLD1-Gas: x0.75
+QLD1-Rooftop Solar: x1.3
+QLD1-Solar: x1.3
+QLD1-Wind: x1.5
+QLD1-Battery: x4.0
+SA1-Gas: x0.75
+SA1-Rooftop Solar: x1.3
+SA1-Solar: x1.3
+SA1-Wind: x1.5
+SA1-Battery: x4.0
+TAS1-Gas: x0.75
+TAS1-Wind: x1.5
+TAS1-Battery: x4.0
+VIC1-Brown Coal: x0.15
+VIC1-Gas: x0.75
+VIC1-Rooftop Solar: x1.3
+VIC1-Solar: x1.3
+VIC1-Wind: x1.5
+VIC1-Battery: x4.0",21347.916,48.404,567.431,218.092,"{'NSW1': 54.961, 'QLD1': 31.071, 'SA1': 0.0, 'TAS1': 0.594, 'VIC1': 131.465}"
+3.3_VreStorageRampGasReduction,"NSW1-Black Coal: x0.15
+NSW1-Gas: x0.5
+NSW1-Rooftop Solar: x1.3
+NSW1-Solar: x1.3
+NSW1-Wind: x1.5
+NSW1-Battery: x4.0
+QLD1-Black Coal: x0.15
+QLD1-Gas: x0.5
+QLD1-Rooftop Solar: x1.3
+QLD1-Solar: x1.3
+QLD1-Wind: x1.5
+QLD1-Battery: x4.0
+SA1-Gas: x0.5
+SA1-Rooftop Solar: x1.3
+SA1-Solar: x1.3
+SA1-Wind: x1.5
+SA1-Battery: x4.0
+TAS1-Gas: x0.5
+TAS1-Wind: x1.5
+TAS1-Battery: x4.0
+VIC1-Brown Coal: x0.15
+VIC1-Gas: x0.5
+VIC1-Rooftop Solar: x1.3
+VIC1-Solar: x1.3
+VIC1-Wind: x1.5
+VIC1-Battery: x4.0",18965.07,48.404,540.415,1774.937,"{'NSW1': 1021.394, 'QLD1': 112.453, 'SA1': 9.825, 'TAS1': 21.435, 'VIC1': 609.831}"
+4_4xVreTransitionZeroCoal,"NSW1-Black Coal: x0.0
+NSW1-Rooftop Solar: x2.0
+NSW1-Solar: x4.0
+NSW1-Wind: x4.0
+NSW1-Battery: x4.0
+QLD1-Black Coal: x0.0
+QLD1-Rooftop Solar: x2.0
+QLD1-Solar: x4.0
+QLD1-Wind: x4.0
+QLD1-Battery: x4.0
+SA1-Rooftop Solar: x2.0
+SA1-Solar: x4.0
+SA1-Wind: x4.0
+SA1-Battery: x4.0
+TAS1-Battery: x4.0
+TAS1-Wind: x4.0
+VIC1-Brown Coal: x0.0
+VIC1-Rooftop Solar: x2.0
+VIC1-Solar: x4.0
+VIC1-Wind: x4.0
+VIC1-Battery: x4.0",5846.646,48.404,100763.369,0.0,"{'NSW1': 0.0, 'QLD1': 0.0, 'SA1': 0.0, 'TAS1': 0.0, 'VIC1': 0.0}"
+5_5xVreTransitionZeroCoal,"NSW1-Black Coal: x0.0
+NSW1-Rooftop Solar: x2.0
+NSW1-Solar: x5.0
+NSW1-Wind: x5.0
+NSW1-Battery: x4.0
+QLD1-Black Coal: x0.0
+QLD1-Rooftop Solar: x2.0
+QLD1-Solar: x5.0
+QLD1-Wind: x5.0
+QLD1-Battery: x4.0
+SA1-Rooftop Solar: x2.0
+SA1-Solar: x5.0
+SA1-Wind: x5.0
+SA1-Battery: x4.0
+TAS1-Battery: x4.0
+TAS1-Wind: x5.0
+VIC1-Brown Coal: x0.0
+VIC1-Rooftop Solar: x2.0
+VIC1-Solar: x5.0
+VIC1-Wind: x5.0
+VIC1-Battery: x4.0",3975.054,48.404,152307.942,0.0,"{'NSW1': 0.0, 'QLD1': 0.0, 'SA1': 0.0, 'TAS1': 0.0, 'VIC1': 0.0}"
+6.0_6xVreTransitionZeroCoal,"NSW1-Black Coal: x0.0
+NSW1-Rooftop Solar: x2.0
+NSW1-Solar: x6.0
+NSW1-Wind: x6.0
+NSW1-Battery: x4.0
+QLD1-Black Coal: x0.0
+QLD1-Rooftop Solar: x2.0
+QLD1-Solar: x6.0
+QLD1-Wind: x6.0
+QLD1-Battery: x4.0
+SA1-Rooftop Solar: x2.0
+SA1-Solar: x6.0
+SA1-Wind: x6.0
+SA1-Battery: x4.0
+TAS1-Battery: x4.0
+TAS1-Wind: x6.0
+VIC1-Brown Coal: x0.0
+VIC1-Rooftop Solar: x2.0
+VIC1-Solar: x6.0
+VIC1-Wind: x6.0
+VIC1-Battery: x4.0",3073.304,48.404,207478.868,0.0,"{'NSW1': 0.0, 'QLD1': 0.0, 'SA1': 0.0, 'TAS1': 0.0, 'VIC1': 0.0}"
+6.1_6xVreTransitionZeroCoal,"NSW1-Black Coal: x0.0
+NSW1-Gas: x0.9
+NSW1-Rooftop Solar: x2.0
+NSW1-Solar: x6.0
+NSW1-Wind: x6.0
+NSW1-Battery: x4.0
+QLD1-Black Coal: x0.0
+QLD1-Gas: x0.9
+QLD1-Rooftop Solar: x2.0
+QLD1-Solar: x6.0
+QLD1-Wind: x6.0
+QLD1-Battery: x4.0
+SA1-Gas: x0.9
+SA1-Rooftop Solar: x2.0
+SA1-Solar: x6.0
+SA1-Wind: x6.0
+SA1-Battery: x4.0
+TAS1-Gas: x0.9
+TAS1-Wind: x6.0
+TAS1-Battery: x4.0
+VIC1-Brown Coal: x0.0
+VIC1-Gas: x0.9
+VIC1-Rooftop Solar: x2.0
+VIC1-Solar: x6.0
+VIC1-Wind: x6.0
+VIC1-Battery: x4.0",2915.232,48.404,207368.866,0.0,"{'NSW1': 0.0, 'QLD1': 0.0, 'SA1': 0.0, 'TAS1': 0.0, 'VIC1': 0.0}"
+6.2_6xVreTransitionZeroCoal,"NSW1-Black Coal: x0.0
+NSW1-Gas: x0.75
+NSW1-Rooftop Solar: x2.0
+NSW1-Solar: x6.0
+NSW1-Wind: x6.0
+NSW1-Battery: x4.0
+QLD1-Black Coal: x0.0
+QLD1-Gas: x0.75
+QLD1-Rooftop Solar: x2.0
+QLD1-Solar: x6.0
+QLD1-Wind: x6.0
+QLD1-Battery: x4.0
+SA1-Gas: x0.75
+SA1-Rooftop Solar: x2.0
+SA1-Solar: x6.0
+SA1-Wind: x6.0
+SA1-Battery: x4.0
+TAS1-Gas: x0.75
+TAS1-Wind: x6.0
+TAS1-Battery: x4.0
+VIC1-Brown Coal: x0.0
+VIC1-Gas: x0.75
+VIC1-Rooftop Solar: x2.0
+VIC1-Solar: x6.0
+VIC1-Wind: x6.0
+VIC1-Battery: x4.0",2657.586,48.404,207168.834,9.98,"{'NSW1': 7.481, 'QLD1': 0.596, 'SA1': 0.0, 'TAS1': 0.0, 'VIC1': 1.902}"
+6.3_6xVreTransitionZeroCoal,"NSW1-Black Coal: x0.0
+NSW1-Gas: x0.5
+NSW1-Rooftop Solar: x2.0
+NSW1-Solar: x6.0
+NSW1-Wind: x6.0
+NSW1-Battery: x4.0
+QLD1-Black Coal: x0.0
+QLD1-Gas: x0.5
+QLD1-Rooftop Solar: x2.0
+QLD1-Solar: x6.0
+QLD1-Wind: x6.0
+QLD1-Battery: x4.0
+SA1-Gas: x0.5
+SA1-Rooftop Solar: x2.0
+SA1-Solar: x6.0
+SA1-Wind: x6.0
+SA1-Battery: x4.0
+TAS1-Gas: x0.5
+TAS1-Wind: x6.0
+TAS1-Battery: x4.0
+VIC1-Brown Coal: x0.0
+VIC1-Gas: x0.5
+VIC1-Rooftop Solar: x2.0
+VIC1-Solar: x6.0
+VIC1-Wind: x6.0
+VIC1-Battery: x4.0",2131.354,48.404,206924.447,105.916,"{'NSW1': 59.688, 'QLD1': 9.855, 'SA1': 1.088, 'TAS1': 0.0, 'VIC1': 35.284}"
+7.0_6xVre4xRoofZeroCoal,"NSW1-Black Coal: x0.0
+NSW1-Gas: x0.5
+NSW1-Rooftop Solar: x4.0
+NSW1-Solar: x6.0
+NSW1-Wind: x6.0
+NSW1-Battery: x4.0
+QLD1-Black Coal: x0.0
+QLD1-Gas: x0.5
+QLD1-Rooftop Solar: x4.0
+QLD1-Solar: x6.0
+QLD1-Wind: x6.0
+QLD1-Battery: x4.0
+SA1-Gas: x0.5
+SA1-Rooftop Solar: x4.0
+SA1-Solar: x6.0
+SA1-Wind: x6.0
+SA1-Battery: x4.0
+TAS1-Gas: x0.5
+TAS1-Wind: x6.0
+TAS1-Battery: x4.0
+VIC1-Gas: x0.5
+VIC1-Brown Coal: x0.0
+VIC1-Rooftop Solar: x4.0
+VIC1-Solar: x6.0
+VIC1-Wind: x6.0
+VIC1-Battery: x4.0",2078.507,48.404,257773.764,99.452,"{'NSW1': 48.267, 'QLD1': 16.704, 'SA1': 1.109, 'TAS1': 0.0, 'VIC1': 33.372}"
+8.0_6xVre&BatteryZeroCoal,"NSW1-Black Coal: x0.0
+NSW1-Gas: x1.0
+NSW1-Rooftop Solar: x6.0
+NSW1-Solar: x6.0
+NSW1-Wind: x6.0
+NSW1-Battery: x6.0
+QLD1-Black Coal: x0.0
+QLD1-Gas: x1.0
+QLD1-Rooftop Solar: x6.0
+QLD1-Solar: x6.0
+QLD1-Wind: x6.0
+QLD1-Battery: x6.0
+SA1-Gas: x1.0
+SA1-Rooftop Solar: x6.0
+SA1-Solar: x6.0
+SA1-Wind: x6.0
+SA1-Battery: x6.0
+TAS1-Gas: x1.0
+TAS1-Wind: x6.0
+TAS1-Battery: x6.0
+VIC1-Gas: x1.0
+VIC1-Brown Coal: x0.0
+VIC1-Rooftop Solar: x6.0
+VIC1-Solar: x6.0
+VIC1-Wind: x6.0
+VIC1-Battery: x6.0",2190.61,72.606,283798.067,0.0,"{'NSW1': 0.0, 'QLD1': 0.0, 'SA1': 0.0, 'TAS1': 0.0, 'VIC1': 0.0}"
+8.1_6xVre&BatteryZeroCoal,"NSW1-Black Coal: x0.0
+NSW1-Gas: x0.75
+NSW1-Rooftop Solar: x6.0
+NSW1-Solar: x6.0
+NSW1-Wind: x6.0
+NSW1-Battery: x6.0
+QLD1-Black Coal: x0.0
+QLD1-Gas: x0.75
+QLD1-Rooftop Solar: x6.0
+QLD1-Solar: x6.0
+QLD1-Wind: x6.0
+QLD1-Battery: x6.0
+SA1-Gas: x0.75
+SA1-Rooftop Solar: x6.0
+SA1-Solar: x6.0
+SA1-Wind: x6.0
+SA1-Battery: x6.0
+TAS1-Gas: x0.75
+TAS1-Wind: x6.0
+TAS1-Battery: x6.0
+VIC1-Gas: x0.75
+VIC1-Brown Coal: x0.0
+VIC1-Rooftop Solar: x6.0
+VIC1-Solar: x6.0
+VIC1-Wind: x6.0
+VIC1-Battery: x6.0",1783.576,72.606,283482.728,0.0,"{'NSW1': 0.0, 'QLD1': 0.0, 'SA1': 0.0, 'TAS1': 0.0, 'VIC1': 0.0}"
+8.2_6xVre&BatteryZeroCoal,"NSW1-Black Coal: x0.0
+NSW1-Gas: x0.5
+NSW1-Rooftop Solar: x6.0
+NSW1-Solar: x6.0
+NSW1-Wind: x6.0
+NSW1-Battery: x6.0
+QLD1-Black Coal: x0.0
+QLD1-Gas: x0.5
+QLD1-Rooftop Solar: x6.0
+QLD1-Solar: x6.0
+QLD1-Wind: x6.0
+QLD1-Battery: x6.0
+SA1-Gas: x0.5
+SA1-Rooftop Solar: x6.0
+SA1-Solar: x6.0
+SA1-Wind: x6.0
+SA1-Battery: x6.0
+TAS1-Gas: x0.5
+TAS1-Wind: x6.0
+TAS1-Battery: x6.0
+VIC1-Gas: x0.5
+VIC1-Brown Coal: x0.0
+VIC1-Rooftop Solar: x6.0
+VIC1-Solar: x6.0
+VIC1-Wind: x6.0
+VIC1-Battery: x6.0",1359.253,72.606,283158.02,8.681,"{'NSW1': 4.541, 'QLD1': 4.108, 'SA1': 0.0, 'TAS1': 0.0, 'VIC1': 0.032}"
+8.2.1_6xVreCurtailReview,"NSW1-Black Coal: x0.0
+NSW1-Gas: x0.5
+NSW1-Rooftop Solar: x3.0
+NSW1-Solar: x3.0
+NSW1-Wind: x6.0
+NSW1-Battery: x8.0
+QLD1-Black Coal: x0.0
+QLD1-Gas: x0.5
+QLD1-Rooftop Solar: x3.0
+QLD1-Solar: x3.0
+QLD1-Wind: x6.0
+QLD1-Battery: x6.0
+SA1-Gas: x0.5
+SA1-Rooftop Solar: x2.0
+SA1-Solar: x3.0
+SA1-Wind: x2.0
+SA1-Battery: x6.0
+TAS1-Gas: x0.5
+TAS1-Rooftop Solar: x3.0
+TAS1-Wind: x5.0
+TAS1-Battery: x8.0
+VIC1-Gas: x0.5
+VIC1-Brown Coal: x0.0
+VIC1-Rooftop Solar: x4.0
+VIC1-Solar: x4.0
+VIC1-Wind: x4.0
+VIC1-Battery: x8.0",1927.023,87.204,89744.276,0.0,"{'NSW1': 0.0, 'QLD1': 0.0, 'SA1': 0.0, 'TAS1': 0.0, 'VIC1': 0.0}"

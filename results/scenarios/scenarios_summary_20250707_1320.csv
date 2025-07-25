@@ -1,0 +1,27 @@
+Scenario,Objective,Gas Generation (GWh),Wind & Solar Curtailment (GWh),Unserved Energy (GWh),Unserved by Region (GWh)
+8.2.1_6xVreCurtailReview,"NSW1-Black Coal: x0.0
+NSW1-Gas: x0.5
+NSW1-Rooftop Solar: x4.0
+NSW1-Solar: x4.0
+NSW1-Wind: x6.0
+NSW1-Battery: x8.0
+QLD1-Black Coal: x0.0
+QLD1-Gas: x0.5
+QLD1-Rooftop Solar: x3.0
+QLD1-Solar: x3.0
+QLD1-Wind: x6.0
+QLD1-Battery: x6.0
+SA1-Gas: x0.5
+SA1-Rooftop Solar: x2.0
+SA1-Solar: x3.0
+SA1-Wind: x3.0
+SA1-Battery: x6.0
+TAS1-Gas: x0.5
+TAS1-Wind: x1.0
+TAS1-Battery: x8.0
+VIC1-Gas: x0.5
+VIC1-Brown Coal: x0.0
+VIC1-Rooftop Solar: x6.0
+VIC1-Solar: x6.0
+VIC1-Wind: x6.0
+VIC1-Battery: x8.0",1439.844,145092.146,0.0,"{'NSW1': 0.0, 'QLD1': 0.0, 'SA1': 0.0, 'TAS1': 0.0, 'VIC1': 0.0}"

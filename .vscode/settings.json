@@ -1,0 +1,22 @@
+{
+    // "jupyter.interactiveWindow.textEditor.executeSelection": true
+
+     
+
+    "python.languageServer": "Pylance", 
+    "jupyter.interactiveWindow.textEditor.executeSelection": true, 
+    "jupyter.notebookFileRoot": "${workspaceFolder}", 
+
+    "macros": { // Note: this requires macros extension by publisher:"geddski"  
+
+        "pythonExecSelectionAndCursorDown": [ 
+        "python.execSelectionInTerminal",  
+        "cursorDown"  
+        ]
+    }, 
+
+    "editor.guides.bracketPairs": true,
+    "r.lsp.promptToInstall": false,
+    "git.ignoreLimitWarning": true
+     
+}

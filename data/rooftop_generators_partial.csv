@@ -1,0 +1,6 @@
+name,bus,carrier,p_nom,marginal_cost
+NSW1-ROOFTOP-SOLAR,NSW1,Rooftop Solar,5477.45,0
+QLD1-ROOFTOP-SOLAR,QLD1,Rooftop Solar,4604.06,0
+SA1-ROOFTOP-SOLAR,SA1,Rooftop Solar,1876.61,0
+TAS1-ROOFTOP-SOLAR,TAS1,Rooftop Solar,250.94,0
+VIC1-ROOFTOP-SOLAR,VIC1,Rooftop Solar,3654.11,0

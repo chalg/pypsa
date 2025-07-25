@@ -1,0 +1,11 @@
+.env
+.venv
+#*.png
+*.zip
+*.html
+output_tables/   
+temp/
+test_isp_assumptions_workbook_Parser.py
+
+
+
