@@ -1,10 +1,12 @@
 ---
 title: "A High-level Open Source Model for the Australian National Electricity Market (NEM)"
 author: "Grant Chalmers"
-date: "2025-07-22"
+date: "2025-07-26"
 format:
   html:
-    theme: cosmo
+    output-file: index.html
+    output-dir: docs        # doesn't work. Use subprocess script
+    theme: cosmo            # theme
     code-fold: true         # hide code by default, with toggle
     code-tools: true        # show global “Show/Hide” & “Copy” buttons
     df-print: paged         # <— turn on HTML-paged DataFrame printing
@@ -17,7 +19,7 @@ format:
 
 ## **Introduction**
 
-The NEM power system is undergoing rapid transformation, driven by the need for increased renewable energy (RE) integration, grid modernization, and the pursuit of sustainable, reliable, and affordable electricity. To support these goals, advanced modeling tools are essential for analyzing the current state of the grid, evaluating future scenarios, and informing policy and investment decisions.
+The NEM power system is undergoing rapid transformation, driven by the need for increased renewable energy (RE) integration, grid modernization, and the pursuit of sustainable, reliable, and affordable electricity. To support these goals, advanced modelling tools are essential for analysing the current state of the grid, evaluating future scenarios, and informing policy and investment decisions.
 
 This notebook presents the development of a high-level baseline model for the NEM power system using [PyPSA (Python for Power System Analysis)](https://pypsa.readthedocs.io/en/latest/), an open-source framework for simulating and optimizing modern energy systems. The model, referred to as High-level_NEM, is a 5-node model (one bus per region) based on actual 2024 generation and demand profiles at hourly resolution. A comparison of the 2024 baseline model with a future scenario is presented in the notebook.
 The future scenario has increased renewable energy and storage and associated reduction in thermal generation.
@@ -26,7 +28,7 @@ The workflow implemented in this notebook encompasses the following key steps:
   - **Data Import and Preprocessing:** Loading and preparing network topology, generator, storage, and time series data from actual NEM system records and relevant administrative datasets.  
   - **Network Construction:** Building the PyPSA network by adding buses, loads, generators, storage units, and transmission lines.  
   - **Temporal Resolution and Snapshots:** Setting up the model to operate at a chosen temporal granularity, allowing for the study of daily and seasonal variability in demand and renewable generation.  
-  - **Optimisation and Scenario Analysis:** Solving the baseline model using linear optimisation to determine the optimal dispatch of resources, and extending the analysis to a plausible future scenario with an agressive increase in variable renewable energy and associated reduction in thermal generation.   
+  - **Optimisation and Scenario Analysis:** Solving the baseline model using linear optimisation to determine the optimal dispatch of resources, and extending the analysis to a plausible future scenario with an aggressive increase in variable renewable energy and associated reduction in thermal generation.   
   - **Results Visualization and Verification:** Generating plots and statistics to interpret model outputs, including network topology, dispatch profiles, generation mix, and importantly, curtailment.  
   - **Scenario Functions:** Providing reusable functions for projecting various scaled-up generation scenarios. 
   
@@ -71,10 +73,11 @@ By following this workflow, the notebook provides a high-level example for those
 
 ### 01 Import 
 
-This section imports all necessary Python packages and libraries required for data processing, power system modeling, geospatial analysis, and visualization. These packages provide the foundational tools for building, analyzing, and visualising the High-leve_NEM baseline model and high penetration renewable energy model.
+This section imports all necessary Python packages and libraries required for data processing, power system modelling, geospatial analysis, and visualization. These packages provide the foundational tools for building, analysing, and visualising the High-leve_NEM baseline model and high penetration renewable energy model.
 
 ```{python}
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 from matplotlib.dates import AutoDateLocator, ConciseDateFormatter
@@ -83,7 +86,6 @@ from pypsa.plot.maps.static import add_legend_patches
 from datetime import timedelta
 from datetime import datetime  
 from dateutil.parser import parse
-import numpy as np
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 from time import perf_counter
@@ -705,7 +707,7 @@ plot_generator_capacity_by_carrier(n)
 According to the AEMO's ISP Step Change - all coal fired generation will be retired by 2038.
 
 <div style="text-align: center;">
-![ISP Step Change Coal Retirments](images/Step Change Coal Retirments.png)
+![ISP Step Change Coal Retirements](images/step-change-coal-retirments.png)
 </div>
 
 
@@ -795,7 +797,7 @@ def plot_peak_demand_vs_capacity(network, stack_carrier=False, relative=False, s
     ax.set_ylabel(ylabel)
     # fig.patch.set_facecolor('#F0FFFF') 
     ax.set_facecolor('#F0FFFF')
-    ax.set_xlabel("Region")
+    ax.set_xlabel("Region/Bus")
     ax.set_title("Peak Demand vs Generation Capacity per Region" + (" (Relative)" if relative else ""))
     ax.grid(True)
     # place legend outside
@@ -904,9 +906,9 @@ def plot_total_demand_vs_generation(network, stack_carrier=False, relative=False
         )
 
     
-    ax.set_xlabel("Bus")
+    ax.set_xlabel("Region/Bus")
     ax.set_ylabel(ylabel)
-    ax.set_title("Total Demand vs Total Generation per Bus" + (" (Relative)" if relative else ""))
+    ax.set_title("Total Demand vs Total Generation per Region" + (" (Relative)" if relative else ""))
     ax.set_xticks(bar_positions)
     ax.set_xticklabels(generation_vs_demand.index, rotation=45, ha="right")
     ax.set_facecolor('#F0FFFF')
@@ -993,7 +995,7 @@ print(html_table)
 ```
 
   
-In the `0_2024_baseline` scenario above, Gas Generation (GWh) is much lower than in reality because I've set the marginal cost of gas higher than coal and there are no other influencing contstraints such as carbon emissions. PyPSA is solving based on least-cost optimisation of power plant and storage dispatch within network constraints. This is much simpler than in real life, which involves a bid stack and many more constraints.  
+In the `0_2024_baseline` scenario above, Gas Generation (GWh) is much lower than in reality because I've set the marginal cost of gas higher than coal and there are no other influencing constraints such as carbon emissions. PyPSA is solving based on least-cost optimisation of power plant and storage dispatch within network constraints. This is much simpler than in real life, which involves a bid stack and many more constraints.  
 
 It is worth adding a comparison column to compare more realistic gas generation from [Open Electricity](https://explore.openelectricity.org.au/energy/nem/?range=1y&interval=1w&view=discrete-time&group=Simplified) to the high VRE scenario that I'm interested in: `8.2.1_6xVreCurtailReview` . This scenario has zero coal generation and an 83% reduction in gas generation.
 
@@ -1063,13 +1065,19 @@ In this scenario, the wind generation capacity closely matches the 2049-50 ISP S
 Coal has been reduced to zero and there is only a small amount of Gas. There are no changes to diesel.
 
 <div style="text-align: center;">
-![ISP Step Change Onshore wind ~69GW)](images/ISP_NEM_Capacity_Forecast.png)
+![ISP Step Change Onshore wind ~69GW)](images/isp-nem-capacity-forecast.png)
 </div>
 
 Assessing peak demand alongside installed generation capacity for each region in the `8.2.1_6xVreCurtailReview` network clearly illustrates the substantial overbuilding of renewable energy relative to demand.
 
 ```{python}
 plot_peak_demand_vs_capacity(n, stack_carrier=True)
+```
+
+Total generation per region also highlights the over-generation required compared to baseline.
+
+```{python}
+plot_total_demand_vs_generation(n, stack_carrier=True, relative=False)
 ```
 
 ```{python}
@@ -1172,8 +1180,9 @@ curtailment_tbl = GT(data=pivot_df \
     .reset_index() \
     .round(2) \
     .rename(columns={'bus': 'Region',
+                     'Solar': 'Utility Solar',   
                      'monthly_curtailment_rooftop_solar_twh_str': 'Rooftop Solar Curtailment',
-                     'monthly_curtailment_solar_twh_str': 'Solar Curtailment',
+                     'monthly_curtailment_solar_twh_str': 'Utility Solar Curtailment',
                      'monthly_curtailment_wind_twh_str': 'Wind Curtailment'
                      })
     )
@@ -1186,37 +1195,41 @@ curtailment_gt = curtailment_tbl.tab_header(
         ) \
         .tab_spanner(
         label="Curtailment (%)",
-        columns=['Rooftop Solar', 'Solar', 'Wind']
+        columns=['Rooftop Solar', 'Utility Solar', 'Wind']
         ) \
         .tab_spanner(
             label="Monthly Curtailment Profiles (TWh)",
             columns=['Rooftop Solar Curtailment',
-                     'Solar Curtailment',
+                     'Utility Solar Curtailment',
                      'Wind Curtailment']
         ) \
         .data_color(
-        columns=['Rooftop Solar', 'Solar', 'Wind'],
+        columns=['Rooftop Solar', 'Utility Solar', 'Wind'],
         palette=[
             "#31a354", "#78c679", "#ffffcc",
             "#fafa8c", "#f4cd1e", "#f8910b"],
         domain=[0, 100]
         ) \
         .cols_width(
-            {'Wind': '120px', 'Solar': '120px', 'Rooftop Solar': '120px'}
+            {'Wind': '120px', 'Utility Solar': '120px', 'Rooftop Solar': '120px'}
         ) \
         .cols_align(    
              align='center'
         ) \
         .tab_source_note(
-            md(
-                '<br><div style="text-align: left;">'
+            source_note=md(
                 "**Calculation**: Curtailment = (Potential energy - Actual energy) / Potential energy * 100."
-                "</div>"
-                           
+                                           
             )
         ) \
         .tab_source_note(
-            source_note=md("**Scenario**: 8.2.1_6xVreCurtailReview (Zero coal & 83% reduction in GPG). **Scale-up objective from 2024 baseline**: *NSW1-Black Coal: x0.0, NSW1-Gas: x0.5, NSW1-Rooftop Solar: x3.0, NSW1-Solar: x3.0, NSW1-Wind: x6.0, NSW1-Battery: x8.0, QLD1-Black Coal: x0.0, QLD1-Gas: x0.5, QLD1-Rooftop Solar: x3.0, QLD1-Solar: x3.0, QLD1-Wind: x6.0, QLD1-Battery: x6.0, SA1-Gas: x0.5, SA1-Rooftop Solar: x2.0, SA1-Solar: x3.0, SA1-Wind: x2.0, SA1-Battery: x6.0, TAS1-Gas: x0.5, TAS1-Rooftop Solar: x3.0, TAS1-Wind: x5.0, TAS1-Battery: x8.0, VIC1-Gas: x0.5, VIC1-Brown Coal: x0.0, VIC1-Rooftop Solar: x4.0, VIC1-Solar: x4.0, VIC1-Wind: x4.0, VIC1-Battery: x8.0*")
+            source_note=md(
+                "**Note**: there are currently no listed utility scale solar in the TAS1 [Open Electricity Facilities](https://explore.openelectricity.org.au/facilities/tas1/?tech=solar_utility&status=operating,committed)"
+                                           
+            )
+        ) \
+        .tab_source_note(
+            source_note=md("**Scenario**: 8.2.1_6xVreCurtailReview (Zero coal & 83% reduction in GPG).<br><br> **Scale-up objective from 2024 baseline**: *NSW1-Black Coal: x0.0, NSW1-Gas: x0.5, NSW1-Rooftop Solar: x3.0, NSW1-Solar: x3.0, NSW1-Wind: x6.0, NSW1-Battery: x8.0, QLD1-Black Coal: x0.0, QLD1-Gas: x0.5, QLD1-Rooftop Solar: x3.0, QLD1-Solar: x3.0, QLD1-Wind: x6.0, QLD1-Battery: x6.0, SA1-Gas: x0.5, SA1-Rooftop Solar: x2.0, SA1-Solar: x3.0, SA1-Wind: x2.0, SA1-Battery: x6.0, TAS1-Gas: x0.5, TAS1-Rooftop Solar: x3.0, TAS1-Wind: x5.0, TAS1-Battery: x8.0, VIC1-Gas: x0.5, VIC1-Brown Coal: x0.0, VIC1-Rooftop Solar: x4.0, VIC1-Solar: x4.0, VIC1-Wind: x4.0, VIC1-Battery: x8.0*")
         ) \
         .fmt_nanoplot("Rooftop Solar Curtailment",
                       plot_type="bar",
@@ -1225,7 +1238,7 @@ curtailment_gt = curtailment_tbl.tab_header(
                           y_ref_line_fmt_fn="GWh",
                           )
         ) \
-        .fmt_nanoplot("Solar Curtailment",
+        .fmt_nanoplot("Utility Solar Curtailment",
                       plot_type="bar",
                       options=nanoplot_options(
                           data_bar_fill_color="#FDB324",
@@ -1343,7 +1356,7 @@ There is a clear midday **plateau** in utility solar output (orange boxplots), l
 In Victoria, the curtailment plateau is especially pronounced. This is likely due to utility-scale solar farms being situated in parts of the network that experience congestion. Congestion arises when the network’s ability to transmit electricity is constrained, requiring operators to curtail solar generation despite sufficient solar resources being available.
 
 <div style="text-align: center;">
-![Operating utility solar in Victoria (Open Electricity)](images/VIC1_Solar_Operating.png)
+![Operating utility solar in Victoria (Open Electricity)](images/vic1-solar-Operating.png)
 </div>
 
  > Under near-term operating conditions, connection points in Victoria have on average close to 50% curtailment for solar and 30% curtailment for wind. - AEMO, 2025 Enhanced Locational Information (ELI) Report [[link]](https://aemo.com.au/-/media/files/electricity/nem/planning_and_forecasting/enhanced-locational-information/2025/2025-enhanced-locational-information-report.pdf?la=en)
@@ -1430,7 +1443,7 @@ plt.show()
 
 This simple model demonstrates that achieving a high-penetration renewable energy grid is possible. However, there is an inherent trade-off between deploying large amounts of variable renewable energy and managing increased curtailment. The model focuses solely on power flow analysis and does not account for costs beyond assigning marginal costs to generators to enable least-cost dispatch. Additionally, I’ve assigned a very small negative marginal cost to storage units, encouraging batteries to charge earlier rather than at the last possible moment - an approach enabled by the model’s assumption of perfect foresight.
 
-It is also important to note that there is no assurance the system would operate in a **secure state** within the `8.2.1_6xVreCurtailReview` sceanrio/network. Incorporating the necessary constraints to ensure secure system operation would introduce significant complexity and is reserved for future analysis. Additionally, this scenario is highly sensitive to increases in demand - a 5% rise, for instance, leads to unserved energy. This highlights the need for substantial overbuilding to create an adequate reserve buffer, which, in turn, further increases curtailment.
+It is also important to note that there is no assurance the system would operate in a **secure state** within the `8.2.1_6xVreCurtailReview` scenario/network. Incorporating the necessary constraints to ensure secure system operation would introduce significant complexity and is reserved for future analysis. Additionally, this scenario is highly sensitive to increases in demand - a 5% rise, for instance, leads to unserved energy. This highlights the need for substantial overbuilding to create an adequate reserve buffer, which, in turn, further increases curtailment.
 
 During the development of the `8.2.1_6xVreCurtailReview` scenario, several scenarios with aggressive coal reduction - such as `2_BalancedAggressiveTransition` - led to a doubling of gas-powered generation (GPG). This occurred because GPG was required to compensate for the loss of 75% of baseload capacity previously provided by coal. Further details can be found in the Appendix.
 
@@ -1453,7 +1466,7 @@ It is possible to determine in rough terms, how often for example the network wo
 It is worth noting that these reserve requirements are dynamic and always changing, see example below of a recent LOR notice from AEMO in reference to the South Australian region:
 
 <div style="text-align: center;">
-![LOR notice example showing dynamic reserve requirements](images/LOR notice example.png)
+![LOR notice example showing dynamic reserve requirements](images/lor-notice-example.png)
 </div>
 
 ```{python}
@@ -1690,6 +1703,9 @@ plot_dispatch(n, time="2024-05-18", days=10, regions=["VIC1"], show_imports=True
 ##### Generate Scenarios Function
 
 Below is the function for generating scenarios from a CSV file.
+
+Ensure any amendments are updated in the the input assumptions file and stored in `data/inputs/tech_assumptions.csv` before execution.
+
 ```{python}
 #| eval: false
 #| 

@@ -3,9 +3,11 @@
 #*.png
 *.zip
 # *.html
-output_tables/   
+output_tables/
 temp/
 test_isp_assumptions_workbook_Parser.py
 
 
 
+
+/.quarto/
