@@ -163,5 +163,5 @@ The **High‑Level NEM** model provides a baseline representation of the NEM’s
 
 **View Quarto output**
 
-   Open the generated Quarto markdown file[High-level\_NEM.qmd.md](High-level_NEM.qmd.md)
+   Open the generated Quarto markdown file [High-level\_NEM.qmd.md](High-level_NEM.md)
 
