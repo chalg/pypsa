@@ -1,3 +1,6 @@
+# Script to render Quarto document to HTML and move files
+# This is because the YAML header in the Quarto document is unable to output to a specific directory, so the HTML file is saved to the root directory.
+
 import subprocess
 import shutil
 import os
@@ -15,7 +18,7 @@ os.makedirs("docs", exist_ok=True)
 if result.returncode == 0:
     # Move and rename the HTML file
     shutil.move("index.html", "docs/index.html")
-    print("File moved to docs/index.html")
+    print("✅ File moved to docs/index.html")
     
     # Move the supporting files folder if it exists
     if os.path.exists("High-level_NEM_files"):
@@ -24,9 +27,9 @@ if result.returncode == 0:
             shutil.rmtree("docs/High-level_NEM_files")
         
         shutil.move("High-level_NEM_files", "docs/High-level_NEM_files")
-        print("Supporting files folder moved to docs/High-level_NEM_files")
+        print("✅ Supporting files folder moved to docs/High-level_NEM_files")
     else:
         print("No supporting files folder found")
         
 else:
-    print("Error:", result.stderr)
+    print(f"❌ Render failed:\n{result.stderr}")
