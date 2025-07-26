@@ -1705,7 +1705,7 @@ plot_dispatch(n, time="2024-05-18", days=10, regions=["VIC1"], show_imports=True
 
 The `4_4xVreTransitionZeroCoal` scenario has a zero coal and a 4x increase in wind and utility solar and storage plus a 2x increase in rooftop solar (see table below).
 
-This reduces gas-powered generation by xx% compared to Open Electricity consumption over a recent 12 month period.
+This reduces gas-powered generation by 51% compared to Open Electricity consumption over a recent 12 month period.
 
 ```{python}
 #| output: asis
