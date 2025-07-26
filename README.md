@@ -13,10 +13,8 @@ A concise, five‑node PyPSA model of the Australian National Electricity Market
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
   - [Usage](#usage)
-  - [Project Structure](#project-structure)
   - [Customization \& Scenarios](#customization--scenarios)
-  - [Contributing](#contributing)
-  - [License \& References](#license--references)
+  - [View Quarto rendered HTML](#view-quarto-rendered-html)
 
 ---
 
@@ -85,13 +83,9 @@ The **High‑Level NEM** model provides a baseline representation of the NEM’s
 
 ## Usage
 
-1. **Run the Jupyter notebook OR Quarto**
+1. **Run the Quarto notebook**
 
-   ```bash
-   jupyter notebook High-level_NEM.ipynb
-   ```
- 
-   OR
+   Open High-level_NEM.qmd in Quarto and run cells, or render to HTML by running `quarto_to_html_render.py`, or:
 
    ```bash
    quarto render High-level_NEM.qmd --to html
@@ -110,26 +104,6 @@ The **High‑Level NEM** model provides a baseline representation of the NEM’s
    n.export_to_netcdf("results/high-level_nem.nc")
    ```
 
----
-
-## Project Structure
-
-```
-├── data/                         # Input CSV files
-│   ├── buses.csv
-│   ├── generators.csv
-│   ├── loads.csv
-│   ├── lines.csv
-│   ├── links.csv
-│   ├── storage_units.csv
-│   ├── loads_t.p_set.csv
-│   └── generators_t.p_max_pu.csv
-├── notebooks/
-│   └── High-level_NEM.ipynb      # Main modelling & analysis notebook
-├── results/                      # Exported NetCDF & figures
-├── requirements.txt              # Python dependencies
-└── README.md                     # You are here
-```
 
 ---
 
@@ -141,18 +115,6 @@ The **High‑Level NEM** model provides a baseline representation of the NEM’s
 
 ---
 
-## Contributing
-
-1. Fork the repo
-2. Create a feature branch (`git checkout -b feature/xyz`)
-3. Commit changes and push (`git push origin feature/xyz`)
-4. Open a Pull Request and describe your improvements
-
----
-
-## License & References
-
-**License:** MIT
 
 **Key References:**
 
@@ -161,7 +123,7 @@ The **High‑Level NEM** model provides a baseline representation of the NEM’s
 - Open Electricity Facilities Database
 - TU Berlin: Data Science for Energy System Modelling
 
-**View Quarto output**
+## View Quarto rendered HTML
 
-   Open the generated Quarto markdown file [High-level\_NEM.qmd.md](High-level_NEM.md)
+[A High-level Open Source Model for the Australian National Electricity Market (NEM)](https://chalg.github.io/pypsa/)
 

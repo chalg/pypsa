@@ -1700,6 +1700,57 @@ Review a previous dispatch period over 10 days in Victoria.
 plot_dispatch(n, time="2024-05-18", days=10, regions=["VIC1"], show_imports=True, scenario_name=scenario, scenario_objective=objective_text)
 ```
 
+
+##### GPG in 4_4xVreTransitionZeroCoal
+
+The `4_4xVreTransitionZeroCoal` scenario has a zero coal and a 4x increase in wind and utility solar and storage plus a 2x increase in rooftop solar (see table below).
+
+This reduces gas-powered generation by xx% compared to Open Electricity consumption over a recent 12 month period.
+
+```{python}
+#| output: asis
+ 
+# 1) Filter scenario
+df_4x = results_tbl[results_tbl["Scenario"] == "4_4xVreTransitionZeroCoal"].copy()
+
+# 2) Compute the % change vs 10,919 GWh. Source: Open Electricity Data (note this will change regularly because it is a rolling 12-month period)
+base = 10919
+df_4x["Gas Δ% vs 10919GWh"] = (df_4x["Gas Generation (GWh)"] - base) / base * 100
+
+# 3) Insert the new column right after “Gas Generation (GWh)”
+col_idx = df_4x.columns.get_loc("Gas Generation (GWh)")
+df_4x.insert(col_idx+1, "Gas Δ% vs 10919GWh", df_4x.pop("Gas Δ% vs 10919GWh"))
+
+# Inspect
+html_4x_table = df_4x.iloc[:, :5].to_html(escape=False, index=False)
+html_4x_table = html_4x_table.replace('<table', 
+    '<table style="width: 100%; table-layout: fixed; font-size: 11px; font-family: monospace;"')
+html_4x_table = html_4x_table.replace('<td', 
+    '<td style="min-width: 250px; word-wrap: break-word; padding: 4px;"')
+
+html_4x_table
+```
+
+Load the `4_4xVreTransitionZeroCoal` network. This scenario has a 100% reduction in coal and a large increase in renewables and storage.
+
+```{python}
+# Load the network for the specific scenario
+n = pypsa.Network("results/scenarios/scenario_4_4xVreTransitionZeroCoal.nc")
+
+# Metadata to provide as arguments to the plot_dispatch() function.
+scenario = "4_4xVreTransitionZeroCoal"
+objective_text = df_results.loc[df_results["Scenario"] == scenario, "Objective"].values[0]
+```
+
+Review the same dispatch period over 10 days in Victoria. Note the emergence of curtailment.
+
+```{python}
+#| warning: false
+plot_dispatch(n, time="2024-05-18", days=10, regions=["VIC1"], show_imports=True, scenario_name=scenario, scenario_objective=objective_text)
+```
+
+---
+
 ##### Generate Scenarios Function
 
 Below is the function for generating scenarios from a CSV file.
