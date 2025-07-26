@@ -5,13 +5,20 @@ date: "2025-07-26"
 format:
   html:
     output-file: index.html
-    output-dir: docs        # doesn't work. Use subprocess script
+    output-dir: docs        # doesn't work (might be because of single file and not site). Use subprocess script
     theme: cosmo            # theme
-    code-fold: true         # hide code by default, with toggle
-    code-tools: true        # show global “Show/Hide” & “Copy” buttons
-    df-print: paged         # <— turn on HTML-paged DataFrame printing
+    toc: true               # TOC
+    toc_float: true         # Floating TOC sidebar
+    toc-depth: 3            # Numbered depth
+    code-fold: true        
+    code-tools: true       
+    code-summary: "Show the Python Code"  # Friendly prompt to users
+    df-print: paged        
     df-print-paged:
-      page-length: 10       #   rows per page
+      page-length: 10
+    anchor-sections: true  # Anchors for direct section linking
+execute:
+  freeze: auto      #   rows per page
   #pdf:
   #  df-print: kable    
 ---
