@@ -1,5 +1,6 @@
 # Script to render Quarto document to HTML and move files
-# This is because the YAML header in the Quarto document is unable to output to a specific directory, so the HTML file is saved to the root directory.
+# This is because the yaml header in the Quarto document is unable to output to a specific directory (for a single file), so the HTML file is saved to the root directory.
+# Note: I'm rendering a single html file, which I'm renaming and moving, I'm not creating a full website and my project type is not Website Project.
 
 import subprocess
 import shutil

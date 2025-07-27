@@ -1,42 +1,45 @@
 ---
 title: "A High-level Open Source Model for the Australian National Electricity Market (NEM)"
 author: "Grant Chalmers"
-date: "2025-07-26"
+date: "2025-07-28"
 format:
   html:
     output-file: index.html
-    output-dir: docs        # doesn't work (might be because of single file and not site). Use subprocess script
     theme: cosmo            # theme
     toc: true               # TOC
     toc_float: true         # Floating TOC sidebar
-    toc-depth: 3            # Numbered depth
+    toc-depth: 4            # Numbered depth
     code-fold: true        
     code-tools: true       
     code-summary: "Show the Python Code"  # Friendly prompt to users
     df-print: paged        
-    df-print-paged:
+    df-print-paged:         # Not working in python
       page-length: 10
     anchor-sections: true  # Anchors for direct section linking
 execute:
   freeze: auto      #   rows per page
-  #pdf:
-  #  df-print: kable    
+  
 ---
 
 
 ## **Introduction**
 
-The NEM power system is undergoing rapid transformation, driven by the need for increased renewable energy (RE) integration, grid modernization, and the pursuit of sustainable, reliable, and affordable electricity. To support these goals, advanced modelling tools are essential for analysing the current state of the grid, evaluating future scenarios, and informing policy and investment decisions.
+The National Electricity Market (NEM), which spans roughly 40,000 km of transmission lines and cables, serves more than 23 million Australians across five interconnected regions - Queensland, New South Wales, Victoria, South Australia, and Tasmania.^[Western Australia and the Northern Territory operate separate electricity systems and are not part of the NEM.] As one of the world's longest and most complex power systems, the NEM coordinates wholesale electricity generation and transports it from generators to large industrial users, local distributors, and ultimately to homes and businesses. This system relies on a real-time ‘pool’ market, with electricity output aggregated and scheduled every five minutes to efficiently balance demand and incentivise investment in fast-response technologies, such as batteries and gas peaking units. 
 
-This notebook presents the development of a high-level baseline model for the NEM power system using [PyPSA (Python for Power System Analysis)](https://pypsa.readthedocs.io/en/latest/), an open-source framework for simulating and optimizing modern energy systems. The model, referred to as High-level_NEM, is a 5-node model (one bus per region) based on actual 2024 generation and demand profiles at hourly resolution. A comparison of the 2024 baseline model with a future scenario is presented in the notebook.
+As the NEM undergoes rapid transformation, driven by government policy promoting greater renewable energy integration and grid modernisation, advanced modelling tools have become essential for analysing the current state of the market and evaluating future scenarios.  
+
+
+
+
+This Quarto document presents the development of a high-level baseline model for the NEM power system using [PyPSA (Python for Power System Analysis)](https://pypsa.readthedocs.io/en/latest/), an open-source framework for simulating and optimizing modern energy systems. The model, referred to as High-level_NEM, is a 5-node model (one bus per region) based on actual 2024 generation and demand profiles at hourly resolution. A comparison of the 2024 baseline model with a future scenario is presented in this document.
 The future scenario has increased renewable energy and storage and associated reduction in thermal generation.
 
-The workflow implemented in this notebook encompasses the following key steps:  
+The workflow implemented in this Quarto document encompasses the following key steps:  
   - **Data Import and Preprocessing:** Loading and preparing network topology, generator, storage, and time series data from actual NEM system records and relevant administrative datasets.  
   - **Network Construction:** Building the PyPSA network by adding buses, loads, generators, storage units, and transmission lines.  
   - **Temporal Resolution and Snapshots:** Setting up the model to operate at a chosen temporal granularity, allowing for the study of daily and seasonal variability in demand and renewable generation.  
   - **Optimisation and Scenario Analysis:** Solving the baseline model using linear optimisation to determine the optimal dispatch of resources, and extending the analysis to a plausible future scenario with an aggressive increase in variable renewable energy and associated reduction in thermal generation.   
-  - **Results Visualization and Verification:** Generating plots and statistics to interpret model outputs, including network topology, dispatch profiles, generation mix, and importantly, curtailment.  
+  - **Results Visualisation and Verification:** Generating plots and statistics to interpret model outputs, including network topology, dispatch profiles, generation mix, and importantly, curtailment.  
   - **Scenario Functions:** Providing reusable functions for projecting various scaled-up generation scenarios. 
   
 
@@ -80,7 +83,7 @@ By following this workflow, the notebook provides a high-level example for those
 
 ### 01 Import 
 
-This section imports all necessary Python packages and libraries required for data processing, power system modelling, geospatial analysis, and visualization. These packages provide the foundational tools for building, analysing, and visualising the High-leve_NEM baseline model and high penetration renewable energy model.
+This section imports all necessary Python packages and libraries required for data processing, power system modelling, geospatial analysis, and visualisation. These packages provide the foundational tools for building, analysing, and visualising the High-leve_NEM baseline model and high penetration renewable energy model.
 
 ```{python}
 import pandas as pd
@@ -104,7 +107,7 @@ from IPython.display import display, HTML
 
 ### 02 Create Network
 
-This section covers the creation of the High-level_NEME network, including loading network data, initializing the PyPSA network object, and preparing the structure for adding buses, loads, generators, storage units, and transmission lines. 
+This section covers the creation of the High-level NEM network, including loading network data, initializing the PyPSA network object, and preparing the structure for adding buses, loads, generators, storage units, and transmission lines. 
 
 
 
@@ -145,7 +148,7 @@ n = pypsa.Network()
 
 ### 03 Add Network Components
 
-This section details the process of adding key components to the PyPSA-PH network, including buses, loads, generators, storage units, and transmission lines. Each component is integrated with relevant time series data and technical parameters to accurately represent the Philippine power system's structure and operation.
+This section details the process of adding key components to the network, including buses, loads, generators, storage units, and transmission lines. Each component is integrated with relevant time series data at hourly resolution.
 
 ```{python}
 # Add components
@@ -1448,6 +1451,7 @@ plt.show()
 
 ### 05 Conclusion and Next Steps
 
+
 This simple model demonstrates that achieving a high-penetration renewable energy grid is possible. However, there is an inherent trade-off between deploying large amounts of variable renewable energy and managing increased curtailment. The model focuses solely on power flow analysis and does not account for costs beyond assigning marginal costs to generators to enable least-cost dispatch. Additionally, I’ve assigned a very small negative marginal cost to storage units, encouraging batteries to charge earlier rather than at the last possible moment - an approach enabled by the model’s assumption of perfect foresight.
 
 ::: {.callout-note}
@@ -1470,6 +1474,10 @@ Potential future analysis would also incorporate:
 
 ### 06 Appendix
 
+
+#### Reserve Requirements
+
+
 As mentioned in the conclusion, there is no certainty around whether or not the `8.2.1_6xVreCurtailReview` network could operate in a secure state.
 
 It is possible to determine in rough terms, how often for example the network would be issued Lack of Reserve (LOR) notices by the system operator. Here we'll use the per region thresholds published by AEMO.
@@ -1479,6 +1487,10 @@ It is worth noting that these reserve requirements are dynamic and always changi
 <div style="text-align: center;">
 ![LOR notice example showing dynamic reserve requirements](images/lor-notice-example.png)
 </div>
+
+In the `count_reserve_breaches_df` funtion below, we can pass reserve thresholds per region, published in the 2024 ISP Inputs and Assumptions workbook.xlsx (sheet: Reserves):
+
+`{"NSW1":705, "VIC1":550, "QLD1":710, "SA1":195, "TAS1":140}`
 
 ```{python}
 def count_reserve_breaches_df(n, threshold_mw=850):
@@ -1663,7 +1675,9 @@ plot_hydro_dispatch_vs_potential(n)
 ```
 
 
-##### GPG in 2_BalancedAggressiveTransition
+
+#### GPG in 2_BalancedAggressiveTransition
+
 
 The `2_BalancedAggressiveTransition` scenario has a 75% reduction in coal and only a mild increase in renewables and storage (see table below).
 
@@ -1712,7 +1726,9 @@ plot_dispatch(n, time="2024-05-18", days=10, regions=["VIC1"], show_imports=True
 ```
 
 
-##### GPG in 4_4xVreTransitionZeroCoal
+
+#### GPG in 4_4xVreTransitionZeroCoal
+
 
 The `4_4xVreTransitionZeroCoal` scenario has a zero coal and a 4x increase in wind and utility solar and storage plus a 2x increase in rooftop solar (see table below).
 
@@ -1762,7 +1778,9 @@ plot_dispatch(n, time="2024-05-18", days=10, regions=["VIC1"], show_imports=True
 
 ---
 
-##### Generate Scenarios Function
+
+#### Generate Scenarios Function
+
 
 Below is the function for generating scenarios from a CSV file.
 
