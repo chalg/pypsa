@@ -71,11 +71,10 @@ The **High‑Level NEM** model provides a baseline representation of the NEM’s
 
 
 
-3. **Input Data**\
+3. **Input Data**
    
 
-   - `generators.csv`, `buses.csv`, `loads.csv`
-   - `lines.csv`, `links.csv`, `storage_units.csv`
+   - Components:  `generators.csv`, `buses.csv`, `loads.csv`, `lines.csv`, `links.csv`, `storage_units.csv`
    - Time series: `loads_t.p_set.csv`, `generators_t.p_max_pu.csv`
 
 ---
