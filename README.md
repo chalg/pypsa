@@ -26,6 +26,10 @@ The **High‑Level NEM** model provides a baseline representation of the NEM’s
 - Exploration of high‑renewable scenarios with storage
 - Visualisation of network topology, generation mix, dispatch and curtailment
 
+
+[8.2.1_6xVreCurtailReview scenario dispatch](images/scenario-dispatch.png)
+
+
 **Intended Audience:**
 
 - Students and professionals learning power system modelling
