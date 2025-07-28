@@ -28,10 +28,10 @@ The **High‑Level NEM** model provides a baseline representation of the NEM’s
 
 
 <p align="center">
-  <img src="images/scenario-dispatch.png" alt="Scenario dispatch" width="700">
+  <img src="docs/images/scenario-dispatch.png" alt="Scenario dispatch" width="700">
 </p>
 
-![Scenario dispatch](images/scenario-dispatch.png)
+![Scenario dispatch](docs/images/scenario-dispatch.png)
 
 **Intended Audience:**
 
