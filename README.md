@@ -47,6 +47,7 @@ The **High‑Level NEM** model provides a baseline representation of the NEM’s
 
 ## Directory Structure
 
+```plaintext
 .
 ├─ High-level_NEM.qmd                  # Main Quarto analysis/report
 ├─ data/                               # Input datasets (already cleaned)
@@ -57,7 +58,7 @@ The **High‑Level NEM** model provides a baseline representation of the NEM’s
 │  └─ scenarios/                       # Scenario netCDF + summaries
 └─ docs/                               # Built site & assets for html report
 
-
+```
 
 ## Prerequisites
 
