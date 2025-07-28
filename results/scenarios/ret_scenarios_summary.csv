@@ -1,7 +1,0 @@
-Scenario,Carriers,Retirement Scope,Unserved Energy (GWh),Unserved by Region (GWh)
-55% Retirement,"Black Coal, Brown Coal","NSW1, VIC1",1.627,"{'NSW1': 0.23, 'QLD1': 0.0, 'SA1': 0.0, 'TAS1': 0.0, 'VIC1': 1.397}"
-60% Retirement,"Black Coal, Brown Coal","NSW1, VIC1",23.564,"{'NSW1': 14.457, 'QLD1': 0.0, 'SA1': 0.0, 'TAS1': 0.146, 'VIC1': 8.961}"
-65% Retirement,"Black Coal, Brown Coal","NSW1, VIC1",77.598,"{'NSW1': 45.741, 'QLD1': 0.0, 'SA1': 0.0, 'TAS1': 0.681, 'VIC1': 31.177}"
-70% Retirement,"Black Coal, Brown Coal","NSW1, VIC1",197.124,"{'NSW1': 97.549, 'QLD1': 0.0, 'SA1': 0.0, 'TAS1': 4.878, 'VIC1': 94.698}"
-75% Retirement,"Black Coal, Brown Coal","NSW1, VIC1",437.233,"{'NSW1': 214.706, 'QLD1': 0.0, 'SA1': 0.0, 'TAS1': 10.119, 'VIC1': 212.408}"
-80% Retirement,"Black Coal, Brown Coal","NSW1, VIC1",804.317,"{'NSW1': 401.37, 'QLD1': 0.0, 'SA1': 0.0, 'TAS1': 20.901, 'VIC1': 382.047}"

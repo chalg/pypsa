@@ -1,6 +1,6 @@
 # High‑Level NEM PyPSA Model
 
-A concise, five‑node PyPSA model of the Australian National Electricity Market (NEM), designed for learners and stakeholders exploring energy transition scenarios and renewable integration.
+A concise, five‑node PyPSA model of the Australian National Electricity Market (NEM), designed for learners and stakeholders exploring energy transition scenarios.
 
 ---
 
@@ -24,7 +24,7 @@ The **High‑Level NEM** model provides a baseline representation of the NEM’s
 
 - Analysis of current dispatch and grid topology
 - Exploration of high‑renewable scenarios with storage
-- Visualization of generation mix, curtailment, and interconnector flows
+- Visualisation of network topology, generation mix, dispatch and curtailment
 
 **Intended Audience:**
 
@@ -49,8 +49,8 @@ The **High‑Level NEM** model provides a baseline representation of the NEM’s
 
 - Python 3.8+
 - [PyPSA](https://pypsa.readthedocs.io/en/latest/)
-- pandas, NumPy, Matplotlib, Cartopy
-- (Optional) Gurobi solver for faster optimisation
+- pypsa, pandas, numpy, matplotlib, cartopy, datetime, great_tables
+- (Optional) Gurobi solver (requires license)
 
 ---
 
@@ -83,7 +83,7 @@ The **High‑Level NEM** model provides a baseline representation of the NEM’s
 
 ## Usage
 
-1. **Run the Quarto notebook**
+1. **Run the Quarto document**
 
    Open High-level_NEM.qmd in Quarto and run cells, or render to HTML by running `quarto_to_html_render.py`, or:
 
@@ -95,8 +95,8 @@ The **High‑Level NEM** model provides a baseline representation of the NEM’s
 
    - **Data Import & Preprocessing**
    - **Network Construction** (buses, loads, generators, storage, lines/links)
-   - **Optimisation & Scenario Analysis**
-   - **Visualisation** (`plot_dispatch` examples for static & interactive plots)
+   - **Optimisation (Solve the network)**
+   - **Visualisation (senario analysis)** (`plot_dispatch` examples for static & interactive plots (plotly) and the great_tables package for variable renewable curtailment analysis)
 
 3. **Export results**
 
@@ -126,4 +126,9 @@ The **High‑Level NEM** model provides a baseline representation of the NEM’s
 ## View Quarto rendered HTML
 
 [A High-level Open Source Model for the Australian National Electricity Market (NEM)](https://chalg.github.io/pypsa/)
+
+Note: I'm rendering a single html file (with asssociated assets), which I'm renaming and moving to the `docs/` directory via the `qaurto_to_html_render.py` script. I'm not creating a full website and my project type is not Website Project. 
+
+
+Using `quarto render High-level_NEM.qmd --to html` will render the Quarto document to HTML in the root directory - however I need it to be in the `docs/` directory so that it can be served by GitHub Pages.
 

@@ -1,9 +1,0 @@
-Scenario,Gas_GWh,Gas_%_vs_baseline
-0_2024_baseline,1555.817,0.0
-4_VreStorageRampTransitionZeroCoal,2925.786,88.1
-1_BalancedTransition,4553.072,192.6
-3.3_VreStorageRampGasReduction,8701.003,459.3
-3.2_VreStorageRampGasReduction,9853.332,533.3
-3.1_VreStorageRampGasReduction,10159.833,553.0
-3_VreStorageRampTransition,10251.824,558.9
-2_BalancedAggressiveTransition,10272.778,560.3
