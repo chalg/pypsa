@@ -10,8 +10,8 @@ A concise, five‑node PyPSA model of the Australian National Electricity Market
   - [Table of Contents](#table-of-contents)
   - [Overview](#overview)
   - [Features](#features)
+  - [Directory Structure](#directory-structure)
   - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
   - [Usage](#usage)
   - [Customization \& Scenarios](#customization--scenarios)
   - [View Quarto rendered HTML](#view-quarto-rendered-html)
@@ -45,6 +45,20 @@ The **High‑Level NEM** model provides a baseline representation of the NEM’s
 
 ---
 
+## Directory Structure
+
+.
+├─ High-level_NEM.qmd                  # Main Quarto analysis/report
+├─ data/                               # Input datasets (already cleaned)
+│  ├─ inputs/                          # Assumption tables
+│  └─ nemweb/clean/                    # NEMWeb extracts
+├─ scripts/                            # Data prep & rendering helpers
+├─ results/
+│  └─ scenarios/                       # Scenario netCDF + summaries
+└─ docs/                               # Built site & assets for html report
+
+
+
 ## Prerequisites
 
 - Python 3.8+
@@ -54,26 +68,10 @@ The **High‑Level NEM** model provides a baseline representation of the NEM’s
 
 ---
 
-## Installation
 
-1. **Clone repository**
 
-   ```bash
-   git clone https://github.com/your-org/high-level-nem.git
-   cd high-level-nem
-   ```
-
-2. **Create virtual environment & install dependencies**
-
-   ```bash
-   python -m venv venv
-   source venv/bin/activate      # Linux/macOS
-   venv\Scripts\activate         # Windows
-   pip install -r requirements.txt
-   ```
-
-3. **Download data**\
-   Place the following CSVs into `data/`:
+3. **Input Data**\
+   
 
    - `generators.csv`, `buses.csv`, `loads.csv`
    - `lines.csv`, `links.csv`, `storage_units.csv`
@@ -87,9 +85,7 @@ The **High‑Level NEM** model provides a baseline representation of the NEM’s
 
    Open High-level_NEM.qmd in Quarto and run cells, or render to HTML by running `quarto_to_html_render.py`, or:
 
-   ```bash
-   quarto render High-level_NEM.qmd --to html
-   ```
+
 
 2. **Walk through sections**
 
@@ -97,12 +93,6 @@ The **High‑Level NEM** model provides a baseline representation of the NEM’s
    - **Network Construction** (buses, loads, generators, storage, lines/links)
    - **Optimisation (Solve the network)**
    - **Visualisation (senario analysis)** (`plot_dispatch` examples for static & interactive plots (plotly) and the great_tables package for variable renewable curtailment analysis)
-
-3. **Export results**
-
-   ```python
-   n.export_to_netcdf("results/high-level_nem.nc")
-   ```
 
 
 ---
@@ -118,10 +108,13 @@ The **High‑Level NEM** model provides a baseline representation of the NEM’s
 
 **Key References:**
 
-- PyPSA Documentation
-- AEMO 2024 ISP Inputs & Assumptions
-- Open Electricity Facilities Database
-- TU Berlin: Data Science for Energy System Modelling
+- [TU Berlin: Data Science for Energy System Modelling](https://fneum.github.io/data-science-for-esm/intro.html#jupyter.org/)  
+- [PyPSA Documentation and Components](https://pypsa.readthedocs.io/en/latest/user-guide/components.html)  
+- [PyPSA Earth Documentation](https://pypsa-earth.readthedocs.io/en/latest/)  
+- [GitHub PyPSA Sources](https://github.com/PyPSA)  
+- [PyPSA-PH: High-Resolution Open Source Power System Model for the Philippines](https://github.com/arizeosalac/PyPSA-PH/tree/main)  
+- [2024 Integrated System Plan (ISP)](https://aemo.com.au/energy-systems/major-publications/integrated-system-plan-isp/2024-integrated-system-plan-isp)  
+- [Open Electricity](https://openelectricity.org.au/)
 
 ## View Quarto rendered HTML
 
