@@ -27,11 +27,10 @@ The **High‑Level NEM** model provides a baseline representation of the NEM’s
 - Visualisation of network topology, generation mix, dispatch and curtailment
 
 
-<p align="center">
-  <img src="docs/images/scenario-dispatch.png" alt="Scenario dispatch" width="700">
-</p>
-
-![Scenario dispatch](docs/images/scenario-dispatch.png)
+<div align="center">
+  <img src="docs/images/scenario-dispatch.png" alt="Scenario dispatch" width="700"><br>
+  <em>Scenario dispatch example</em>
+</div>
 
 **Intended Audience:**
 
