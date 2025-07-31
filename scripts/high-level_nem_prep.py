@@ -79,6 +79,8 @@ generators = pd.concat([generators, rooftop_generators_partial],
                        ignore_index=True) \
                         .set_index('name')
 
+# drop earlier entries for the same index, keep last
+generators = generators.loc[~generators.index.duplicated(keep='last')]
 # Pushing to csv will concatenate duplicate rooftop solar generators and this type of warning will become apparent:
 # WARNING:pypsa.io:The following generators are already defined and will be skipped (use overwrite=True to overwrite): NSW1-ROOFTOP-SOLAR
 # generators.to_csv('data/generators.csv') #.set_index('name')

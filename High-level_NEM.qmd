@@ -1290,7 +1290,7 @@ The model applies relatively harsh curtailment to rooftop solar. This is a resul
 
 The built-in curtailment would likely, at least partially explain why AEMO uses solar and wind traces, rather than solely relying on historical data, in its ISP modelling.
 
-Comparing rooftop solar with utility solar availability (capacity) factors in our network will help clarify this:
+Comparing rooftop solar with utility solar availability (capacity) factors^[Rooftop solar capacity factors determined by normalising (dividing each observation) against the region's maximum output - see *import_rooftop_solar.py* for python code.] in our network will help clarify this:
 
 
 ```{python}

@@ -32,24 +32,24 @@ try:
     # Couldn't use select_columns='all' with default feather format.
 
     rooftop_data  = nemosis.dynamic_data_compiler(
-        start_time=start_time,
-        end_time=end_time,
-        table_name=table_name,
-        raw_data_location=raw_data_folder,  # Specify the required raw_data_location
-        select_columns='all',
-        fformat='csv',
-        keep_csv=False  # Set to True to keep raw CSV files
+    start_time=start_time,
+    end_time=end_time,
+    table_name=table_name,
+    raw_data_location=raw_data_folder,  # Specify the required raw_data_location
+    select_columns='all',
+    fformat='csv',
+    keep_csv=False  # Set to True to keep raw CSV files
     )
 
     rooftop_data.head(50)
-    
-   # Filter for TYPE = 'MEASUREMENT' (change to 'SATELLITE' if needed)
+
+    # Filter for TYPE = 'MEASUREMENT' (change to 'SATELLITE' if needed)
     filtered_data = rooftop_data[rooftop_data['TYPE'] == 'MEASUREMENT']
 
     # Filter for specific regions
     filtered_data = filtered_data.query('REGIONID in ["NSW1", "VIC1", "QLD1", "SA1", "TAS1"]')
     filtered_data
-    
+
     # Convert timestamps
     filtered_data['INTERVAL_DATETIME'] = pd.to_datetime(filtered_data['INTERVAL_DATETIME'])
 
@@ -69,22 +69,22 @@ except Exception as e:
     print(f"An error occurred: {str(e)}")
 
 
-# TODO: copy script from ChatGPT to import rooftop solar data and format for PyPSA. Correct paths etc, possibly automate insertion into existing csvs.
-
-# FROM CHATGPT
 
 # Load uploaded rooftop solar data
 rooftop_df = pd.read_csv(f"{data_folder}/rooftop_solar_hourly_2024.csv", parse_dates=["INTERVAL_DATETIME"])
 rooftop_df = rooftop_df.set_index("INTERVAL_DATETIME")
 
-# Normalize to get p_max_pu values and fill any NaNs as it will create optimisation warnings
+rooftop_df.head(20)
+
+# Normalize to get p_max_pu values per region by dividing each column by its own max and fill any NaNs as it will create optimisation warnings
 p_max_pu_df = rooftop_df.div(rooftop_df.max()).fillna(0)
+
 
 # Rename columns to match generator names like 'NSW1-ROOFTOP-SOLAR'
 p_max_pu_df.columns = [f"{col}-ROOFTOP-SOLAR" for col in p_max_pu_df.columns]
 
 # Save p_max_pu time series
-p_max_pu_path = "data/high-level_NEM/generators-p_max_pu.csv"
+p_max_pu_path = "data/generators-p_max_pu.csv"
 p_max_pu_df.to_csv(p_max_pu_path)
 
 # Build generator entries
@@ -100,7 +100,7 @@ for region in rooftop_df.columns:
     })
 
 generators_df = pd.DataFrame(generator_entries)
-generators_path = "data/high-level_NEM/rooftop_generators_partial.csv"
+generators_path = "data/rooftop_generators_partial.csv"
 generators_df.to_csv(generators_path, index=False)
 
 p_max_pu_path, generators_path
