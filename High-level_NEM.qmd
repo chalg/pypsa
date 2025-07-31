@@ -1377,7 +1377,7 @@ plt.show()
 
 ```
 
-There is a clear midday **plateau** in utility solar output (orange boxplots), likely resulting from either **negative market prices** or **network constraints** such as congestion.
+There is a clear midday **plateau** in utility solar output (orange boxplots), likely resulting from **negative market prices** and/or **network constraints** such as congestion.
 
 In Victoria, the curtailment plateau is especially pronounced. This is likely due to utility-scale solar farms being situated in parts of the network that experience congestion. Congestion arises when the network’s ability to transmit electricity is constrained, requiring operators to curtail solar generation despite sufficient solar resources being available.
 
