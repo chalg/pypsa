@@ -51,12 +51,12 @@ The workflow implemented in this Quarto document encompasses the following key s
 Develop a high-level 5-node baseline PyPSA model for the NEM and VRE/storage scale-up scenarios with:  
   1. One bus per NEM region with transmission interconnectors  
   2. Hourly time resolution to capture some RE intermittency  
-  3. Comparison of 2024 baseline model to a high penetration renewable energy scenario  
+  3. Comparison of 2024 baseline model (*0_2024_baseline*) to a high penetration renewable energy scenario (*8.3_VreCurtailReview*)  
 
 
 *Key Assumptions*  
 
-Baseline 2024 model:
+Baseline 2024 model:  
   - 2024 demand  
   - 2024 generation profiles  
   - 2024 renewable energy availability (capacity) factors (incl. hydro).  
@@ -68,7 +68,11 @@ Baseline 2024 model:
   - Project EnergyConnect and Marinus stage 1 implemented on top of existing interconnectors (constrained by nominal capacity)  
   - One generator of each major source and one battery setup per region/bus
 
-By following this workflow, the notebook provides a high-level example for those learning power system analysis with PyPSA.
+::: {.callout-note}
+Apart from the baseline model, 19 additional scenarios were created by varying the scale-up of VRE and storage, and the scale-down of thermal generation, ultimately culminating in the final `8.3_VreCurtailReview` scenario.
+:::
+
+By following this workflow, the document provides a high-level example for those learning power system analysis with PyPSA.
 
 **Important links/references:**  
 
@@ -83,7 +87,7 @@ By following this workflow, the notebook provides a high-level example for those
 
 ### 01 Import 
 
-This section imports all necessary Python packages and libraries required for data processing, power system modelling, geospatial analysis, and visualisation. These packages provide the foundational tools for building, analysing, and visualising the High-leve_NEM baseline model and high penetration renewable energy model.
+This section imports all necessary Python packages and libraries required for data processing, power system modelling, geospatial analysis, and visualisation. These packages provide the foundational tools for building, analysing, and visualising the High-level NEM baseline model and high penetration renewable energy model.
 
 ```{python}
 import pandas as pd
@@ -653,6 +657,8 @@ def plot_dispatch(n, time="2024", days=None, regions=None,
     
 ```
 
+#### `0_2024_baseline` scenario
+
 Review dispatch for a 5-day period in NSW.
 
 Note here that very little gas is dispatched due to having a higher marginal price than black coal. In reality the ramping up and down of coal plants is smoother than this. The hourly resolution does not constrain the ramping much compared to actual five-minute dispatching in the NEM. For example, Eraring black coal units maximum ramp-up of 4MW/min, is 240MW per model snapshot (hourly).
@@ -1038,6 +1044,8 @@ html_subset_table = html_subset_table.replace('<td',
 html_subset_table
 ```
 
+
+#### `8.3_VreCurtailReview` scenario
 
 
 Load the `8.3_VreCurtailReview` network.
