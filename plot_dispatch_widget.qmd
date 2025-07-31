@@ -1,0 +1,146 @@
+---
+title: "Widget Test"
+author: "Grant Chalmers"
+date: "2025-07-29"
+format:
+  html:
+    embed-resources: true
+    output-file: widget.html
+    theme: cosmo            # theme
+    # toc: true               # TOC
+    # toc_float: true         # Floating TOC sidebar
+    # toc-depth: 4            # Numbered depth
+    # code-fold: true        
+    # code-tools: true
+    # code-summary: "Show the Python Code"  # Friendly prompt to users
+    # df-print: paged        
+    # df-print-paged:         # Not working in python
+    #   page-length: 10
+    # anchor-sections: true  # Anchors for direct section linking
+execute:
+  freeze: auto      #   rows per page
+  
+---
+
+```{python}
+#| echo: false
+import plotly.io as pio
+pio.renderers.default = "plotly_mimetype"
+```
+
+
+
+```{python}
+#| echo: false
+#| warning: false
+#| message: false
+#| freeze: false
+
+import pandas as pd
+from pathlib import Path
+from functools import lru_cache
+import ipywidgets as w
+import pypsa
+from plot_dispatch import plot_dispatch  # your function must return a Plotly fig
+
+SCEN_DIR = Path("results/scenarios")
+SCENARIOS = {p.stem: p for p in sorted(SCEN_DIR.glob("*.nc"))}
+
+@lru_cache(maxsize=8)
+def load_network(path_str: str) -> pypsa.Network:
+    return pypsa.Network(path_str)
+
+# Initialize widgets
+scenario   = w.Dropdown(description="Scenario:", options=list(SCENARIOS.keys()))
+regions    = w.SelectMultiple(description="Regions:", options=[], rows=7)
+start_text = w.Text(description="Start:", placeholder="YYYY | YYYY-MM | YYYY-MM-DD")
+days       = w.IntSlider(description="Days", value=7, min=0, max=90, step=1)
+imports    = w.Checkbox(description="Imports/Exports", value=True)
+curtail    = w.Checkbox(description="Curtailment", value=True)
+
+# Set default date picker value safely
+default_date = pd.Timestamp("2024-01-01").date()
+if SCENARIOS:
+    try:
+        first_scenario = list(SCENARIOS.keys())[0]
+        n_temp = load_network(str(SCENARIOS[first_scenario]))
+        default_date = n_temp.snapshots.min().date()
+    except:
+        pass  # fallback to default
+
+start_date = w.DatePicker(description="Start:", value=default_date)
+
+def _on_scenario_change(change):
+    if not change["new"]:
+        return
+    try:
+        n = load_network(str(SCENARIOS[change["new"]]))
+        regions.options = list(n.buses.index)
+        
+        # Set all regions if none selected
+        if not regions.value:
+            regions.value = tuple(regions.options)
+        else:
+            # Keep valid selections
+            keep = [r for r in regions.value if r in regions.options]
+            regions.value = tuple(keep or regions.options)
+        
+        # Update date picker
+        tmin = n.snapshots.min()
+        start_date.value = tmin.date()
+        
+        # Update text field if empty
+        if not start_text.value:
+            tmax = n.snapshots.max()
+            if (tmax - tmin).days >= 28:
+                start_text.value = f"{tmin.year}-{tmin.month:02d}"
+            else:
+                start_text.value = f"{tmin.year}"
+    except Exception as e:
+        print(f"Error loading scenario: {e}")
+
+# Set up observer
+scenario.observe(_on_scenario_change, names="value")
+
+# Initialize with first scenario if available
+if scenario.options:
+    scenario.value = scenario.options[0]
+
+@w.interact(
+    scenario=scenario,
+    date=start_date,
+    days=days,
+    regions=regions,
+    show_imports=imports,
+    show_curtailment=curtail
+)
+def _view(scenario, date, days, regions, show_imports, show_curtailment):
+    if not scenario or not regions:
+        return None
+        
+    try:
+        n = load_network(str(SCENARIOS[scenario]))
+        # Convert to ISO string
+        time_str = pd.Timestamp(date).strftime("%Y-%m-%d") if date else str(n.snapshots.min().year)
+        
+        fig = plot_dispatch(
+            n,
+            time=time_str,
+            days=(None if days == 0 else int(days)),
+            regions=list(regions) or None,
+            show_imports=show_imports,
+            show_curtailment=show_curtailment,
+            scenario_name=scenario,
+            interactive=True,
+        )
+        return fig
+    except Exception as e:
+        print(f"Error generating plot: {e}")
+        return None
+```
+
+
+
+
+
+

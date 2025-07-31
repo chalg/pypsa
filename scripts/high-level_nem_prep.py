@@ -1479,7 +1479,7 @@ def generate_scenarios(
         })
 
         # ── export solved network ─────────────────────────────────────
-        n.export_to_netcdf(os.path.join(export_dir, f"scenario_{scenario}.nc"))
+        n.export_to_netcdf(os.path.join(export_dir, f"{scenario}.nc"))
 
     df_results = pd.DataFrame(results)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M")
@@ -1552,27 +1552,27 @@ n = pypsa.Network("results/high-level_nem.nc")
 
 
 # Scenarios
-n = pypsa.Network("results/scenarios/scenario_1_BalancedTransition.nc")
-n = pypsa.Network("results/scenarios/scenario_2_BalancedAggressiveTransition.nc")
-n = pypsa.Network("results/scenarios/scenario_3.0_VreStorageRampTransition.nc")
-n = pypsa.Network("results/scenarios/scenario_3.1_VreStorageRampGasReduction.nc")
-n = pypsa.Network("results/scenarios/scenario_3.1.2_VreStorageRampGasReduction.nc")
-n = pypsa.Network("results/scenarios/scenario_3.2_VreStorageRampGasReduction.nc")
-n = pypsa.Network("results/scenarios/scenario_3.3_VreStorageRampGasReduction.nc")
-n = pypsa.Network("results/scenarios/scenario_4_VreStorageRampTransitionZeroCoal.nc")
-n = pypsa.Network("results/scenarios/scenario_4_4xVreTransitionZeroCoal.nc")
-n = pypsa.Network("results/scenarios/scenario_5_5xVreTransitionZeroCoal.nc")
-n = pypsa.Network("results/scenarios/scenario_6.0_6xVreTransitionZeroCoal.nc")
-n = pypsa.Network("results/scenarios/scenario_6.1_6xVreTransitionZeroCoal.nc")
+n = pypsa.Network("results/scenarios/1_BalancedTransition.nc")
+n = pypsa.Network("results/scenarios/2_BalancedAggressiveTransition.nc")
+n = pypsa.Network("results/scenarios/3.0_VreStorageRampTransition.nc")
+n = pypsa.Network("results/scenarios/3.1_VreStorageRampGasReduction.nc")
+n = pypsa.Network("results/scenarios/3.1.2_VreStorageRampGasReduction.nc")
+n = pypsa.Network("results/scenarios/3.2_VreStorageRampGasReduction.nc")
+n = pypsa.Network("results/scenarios/3.3_VreStorageRampGasReduction.nc")
+n = pypsa.Network("results/scenarios/4_VreStorageRampTransitionZeroCoal.nc")
+n = pypsa.Network("results/scenarios/4_4xVreTransitionZeroCoal.nc")
+n = pypsa.Network("results/scenarios/5_5xVreTransitionZeroCoal.nc")
+n = pypsa.Network("results/scenarios/6.0_6xVreTransitionZeroCoal.nc")
+n = pypsa.Network("results/scenarios/6.1_6xVreTransitionZeroCoal.nc")
 
-n = pypsa.Network("results/scenarios/scenario_6.2_6xVreTransitionZeroCoal.nc")
-n = pypsa.Network("results/scenarios/scenario_7.0_6xVre4xRoofZeroCoal.nc")
-n = pypsa.Network("results/scenarios/scenario_8.0_6xVre&BatteryZeroCoal.nc")
-n = pypsa.Network("results/scenarios/scenario_8.1_6xVre&BatteryZeroCoal.nc")
-n = pypsa.Network("results/scenarios/scenario_8.2_6xVre&BatteryZeroCoal.nc")
-n = pypsa.Network("results/scenarios/scenario_1.4_10xVre&BatteryZeroFF.nc")
-n = pypsa.Network("results/scenarios/scenario_1.5_11xVre&BatteryZeroFF.nc")
-n = pypsa.Network("results/scenarios/scenario_8.2.1_6xVreCurtailReview.nc")
+n = pypsa.Network("results/scenarios/6.2_6xVreTransitionZeroCoal.nc")
+n = pypsa.Network("results/scenarios/7.0_6xVre4xRoofZeroCoal.nc")
+n = pypsa.Network("results/scenarios/8.0_6xVre&BatteryZeroCoal.nc")
+n = pypsa.Network("results/scenarios/8.1_6xVre&BatteryZeroCoal.nc")
+n = pypsa.Network("results/scenarios/8.2_6xVre&BatteryZeroCoal.nc")
+n = pypsa.Network("results/scenarios/1.4_10xVre&BatteryZeroFF.nc")
+n = pypsa.Network("results/scenarios/1.5_11xVre&BatteryZeroFF.nc")
+n = pypsa.Network("results/scenarios/8.2.1_6xVreCurtailReview.nc")
 
 
 
@@ -1749,7 +1749,7 @@ curtailment_gt = curtailment_tbl.tab_header(
             )
         ) \
         .tab_source_note(
-            source_note=md("**Scenario**: 8.2.1_6xVreCurtailReview (Zero coal & 83% reduction in GPG). **Scale-up objective from 2024 baseline**: *NSW1-Black Coal: x0.0, NSW1-Gas: x0.5, NSW1-Rooftop Solar: x3.0, NSW1-Solar: x3.0, NSW1-Wind: x6.0, NSW1-Battery: x8.0, QLD1-Black Coal: x0.0, QLD1-Gas: x0.5, QLD1-Rooftop Solar: x3.0, QLD1-Solar: x3.0, QLD1-Wind: x6.0, QLD1-Battery: x6.0, SA1-Gas: x0.5, SA1-Rooftop Solar: x2.0, SA1-Solar: x3.0, SA1-Wind: x2.0, SA1-Battery: x6.0, TAS1-Gas: x0.5, TAS1-Rooftop Solar: x3.0, TAS1-Wind: x5.0, TAS1-Battery: x8.0, VIC1-Gas: x0.5, VIC1-Brown Coal: x0.0, VIC1-Rooftop Solar: x4.0, VIC1-Solar: x4.0, VIC1-Wind: x4.0, VIC1-Battery: x8.0*")
+            source_note=md("**Scenario**: 8.3_VreCurtailReview (Zero coal & 83% reduction in GPG). **Scale-up objective from 2024 baseline**: *NSW1-Black Coal: x0.0, NSW1-Gas: x0.5, NSW1-Rooftop Solar: x3.0, NSW1-Solar: x3.0, NSW1-Wind: x6.0, NSW1-Battery: x8.0, QLD1-Black Coal: x0.0, QLD1-Gas: x0.5, QLD1-Rooftop Solar: x3.0, QLD1-Solar: x3.0, QLD1-Wind: x6.0, QLD1-Battery: x6.0, SA1-Gas: x0.5, SA1-Rooftop Solar: x2.0, SA1-Solar: x3.0, SA1-Wind: x2.0, SA1-Battery: x6.0, TAS1-Gas: x0.5, TAS1-Rooftop Solar: x3.0, TAS1-Wind: x5.0, TAS1-Battery: x8.0, VIC1-Gas: x0.5, VIC1-Brown Coal: x0.0, VIC1-Rooftop Solar: x4.0, VIC1-Solar: x4.0, VIC1-Wind: x4.0, VIC1-Battery: x8.0*")
         ) \
         .fmt_nanoplot("Rooftop Solar Curtailment",
                       plot_type="bar",
@@ -1970,7 +1970,7 @@ def calculate_total_curtailment(network, carriers=None):
 
 
 
-n = pypsa.Network("results/scenarios/scenario_3.3_VreStorageRampGasReduction.nc")
+n = pypsa.Network("results/scenarios/3.3_VreStorageRampGasReduction.nc")
 # Doesn't look correct, higher using baseline than 3.3. Could be soaked up with exports and storage.
 curt_summary = calculate_total_curtailment(n, carriers=["Wind", "Solar", "Rooftop Solar"])
 print(curt_summary)
@@ -2094,11 +2094,11 @@ plot_residual_load(n, time="2024-09", days=30, regions=None)
 def plot_gas_energy_across_scenarios(nc_dir, gas_carrier="Gas"):
     """
     Builds a bar chart of total Gas generation (GWh) for every .nc file in nc_dir.
-    Assumes filenames look like 'scenario_<Scenario>.nc'.
+    Assumes filenames look like '<Scenario>.nc'.
     """
     data = []
-    for path in glob.glob(os.path.join(nc_dir, "scenario_*.nc")):
-        scenario = os.path.basename(path).replace("scenario_", "").replace(".nc", "")
+    for path in glob.glob(os.path.join(nc_dir, "*.nc")):
+        scenario = os.path.basename(path).replace("", "").replace(".nc", "")
         n = pypsa.Network(path)
 
         idx = n.generators.index[n.generators.carrier == gas_carrier]

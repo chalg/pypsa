@@ -1,7 +1,7 @@
 ---
 title: "A High-level Open Source Model for the Australian National Electricity Market (NEM)"
 author: "Grant Chalmers"
-date: "2025-07-28"
+date: "2025-07-31"
 format:
   html:
     output-file: index.html
@@ -124,7 +124,7 @@ storage_units = pd.read_csv("data/storage_units.csv", index_col=0)
 ```
 
 ```{python}
-# Load time series data
+# Load time series data, which has 8784 rows due to 2024 being a leap year.
 load_ts = pd.read_csv("data/loads_t.p_set.csv", index_col=0)
 load_ts.index = pd.to_datetime(load_ts.index, errors="raise")
 print(load_ts.index.dtype) 
@@ -317,7 +317,7 @@ plt.show()
 # Solve the nework
 # Change to open source solver if required, default is HiGHS:
 # n.optimize()
-# n.optimize(solver_name = "gurobi")
+#n.optimize(solver_name = "gurobi")
 ```
 
 ```{python}
@@ -585,7 +585,7 @@ def plot_dispatch(n, time="2024", days=None, regions=None,
                  bordercolor='rgba(0,0,0,0.2)',
                  borderwidth=1
              ),
-             width=800,
+             width=780,
              height=500
          )
          
@@ -608,6 +608,7 @@ def plot_dispatch(n, time="2024", days=None, regions=None,
              fig.update_layout(annotations=annotations)
          
          fig.show()
+        #  return fig
          
      else:
          # MATPLOTLIB STATIC PLOT 
@@ -940,6 +941,7 @@ Note: some of the scenarios have unserved energy, which tends to show up in NSW 
 ```{python}
 #| output: asis
 
+
 # Previously saved results generated from the generate_scenarios function in the Appendix
 # Note: 0_2024_baseline is the baseline scenario and is equivalent to 'high-level_nem'.
 df_results = pd.read_csv("results/scenarios/scenarios_summary_20250711_1007.csv")
@@ -1007,16 +1009,16 @@ print(html_table)
   
 In the `0_2024_baseline` scenario above, Gas Generation (GWh) is much lower than in reality because I've set the marginal cost of gas higher than coal and there are no other influencing constraints such as carbon emissions. PyPSA is solving based on least-cost optimisation of power plant and storage dispatch within network constraints. This is much simpler than in real life, which involves a bid stack and many more constraints.  
 
-It is worth adding a comparison column to compare more realistic gas generation from [Open Electricity](https://explore.openelectricity.org.au/energy/nem/?range=1y&interval=1w&view=discrete-time&group=Simplified) to the high VRE scenario that I'm interested in: `8.2.1_6xVreCurtailReview` . This scenario has zero coal generation and an 83% reduction in gas generation.
+It is worth adding a comparison column to compare more realistic gas generation from [Open Electricity](https://explore.openelectricity.org.au/energy/nem/?range=1y&interval=1w&view=discrete-time&group=Simplified) to the high VRE scenario that I'm interested in: `8.3_VreCurtailReview` . This scenario has zero coal generation and an 83% reduction in gas generation.
 
-The `8.2.1_6xVreCurtailReview` is one of the more plausible scenarios found by scaling up VRE and storage from the baseline model using a csv import file with different scale-up factors.
+The `8.3_VreCurtailReview` is one of the more plausible scenarios found by scaling up VRE and storage from the baseline model using a csv import file with different scale-up factors.
 
 
 ```{python}
 #| output: asis
 
 # 1) Filter scenario
-df_filt = results_tbl[results_tbl["Scenario"] == "8.2.1_6xVreCurtailReview"].copy()
+df_filt = results_tbl[results_tbl["Scenario"] == "8.3_VreCurtailReview"].copy()
 
 # 2) Compute the % change vs 10,919 GWh. Source: Open Electricity Data (this value will change regularly because it is a rolling 12-month period)
 base = 10919
@@ -1038,14 +1040,14 @@ html_subset_table
 
 
 
-Load the `8.2.1_6xVreCurtailReview` network.
+Load the `8.3_VreCurtailReview` network.
 
 ```{python}
 # Load the network for the specific scenario
-n = pypsa.Network("results/scenarios/scenario_8.2.1_6xVreCurtailReview.nc")
+n = pypsa.Network("results/scenarios/8.3_VreCurtailReview.nc")
 
 # Metadata to provide as arguments to the plot_dispatch() function.
-scenario = "8.2.1_6xVreCurtailReview"
+scenario = "8.3_VreCurtailReview"
 objective_text = df_results.loc[df_results["Scenario"] == scenario, "Objective"].values[0]
 ```
 
@@ -1078,7 +1080,7 @@ Coal has been reduced to zero and there is only a small amount of Gas. There are
 ![ISP Step Change Onshore wind ~69GW)](images/isp-nem-capacity-forecast.png)
 </div>
 
-Assessing peak demand alongside installed generation capacity for each region in the `8.2.1_6xVreCurtailReview` network clearly illustrates the substantial overbuilding of renewable energy relative to demand.
+Assessing peak demand alongside installed generation capacity for each region in the `8.3_VreCurtailReview` network clearly illustrates the substantial overbuilding of renewable energy relative to demand.
 
 ```{python}
 plot_peak_demand_vs_capacity(n, stack_carrier=True)
@@ -1239,7 +1241,7 @@ curtailment_gt = curtailment_tbl.tab_header(
             )
         ) \
         .tab_source_note(
-            source_note=md("**Scenario**: 8.2.1_6xVreCurtailReview (Zero coal & 83% reduction in GPG).<br><br> **Scale-up objective from 2024 baseline**: *NSW1-Black Coal: x0.0, NSW1-Gas: x0.5, NSW1-Rooftop Solar: x3.0, NSW1-Solar: x3.0, NSW1-Wind: x6.0, NSW1-Battery: x8.0, QLD1-Black Coal: x0.0, QLD1-Gas: x0.5, QLD1-Rooftop Solar: x3.0, QLD1-Solar: x3.0, QLD1-Wind: x6.0, QLD1-Battery: x6.0, SA1-Gas: x0.5, SA1-Rooftop Solar: x2.0, SA1-Solar: x3.0, SA1-Wind: x2.0, SA1-Battery: x6.0, TAS1-Gas: x0.5, TAS1-Rooftop Solar: x3.0, TAS1-Wind: x5.0, TAS1-Battery: x8.0, VIC1-Gas: x0.5, VIC1-Brown Coal: x0.0, VIC1-Rooftop Solar: x4.0, VIC1-Solar: x4.0, VIC1-Wind: x4.0, VIC1-Battery: x8.0*")
+            source_note=md("**Scenario**: 8.3_VreCurtailReview (Zero coal & 83% reduction in GPG).<br><br> **Scale-up objective from 2024 baseline**: *NSW1-Black Coal: x0.0, NSW1-Gas: x0.5, NSW1-Rooftop Solar: x3.0, NSW1-Solar: x3.0, NSW1-Wind: x6.0, NSW1-Battery: x8.0, QLD1-Black Coal: x0.0, QLD1-Gas: x0.5, QLD1-Rooftop Solar: x3.0, QLD1-Solar: x3.0, QLD1-Wind: x6.0, QLD1-Battery: x6.0, SA1-Gas: x0.5, SA1-Rooftop Solar: x2.0, SA1-Solar: x3.0, SA1-Wind: x2.0, SA1-Battery: x6.0, TAS1-Gas: x0.5, TAS1-Rooftop Solar: x3.0, TAS1-Wind: x5.0, TAS1-Battery: x8.0, VIC1-Gas: x0.5, VIC1-Brown Coal: x0.0, VIC1-Rooftop Solar: x4.0, VIC1-Solar: x4.0, VIC1-Wind: x4.0, VIC1-Battery: x8.0*")
         ) \
         .fmt_nanoplot("Rooftop Solar Curtailment",
                       plot_type="bar",
@@ -1310,7 +1312,7 @@ combos = [
 ]
 
 fig, axes = plt.subplots(
-    nrows=2, ncols=2, figsize=(8, 8),
+    nrows=2, ncols=2, figsize=(8.5, 8),
     sharex=True, sharey=True   # share y for common scale
 )
 axes = axes.flatten()
@@ -1350,13 +1352,15 @@ for ax, (sol_col, rt_col) in zip(axes, combos):
 # shared legend
 handles = [bp1["boxes"][0], bp2["boxes"][0]]
 labels  = ['Utility-scale Solar', 'Rooftop Solar']
-fig.legend(handles, labels, loc='upper center', ncol=2, bbox_to_anchor=(0.5, 0.98))
+fig.legend(handles, labels, loc='lower center', ncol=2, bbox_to_anchor=(0.5, -0.04))
 
 # one common y-axis label
 fig.supxlabel('Hour of Day (2024)')
 fig.supylabel('Capacity Factor')
+fig.suptitle("Utility Solar vs Rooftop Solar Capacity Factors")
+# adjust spacing
+fig.subplots_adjust(top=0.90, bottom=0.08, left=0.1, right=0.9, hspace=0.2, wspace=0.1)
 
-fig.tight_layout(rect=[0, 0, 1, 0.95])
 plt.show()
 
 ```
@@ -1396,7 +1400,7 @@ combos = [
 ]
 
 fig, axes = plt.subplots(
-    nrows=2, ncols=2, figsize=(8, 8),
+    nrows=2, ncols=2, figsize=(8.5, 8),
     sharex=True, sharey=True   # share y for common scale
 )
 axes = axes.flatten()
@@ -1436,13 +1440,14 @@ for ax, (sol_col, rt_col) in zip(axes, combos):
 # shared legend
 handles = [bp1["boxes"][0], bp2["boxes"][0]]
 labels  = ['Wind', 'Rooftop Solar']
-fig.legend(handles, labels, loc='upper center', ncol=2, bbox_to_anchor=(0.5, 0.98))
+fig.legend(handles, labels, loc='lower center', ncol=2, bbox_to_anchor=(0.5, -0.04))
 
 # one common y-axis label
 fig.supxlabel('Hour of Day (2024)')
 fig.supylabel('Capacity Factor')
+fig.suptitle("Wind vs Rooftop Solar Capacity Factors")
 
-fig.tight_layout(rect=[0, 0, 1, 0.95])
+fig.subplots_adjust(top=0.90, bottom=0.08, left=0.1, right=0.9, hspace=0.2, wspace=0.1)
 plt.show()
 
 ```
@@ -1455,12 +1460,12 @@ plt.show()
 This simple model demonstrates that achieving a high-penetration renewable energy grid is possible. However, there is an inherent trade-off between deploying large amounts of variable renewable energy and managing increased curtailment. The model focuses solely on power flow analysis and does not account for costs beyond assigning marginal costs to generators to enable least-cost dispatch. Additionally, I’ve assigned a very small negative marginal cost to storage units, encouraging batteries to charge earlier rather than at the last possible moment - an approach enabled by the model’s assumption of perfect foresight.
 
 ::: {.callout-note}
-There is no assurance the system would operate in a **secure state** within the `8.2.1_6xVreCurtailReview` scenario/network.
+There is no assurance the system would operate in a **secure state** within the `8.3_VreCurtailReview` scenario/network.
 :::
 
 Incorporating the necessary constraints to ensure secure system operation would introduce significant complexity and is reserved for future analysis. Additionally, this scenario is highly sensitive to increases in demand - a 5% rise, for instance, leads to unserved energy. This highlights the need for substantial overbuilding to create an adequate reserve buffer, which, in turn, further increases curtailment.
 
-During the development of the `8.2.1_6xVreCurtailReview` scenario, several scenarios with aggressive coal reduction - such as `2_BalancedAggressiveTransition` - led to a doubling of gas-powered generation (GPG). This occurred because GPG was required to compensate for the loss of 75% of baseload capacity previously provided by coal. Further details can be found in the Appendix.
+During the development of the `8.3_VreCurtailReview` scenario, several scenarios with aggressive coal reduction - such as `2_BalancedAggressiveTransition` - led to a doubling of gas-powered generation (GPG). This occurred because GPG was required to compensate for the loss of 75% of baseload capacity previously provided by coal. Further details can be found in the Appendix.
 
 The high penetration VRE scenarios are also under-utilising hydro. Some of this can be explained by setting a small marginal price ($8.58) as per 2024 ISP Inputs and Assumptions workbook. An example of this marginal price sensitivity can be found in the Appendix. 2024 was a dry year, which also contributed to Hydro underperformance.
 
@@ -1478,7 +1483,7 @@ Potential future analysis would also incorporate:
 #### Reserve Requirements
 
 
-As mentioned in the conclusion, there is no certainty around whether or not the `8.2.1_6xVreCurtailReview` network could operate in a secure state.
+As mentioned in the conclusion, there is no certainty around whether or not the `8.3_VreCurtailReview` network could operate in a secure state.
 
 It is possible to determine in rough terms, how often for example the network would be issued Lack of Reserve (LOR) notices by the system operator. Here we'll use the per region thresholds published by AEMO.
 
@@ -1599,7 +1604,7 @@ def plot_hydro_dispatch_vs_potential(n):
 
     fig, axes = plt.subplots(
         nrows=nrows, ncols=ncols,
-        figsize=(8, 4*nrows),
+        figsize=(8.5, 4*nrows),
         sharex=True, sharey=True
     )
     axes = axes.flatten()
@@ -1638,12 +1643,13 @@ def plot_hydro_dispatch_vs_potential(n):
         fig.delaxes(axes[j])
 
     # one shared legend & axis labels
-    fig.legend(legend_handles, legend_labels,
-               loc='upper center', ncol=2, frameon=False)
+    fig.legend(handles, labels, loc='lower center',
+     ncol=2, bbox_to_anchor=(0.5, -0.04))
     fig.supxlabel('Time')
     fig.supylabel('Power (MW)')
-
-    plt.tight_layout(rect=[0, 0, 1, 0.95])
+    fig.suptitle("Hydro Potential vs Dispatch")
+    fig.subplots_adjust(top=0.91, bottom=0.08, left=0.1, right=0.9, hspace=0.2, wspace=0.1)
+    
     plt.show()
 
 
@@ -1711,7 +1717,7 @@ Load the `2_BalancedAggressiveTransition` network. This scenario has a 75% reduc
 
 ```{python}
 # Load the network for the specific scenario
-n = pypsa.Network("results/scenarios/scenario_2_BalancedAggressiveTransition.nc")
+n = pypsa.Network("results/scenarios/2_BalancedAggressiveTransition.nc")
 
 # Metadata to provide as arguments to the plot_dispatch() function.
 scenario = "2_BalancedAggressiveTransition"
@@ -1762,7 +1768,7 @@ Load the `4_4xVreTransitionZeroCoal` network. This scenario has a 100% reduction
 
 ```{python}
 # Load the network for the specific scenario
-n = pypsa.Network("results/scenarios/scenario_4_4xVreTransitionZeroCoal.nc")
+n = pypsa.Network("results/scenarios/4_4xVreTransitionZeroCoal.nc")
 
 # Metadata to provide as arguments to the plot_dispatch() function.
 scenario = "4_4xVreTransitionZeroCoal"
@@ -1942,7 +1948,7 @@ def generate_scenarios(
         })
 
         # ── export solved network ─────────────────────────────────────
-        n.export_to_netcdf(os.path.join(export_dir, f"scenario_{scenario}.nc"))
+        n.export_to_netcdf(os.path.join(export_dir, f"{scenario}.nc"))
 
     df_results = pd.DataFrame(results)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M")
@@ -1963,3 +1969,10 @@ Run the above function and assign results to `df_results` for further analysis.
 n = pypsa.Network("results/high-level_nem.nc")
 df_results = generate_scenarios(n, tech_assumptions_path="data/inputs/tech_assumptions.csv")
 ```
+
+
+#### PyPSA Dispatch Streamlit App
+
+[App link](https://chalg-pypsa-dispatch-app-streamlit-app-4arpu2.streamlit.app/) 
+
+_Tip: Right-click or Cmd/Ctrl+Click to open in a new tab._
