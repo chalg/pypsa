@@ -657,7 +657,9 @@ def plot_dispatch(n, time="2024", days=None, regions=None,
     
 ```
 
+
 #### `0_2024_baseline` scenario
+
 
 Review dispatch for a 5-day period in NSW.
 
@@ -1045,7 +1047,9 @@ html_subset_table
 ```
 
 
+
 #### `8.3_VreCurtailReview` scenario
+
 
 
 Load the `8.3_VreCurtailReview` network.
@@ -1478,7 +1482,7 @@ During the development of the `8.3_VreCurtailReview` scenario, several scenarios
 The high penetration VRE scenarios are also under-utilising hydro. Some of this can be explained by setting a small marginal price ($8.58) as per 2024 ISP Inputs and Assumptions workbook. An example of this marginal price sensitivity can be found in the Appendix. 2024 was a dry year, which also contributed to Hydro underperformance.
 
 Potential future analysis would also incorporate:  
-  - increased transmission (lines/links currently stacked on top of each other as they join the same bus)
+  - increased transmission (lines/links currently stacked on top of each other as they join the same bus)  
   -  accurate geospatial resolution  
   -  more detailed costs, including capital costs, and  
   -  carbon emissions.
@@ -1984,3 +1988,5 @@ df_results = generate_scenarios(n, tech_assumptions_path="data/inputs/tech_assum
 [App link](https://chalg-pypsa-dispatch-app-streamlit-app-4arpu2.streamlit.app/) 
 
 _Tip: Right-click or Cmd/Ctrl+Click to open in a new tab._
+
+Like this Quarto document, the Streamlit app is better viewed on a large screen.
