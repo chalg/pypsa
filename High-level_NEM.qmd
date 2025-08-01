@@ -944,7 +944,7 @@ Load previously generated scenario data.
 
 The `0_2024_baseline` scenario is the baseline and hence scale-up factor is 1. The 19 others are scaled up from the baseline model according to the Objective column.
 
-Note: some of the scenarios have unserved energy, which tends to show up in NSW and VIC before other regions.
+Note: some of the scenarios have unserved energy (bold, red font), which tends to show up in NSW and VIC before other regions.
 
 ```{python}
 #| output: asis
@@ -952,7 +952,7 @@ Note: some of the scenarios have unserved energy, which tends to show up in NSW 
 
 # Previously saved results generated from the generate_scenarios function in the Appendix
 # Note: 0_2024_baseline is the baseline scenario and is equivalent to 'high-level_nem'.
-df_results = pd.read_csv("results/scenarios/scenarios_summary_20250711_1007.csv")
+df_results = pd.read_csv("results/scenarios/scenarios_summary_20250731_1443.csv")
 
 # Format in a more user-friendly format for HTML
 results_tbl = df_results.copy()
@@ -960,7 +960,7 @@ for col in df_results.select_dtypes(include=['object']).columns:
     results_tbl[col] = results_tbl[col].str.replace('\n', '<br>', regex=False)
 
 # Drop to make more space.
-results_tbl = results_tbl.drop(['Unserved Energy (GWh)', 'Battery Capacity (GW)', 'Wind & Solar Curtailment (GWh)'], axis=1)
+results_tbl = results_tbl.drop(['Unserved Energy (GWh)', 'Wind & Solar Curtailment (GWh)'], axis=1)
 
 # Get the last column name
 last_col = results_tbl.columns[-1]
@@ -1015,11 +1015,11 @@ print(html_table)
 ```
 
   
-In the `0_2024_baseline` scenario above, Gas Generation (GWh) is much lower than in reality because I've set the marginal cost of gas higher than coal and there are no other influencing constraints such as carbon emissions. PyPSA is solving based on least-cost optimisation of power plant and storage dispatch within network constraints. This is much simpler than in real life, which involves a bid stack and many more constraints.  
+In the `0_2024_baseline` scenario above, GPG (GWh) is much lower than in reality because I've set the marginal cost of gas higher than coal and there are no other influencing constraints such as carbon emissions. PyPSA is solving based on least-cost optimisation of power plant and storage dispatch within network constraints. This is much simpler than in real life, which involves a bid stack and many more constraints.  
 
 It is worth adding a comparison column to compare more realistic gas generation from [Open Electricity](https://explore.openelectricity.org.au/energy/nem/?range=1y&interval=1w&view=discrete-time&group=Simplified) to the high VRE scenario that I'm interested in: `8.3_VreCurtailReview` . This scenario has zero coal generation and an 83% reduction in gas generation.
 
-The `8.3_VreCurtailReview` is one of the more plausible scenarios found by scaling up VRE and storage from the baseline model using a csv import file with different scale-up factors.
+The `8.3_VreCurtailReview` is one of the more plausible scenarios found by scaling up VRE and storage from the baseline model using a csv import file with different scale-up factors. Please note that, in this scenario, battery storage capacity is 2.5 times the level forecasted for 2049-50 in the AEMO ISP *Step Change* scenario for residential and commercial batteries.
 
 
 ```{python}
@@ -1030,10 +1030,10 @@ df_filt = results_tbl[results_tbl["Scenario"] == "8.3_VreCurtailReview"].copy()
 
 # 2) Compute the % change vs 10,919 GWh. Source: Open Electricity Data (this value will change regularly because it is a rolling 12-month period)
 base = 10919
-df_filt["Gas Δ% vs 10919GWh"] = (df_filt["Gas Generation (GWh)"] - base) / base * 100
+df_filt["Gas Δ% vs 10919GWh"] = (df_filt["GPG (GWh)"] - base) / base * 100
 
-# 3) Insert the new column right after “Gas Generation (GWh)”
-col_idx = df_filt.columns.get_loc("Gas Generation (GWh)")
+# 3) Insert the new column right after “GPG (GWh)”
+col_idx = df_filt.columns.get_loc("GPG (GWh)")
 df_filt.insert(col_idx+1, "Gas Δ% vs 10919GWh", df_filt.pop("Gas Δ% vs 10919GWh"))
 
 # Inspect
@@ -1709,10 +1709,10 @@ df_bat = results_tbl[results_tbl["Scenario"] == "2_BalancedAggressiveTransition"
 
 # 2) Compute the % change vs 10,919 GWh. Source: Open Electricity Data (note this will change regularly because it is a rolling 12-month period)
 base = 10919
-df_bat["Gas Δ% vs 10919GWh"] = (df_bat["Gas Generation (GWh)"] - base) / base * 100
+df_bat["Gas Δ% vs 10919GWh"] = (df_bat["GPG (GWh)"] - base) / base * 100
 
-# 3) Insert the new column right after “Gas Generation (GWh)”
-col_idx = df_bat.columns.get_loc("Gas Generation (GWh)")
+# 3) Insert the new column right after “GPG (GWh)”
+col_idx = df_bat.columns.get_loc("GPG (GWh)")
 df_bat.insert(col_idx+1, "Gas Δ% vs 10919GWh", df_bat.pop("Gas Δ% vs 10919GWh"))
 
 # Inspect
@@ -1760,10 +1760,10 @@ df_4x = results_tbl[results_tbl["Scenario"] == "4_4xVreTransitionZeroCoal"].copy
 
 # 2) Compute the % change vs 10,919 GWh. Source: Open Electricity Data (note this will change regularly because it is a rolling 12-month period)
 base = 10919
-df_4x["Gas Δ% vs 10919GWh"] = (df_4x["Gas Generation (GWh)"] - base) / base * 100
+df_4x["Gas Δ% vs 10919GWh"] = (df_4x["GPG (GWh)"] - base) / base * 100
 
-# 3) Insert the new column right after “Gas Generation (GWh)”
-col_idx = df_4x.columns.get_loc("Gas Generation (GWh)")
+# 3) Insert the new column right after “GPG (GWh)”
+col_idx = df_4x.columns.get_loc("GPG (GWh)")
 df_4x.insert(col_idx+1, "Gas Δ% vs 10919GWh", df_4x.pop("Gas Δ% vs 10919GWh"))
 
 # Inspect
@@ -1831,7 +1831,7 @@ def generate_scenarios(
     • **Generator Capacity (GW)** - total generator capacity by carrier.
       (built-in `n.generators.p_nom`)
 
-    • **Gas Generation (GWh)** - total dispatched energy from carrier 'Gas'.
+    • **GPG (GWh)** - total dispatched energy from carrier 'Gas'.
     • **Wind and Solar Curtailment (GWh)** - renewable curtailment across the whole
       system (built-in `n.statistics.curtailment`).
     • **Battery Capacity (GW)** - total battery storage capacity in the system.
@@ -1849,7 +1849,7 @@ def generate_scenarios(
     Returns
     -------
     pandas.DataFrame
-        Scenario metrics including battery capacity (GW), generator capacity (GW), curtailment (GWh), unserved energy (GWh) and gas generation (GWh).
+        Scenario metrics including battery capacity (GW), generator capacity (GW), curtailment (GWh), unserved energy (GWh) and GPG (GWh).
     """
 
     
@@ -1949,7 +1949,7 @@ def generate_scenarios(
             ),
             # "Total System Cost (B$)": round(n.objective / 1e9, 3),
             # "Total New Capacity (GW)": round(n.generators.p_nom_opt.sum() / 1e3, 3),
-            "Gas Generation (GWh)": gas_GWh,
+            "GPG (GWh)": gas_GWh,
             # "Total Curtailment (GWh)": round(curt_GWh, 3),
             "Battery Capacity (GW)": battery_capacity_GW,
             "Generator Capacity (GW)": dict_to_multiline_string(capacity_by_carrier),
