@@ -1635,7 +1635,7 @@ def plot_hydro_dispatch_vs_potential(n):
 
         ln1 = ax.plot(
             n.snapshots, potential,
-            label='Potential', linestyle=':', color='orange', alpha=0.6
+            label='Potential', linestyle=':', color='orange', alpha=0.9
         )
         ln2 = ax.plot(
             n.snapshots, dispatch,
@@ -1660,7 +1660,7 @@ def plot_hydro_dispatch_vs_potential(n):
         fig.delaxes(axes[j])
 
     # one shared legend & axis labels
-    fig.legend(handles, labels, loc='lower center',
+    fig.legend(legend_handles, legend_labels, loc='lower center',
      ncol=2, bbox_to_anchor=(0.5, -0.04))
     fig.supxlabel('Time')
     fig.supylabel('Power (MW)')
