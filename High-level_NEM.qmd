@@ -1479,11 +1479,16 @@ Incorporating the necessary constraints to ensure secure system operation would 
 
 During the development of the `8.3_VreCurtailReview` scenario, several scenarios with aggressive coal reduction - such as `2_BalancedAggressiveTransition` - led to a doubling of gas-powered generation (GPG). This occurred because GPG was required to compensate for the loss of 75% of baseload capacity previously provided by coal. Further details can be found in the Appendix.
 
+The `6.1_6xVreTransitionZeroCoal` scenario achieves a 75% reduction in gas generation^[compared to 10,919 GWh - recent 12-month Open Electricity '1Y-Simplified' view. [Source:](https://explore.openelectricity.org.au/energy/nem/?range=1y&interval=1w&view=discrete-time&group=Simplified)] however only results in 48.4 GW of battery capacity - equivalent to ~1.42 times the 34 GW projected for 2049–50 in the AEMO ISP *Step Change* scenario for residential and commercial batteries^[2024 ISP, section 4.2, page 50]. Consequently, this scenario would likely be significantly more economical from a cost perspective compared to `8.3_VreCurtailReview`.
+
 The high penetration VRE scenarios are also under-utilising hydro. Some of this can be explained by setting a small marginal price ($8.58) as per 2024 ISP Inputs and Assumptions workbook. An example of this marginal price sensitivity can be found in the Appendix. 2024 was a dry year, which also contributed to Hydro underperformance.
 
+Unserved energy predominantly occurred in May and June, particularly the evening of June 13.
+
 Potential future analysis would also incorporate:  
-  - increased transmission (lines/links currently stacked on top of each other as they join the same bus)  
-  -  accurate geospatial resolution  
+  -  increased transmission (lines/links currently stacked on top of each other as they join the same bus)  
+  -  accurate geospatial resolution
+  -  more granular time resolution (possibly for May/June only due to increased computation)  
   -  more detailed costs, including capital costs, and  
   -  carbon emissions.
   
