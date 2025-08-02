@@ -7,6 +7,8 @@ output_tables/
 temp/
 test_isp_assumptions_workbook_Parser.py
 plot_dispatch_widget.qmd
+# Too large to track
+dispatchload_2024.feather   
 
 
 

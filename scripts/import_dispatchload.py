@@ -5,58 +5,66 @@ import pandas as pd
 import pytz
 
 
+# Function to download and extract dispatch load data from NEMWEB archive
 def nemweb_archive_dispatchload(datestring):
     year = datestring[:4]
     month = datestring[4:6]
 
-    url = (
+    base_url = (
         "https://nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/"
         f"{year}/MMSDM_{year}_{month}/MMSDM_Historical_Data_SQLLoader/DATA/"
-        f"PUBLIC_ARCHIVE%23DISPATCHLOAD%23FILE01%23{datestring}0000.zip"
     )
 
-    response = requests.get(url)
-    response.raise_for_status()
+    url_variants = [
+        f"PUBLIC_ARCHIVE%23DISPATCHLOAD%23FILE01%23{datestring}0000.zip",
+        f"PUBLIC_DVD_DISPATCHLOAD_{datestring}0000.zip"
+    ]
+
+    response = None
+    for variant in url_variants:
+        try:
+            url = base_url + variant
+            response = requests.get(url)
+            response.raise_for_status()
+            print(f"Successfully downloaded from {url}")
+            break  # exit loop if successful
+        except requests.exceptions.HTTPError as e:
+            print(f"URL failed: {url} | Error: {e}")
+            continue  # try the next variant
+
+    if response is None or response.status_code != 200:
+        raise Exception("All URL variants failed. Could not fetch data.")
 
     with zipfile.ZipFile(io.BytesIO(response.content)) as z:
         filename = z.namelist()[0]
         with z.open(filename) as f:
-            # Read CSV skipping the first row (metadata), header on the second row
             data_file = pd.read_csv(f, header=1, dtype=str)
-    
+
     if data_file.empty:
         print("Warning: DataFrame is empty after loading.")
         return data_file
-    
-    # Drop the first data row (index 0) which contains leftover metadata
-    data_file = data_file.drop(index=0).reset_index(drop=True)
 
-    # Strip quotes from datetime columns if present
+    data_file = data_file.drop(index=0).reset_index(drop=True)
     data_file['SETTLEMENTDATE'] = data_file['SETTLEMENTDATE'].str.strip('"')
     data_file['LASTCHANGED'] = data_file['LASTCHANGED'].str.strip('"')
 
-    # Parse datetime with timezone (not sure timezone is necessary)
     tz = pytz.timezone("Australia/Brisbane")
     data_file['SETTLEMENTDATE'] = pd.to_datetime(data_file['SETTLEMENTDATE'], format="%Y/%m/%d %H:%M:%S").dt.tz_localize(tz)
     data_file['LASTCHANGED'] = pd.to_datetime(data_file['LASTCHANGED'], format="%Y/%m/%d %H:%M:%S").dt.tz_localize(tz)
 
-    # Convert specified columns to numeric
     numeric_cols = ['INTERVENTION', 'INITIALMW', 'TOTALCLEARED']
-    # Filter to columns that actually exist (avoid KeyError)
     cols_to_convert = [col for col in numeric_cols if col in data_file.columns]
     data_file[cols_to_convert] = data_file[cols_to_convert].apply(pd.to_numeric, errors='coerce')
 
-    # Use idxmax without .apply to avoid DeprecationWarning
     idx = data_file.groupby(['DUID', 'SETTLEMENTDATE'])['INTERVENTION'].idxmax()
-
     data_file = data_file.loc[idx].reset_index(drop=True)
-    data_file = data_file[['DUID', 'SETTLEMENTDATE', 'INITIALMW', 'TOTALCLEARED']]
 
-    return data_file
+    return data_file[['DUID', 'SETTLEMENTDATE', 'INITIALMW', 'TOTALCLEARED']]
+
 
 
 # for loadiing only one month at a time.
-datestring = "20250601"  #01 is required at the end for url format
+datestring = "20240501"  #01 is required at the end for url format
 
 df = nemweb_archive_dispatchload(datestring)
 
@@ -95,10 +103,18 @@ def load_dispatchloads_multiple(dates):
         return pd.DataFrame()  # empty dataframe if no data loaded
     
 # Usage: 
-dates = ['20250501', '20250601']
+# Attempt a whole year of data, but this may take a while (51,743,231 rows).
+dates = ['20240101', '20240201', '20240301', '20240401',
+         '20240501', '20240601', '20240701', '20240801',
+         '20240901', '20241001', '20241101', '20241201']
+
 combined_df = load_dispatchloads_multiple(dates)
-print(combined_df.shape)
+print(combined_df.info)
 print(combined_df.head())
+print(combined_df.tail())
+
+# Save raw data to Feather format for later use
+combined_df.to_feather('data/nemweb/raw/dispatchload_2024.feather')
 
 # AEMO spreadsheet processing:
 import tempfile
@@ -129,7 +145,7 @@ generator_data_tbl = generator_data_tbl.drop_duplicates()
 
 # Example: assuming df is a DataFrame you already have
 # Make sure to clean column names for dispatchload too
-dispatchload = df.clean_names()
+dispatchload = combined_df.clean_names()
 
 # Data Wrangling equivalent:
 # Filter out rows where 'reg_cap_generation_mw' == "-"
@@ -168,15 +184,22 @@ dispatchload_joined['cf'] = dispatchload_joined.apply(
     axis=1
 )
 
+# Optional - half-hour timestamp
+dispatchload_joined['datetime_30min'] = dispatchload_joined['settlementdate'].dt.floor('30T')
+
+
 # Extract hour and date from settlementdate
 dispatchload_joined['hour'] = dispatchload_joined['settlementdate'].dt.hour
 dispatchload_joined['date'] = dispatchload_joined['settlementdate'].dt.date  # datetime.date object
 
 # Group by the specified columns and calculate mean of cf
 group_cols = ['duid', 'date', 'hour', 'region', 'station_name', 'participant', 'fuel_source_primary', 'fuel_source_descriptor']
+# Optional: half-hourly aggregation
+group_cols = ['datetime_30min', 'region', 'fuel_source_descriptor']
 
 dispatchload_prepared = (
     dispatchload_joined
+    .query("fuel_source_descriptor in ['Solar', 'Wind', 'Water']")
     .groupby(group_cols, dropna=False)  # dropna=False keeps NaNs in grouping cols if any
     .agg(mean_cf=('cf', 'mean'))
     .reset_index()
@@ -185,11 +208,42 @@ dispatchload_prepared = (
 # Filter out rows where mean_cf is NA
 dispatchload_prepared = dispatchload_prepared[dispatchload_prepared['mean_cf'].notna()]
 
-# Spot check
-filtered_df = dispatchload_prepared[
-    (dispatchload_prepared['duid'] == "AGLHAL") &
-    (dispatchload_prepared['date'] == pd.to_datetime("2025-06-17").date())
-]
+# Convert to PyPSA pattern for generator names
+# e.g., 'NSW1-WIND', 'VIC1-SOLAR', etc
+dispatchload_prepared['Generator'] = (
+    dispatchload_prepared['region'] + "-" + dispatchload_prepared['fuel_source_descriptor']
+).str.upper()
 
-# Print up to 24 rows - multiple rows reconcile to R script output.
-filtered_df.head(24)
+# Replace 'WATER' with 'HYDRO' in generator names
+dispatchload_prepared['Generator'] = dispatchload_prepared['Generator'].str.replace(r'-WATER$', '-HYDRO', regex=True)
+
+# Gather only the relevant columns to pivot into wide format
+re_cf_30mins = dispatchload_prepared[['datetime_30min', 'Generator', 'mean_cf']]
+
+# Review the first 200 rows of the DataFrame
+re_cf_30mins.head(200)
+
+# Pivot the DataFrame to have datetime_30min as index and Generator as columns
+re_cf_30mins = re_cf_30mins.pivot(index='datetime_30min', columns='Generator', values='mean_cf')
+
+# Remove timezone information if present
+re_cf_30mins.index = re_cf_30mins.index.tz_localize(None)
+
+# Drop last row as it is in 2025 (should be 17,568 rows for leap year 2024)
+re_cf_30mins = re_cf_30mins.drop(re_cf_30mins.index[-1])
+
+# Save clean data to Feather format for import into PyPSA ready format
+re_cf_30mins.to_feather('data/nemweb/clean/re_cf_30mins_2024.feather')
+
+# # Spot check
+# filtered_df = dispatchload_prepared[
+#     (dispatchload_prepared['duid'] == "AGLHAL") &
+#     (dispatchload_prepared['date'] == pd.to_datetime("2025-06-17").date())
+# ]
+
+
+
+# # Print up to 24 rows - multiple rows reconcile to R script output.
+# filtered_df.head(24)
+
+
