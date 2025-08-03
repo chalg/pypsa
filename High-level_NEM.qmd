@@ -1,7 +1,7 @@
 ---
 title: "A High-level Open Source Model for the Australian National Electricity Market (NEM)"
 author: "Grant Chalmers"
-date: "2025-07-31"
+date: "2025-08-04"
 format:
   html:
     output-file: index.html
@@ -52,7 +52,7 @@ Develop a high-level 5-node baseline PyPSA model for the NEM and VRE/storage sca
   1. One bus per NEM region with transmission interconnectors  
   2. Hourly time resolution to capture some RE intermittency  
   3. Comparison of 2024 baseline model (*0_2024_baseline*) to a high-penetration renewable energy scenario (*8.3_VreCurtailReview*)  
-  4. Develop an interactive web prototype app (Streamlit) for visualising dispatch profiles  
+  4. Develop an interactive web prototype Streamlit [app](https://chalg-pypsa-dispatch-app-streamlit-app-4arpu2.streamlit.app/) for visualising dispatch profiles.  
 
 
 *Key Assumptions*  
