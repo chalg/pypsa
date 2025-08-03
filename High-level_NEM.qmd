@@ -1485,6 +1485,18 @@ The high penetration VRE scenarios are also under-utilising hydro. Some of this 
 
 Unserved energy predominantly occurred in May and June, particularly the evening of June 13.
 
+::: {.callout-tip}
+
+I spent several hours adjusting scripts and running all of these scenarios at a 30-minute resolution, and I observed a greater amount of unserved energy. Only 3 out of the 20 scenarios did not result in any unserved energy - and in each of those three cases, gas generation capacity was not reduced.
+
+The three scenarios with no unserved energy were:  
+  - 0_2024_baseline  
+  - 1_BalancedTransition  
+  - 8.0_6xVre&BatteryZeroCoal  
+
+This demonstrates that while hourly resolution is a helpful indicator, it is not fully reliable for identifying all instances of unserved energy.
+:::
+
 Potential future analysis would also incorporate:  
   -  increased transmission (lines/links currently stacked on top of each other as they join the same bus)  
   -  accurate geospatial resolution
