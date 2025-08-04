@@ -38,7 +38,7 @@ The workflow implemented in this Quarto document encompasses the following key s
   - **Data Import and Preprocessing:** Loading and preparing network topology, generator, storage, and time series data from actual NEM system records and relevant administrative datasets.  
   - **Network Construction:** Building the PyPSA network by adding buses, loads, generators, storage units, and transmission lines.  
   - **Temporal Resolution and Snapshots:** Setting up the model to operate at a chosen temporal granularity, allowing for the study of daily and seasonal variability in demand and renewable generation.  
-  - **Optimisation and Scenario Analysis:** Solving the baseline model using linear optimisation to determine the optimal dispatch of resources, and extending the analysis to a plausible future scenario with an aggressive increase in variable renewable energy and associated reduction in thermal generation.   
+  - **Optimisation and Scenario Analysis:** Solving the baseline model using linear optimisation to determine the optimal dispatch of resources, and extending the analysis to a future scenario with an aggressive increase in variable renewable energy and associated reduction in thermal generation.   
   - **Results Visualisation and Verification:** Generating plots and statistics to interpret model outputs, including network topology, dispatch profiles, generation mix, and importantly, curtailment.  
   - **Scenario Functions:** Providing reusable functions for projecting various scaled-up generation scenarios. 
   
@@ -1496,12 +1496,17 @@ The three scenarios with no unserved energy were:
   - `8.0_6xVre&BatteryZeroCoal`  
 
 This demonstrates that while hourly resolution is a helpful indicator, it is not fully reliable for evaluating the dispatch profile.
+
+<div style="text-align: center;">
+![Unserved Energy in the `8.3_VreCurtailReview` scenario at 30 minute resolution](images/unserved-energy-heatmap.png)
+</div>
+
 :::
 
 Potential future analysis would also incorporate:  
   -  increased transmission (lines/links currently stacked on top of each other as they join the same bus)  
-  -  accurate geospatial resolution
-  -  more granular time resolution (possibly for May/June only due to increased computation)  
+  -  accurate geospatial resolution  
+  -  as indicated above, more granular time resolution (possibly for May/June only due to increased computation)  
   -  more detailed costs, including capital costs, and  
   -  carbon emissions.
   

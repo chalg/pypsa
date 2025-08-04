@@ -2576,3 +2576,71 @@ df = df.query("carrier in ['Wind', 'Solar', 'Rooftop Solar']") \
 print(df['curt_pct'].dropna())
 
 
+def analyse_unserved_energy(n):
+    """
+    Analyze instances of Unserved Energy in a PyPSA network.
+
+    Parameters:
+        n (pypsa.Network): The PyPSA network object after optimization.
+
+    Returns:
+        pd.DataFrame: DataFrame containing bus, datetime, and unserved energy (GWh).
+    """
+    import pandas as pd
+
+    unserved_generators = n.generators.query("carrier == 'Unserved Energy'").index
+    unserved_data = n.generators_t.p[unserved_generators]
+
+    # Melt the DataFrame to have a long-form dataframe
+    unserved_long = unserved_data.reset_index().melt(
+        id_vars='snapshot',
+        var_name='Generator',
+        value_name='MW'
+    )
+
+    # Filter rows with non-zero (positive) unserved energy
+    unserved_events = unserved_long.query("MW > 0").copy()
+
+    # Convert MW to GWh assuming snapshot resolution (e.g., 30 mins = 0.5 hours)
+    # Automatically calculate timestep duration
+    timestep_hours = n.snapshot_weightings.generators.mean()
+    unserved_events['GWh'] = unserved_events['MW'] * timestep_hours / 1000
+
+    # Extract bus names from generator names
+    unserved_events['Bus'] = unserved_events['Generator'].str.replace('-UNSERVED$', '', regex=True)
+
+    # Rearrange columns
+    unserved_events = unserved_events[['snapshot', 'Bus', 'GWh']].reset_index(drop=True)
+
+    return unserved_events
+
+# Example usage:
+unserved_energy_df = analyse_unserved_energy(n)
+
+# Count observations, total unserved energy:
+num_obs = len(unserved_energy_df)
+total_gwh = unserved_energy_df['GWh'].sum()
+
+print(f"Number of unserved energy events: {num_obs}")
+print(f"Total unserved energy: {total_gwh:.3f} GWh")
+
+# Display the first few events:
+print(unserved_energy_df.head())
+
+# Heatmap of unserved energy by bus and date
+import seaborn as sns
+
+# Shorten the timestamp for better readability
+unserved_energy_df['snapshot_str'] = unserved_energy_df['snapshot'].dt.strftime('%Y-%m-%d %H:%M')
+
+pivot_df = unserved_energy_df.pivot_table(
+    index='snapshot_str', columns='Bus', values='GWh', fill_value=0
+)
+
+plt.figure(figsize=(8.5, 4))
+sns.heatmap(pivot_df.T, cmap='Reds', cbar_kws={'label': 'Unserved Energy (GWh)'})
+plt.xlabel('Date')
+plt.ylabel('Region')
+plt.title('Heatmap of Unserved Energy by Region and Date')
+plt.tight_layout()
+plt.show()
