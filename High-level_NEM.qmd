@@ -1095,6 +1095,8 @@ Coal has been reduced to zero and there is only a small amount of Gas. There are
 
 Assessing peak demand alongside installed generation capacity for each region in the `8.3_VreCurtailReview` network clearly illustrates the substantial overbuilding of renewable energy relative to demand.
 
+Also, consider the relationship between gas generation capacity and demand in SA1, and similarly, between hydro capacity and demand in TAS1. As a result, these regions tend to experience unserved energy later than the others.
+
 ```{python}
 plot_peak_demand_vs_capacity(n, stack_carrier=True)
 ```
@@ -2012,4 +2014,12 @@ df_results = generate_scenarios(n, tech_assumptions_path="data/inputs/tech_assum
 
 _Tip: Right-click or Cmd/Ctrl+Click to open in a new tab._
 
-Like this Quarto document, the Streamlit app is better viewed on a large screen.
+::: {.callout-note}
+*30mins* resolution was added as a drop-down option to view a modified subset of the hourly scenarios at 30-minute resolution.
+
+The modifications were primarily to reduce increased unserved energy at the more granular temporal resolution. 
+
+I've deliberately left `8.1_6xVre&Battery_30min` to show an example of a small amount of remaining unserved energy on the evening of Jun 13 in VIC1.
+:::
+
+Like this webpage, the Streamlit app is better viewed on a large screen.
