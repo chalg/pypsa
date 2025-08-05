@@ -1020,7 +1020,7 @@ In the `0_2024_baseline` scenario above, GPG (GWh) is much lower than in reality
 
 It is worth adding a comparison column to compare more realistic gas generation from [Open Electricity](https://explore.openelectricity.org.au/energy/nem/?range=1y&interval=1w&view=discrete-time&group=Simplified) to the high VRE scenario that I'm interested in: `8.3_VreCurtailReview` . This scenario has zero coal generation and an 83% reduction in gas generation.
 
-The `8.3_VreCurtailReview` is one of the more plausible scenarios found by scaling up VRE and storage from the baseline model using a csv import file with different scale-up factors. Please note that, in this scenario, battery storage capacity is 2.5 times the level forecasted for 2049-50 in the AEMO ISP *Step Change* scenario for residential and commercial batteries.
+The `8.3_VreCurtailReview` is one of the more plausible scenarios found by scaling up VRE and storage from the baseline model using a csv import file with different scale-up factors. Please note that, in this scenario, battery storage capacity is 1.55 times the level forecasted for 2049-50 in the AEMO ISP *Step Change* scenario for installed storage capacity.
 
 
 ```{python}
@@ -1095,7 +1095,7 @@ Coal has been reduced to zero and there is only a small amount of Gas. There are
 
 Assessing peak demand alongside installed generation capacity for each region in the `8.3_VreCurtailReview` network clearly illustrates the substantial overbuilding of renewable energy relative to demand.
 
-Also, consider the relationship between gas generation capacity and demand in SA1, and similarly, between hydro capacity and demand in TAS1. As a result, these regions tend to experience unserved energy later than the others.
+Also, consider the relationship between gas generation capacity and demand in SA1, and similarly to an even larger extent, between hydro capacity and demand in TAS1. As a result, these regions tend to experience unserved energy later than other regions.
 
 ```{python}
 plot_peak_demand_vs_capacity(n, stack_carrier=True)
@@ -1482,7 +1482,7 @@ Incorporating the necessary constraints to ensure secure system operation would 
 
 During the development of the `8.3_VreCurtailReview` scenario, several scenarios with aggressive coal reduction - such as `2_BalancedAggressiveTransition` - led to a doubling of gas-powered generation (GPG). This occurred because GPG was required to compensate for the loss of 75% of baseload capacity previously provided by coal. Further details can be found in the Appendix.
 
-The `6.1_6xVreTransitionZeroCoal` scenario achieves a 75% reduction in gas generation^[compared to 10,919 GWh - recent 12-month Open Electricity '1Y-Simplified' view. [Source:](https://explore.openelectricity.org.au/energy/nem/?range=1y&interval=1w&view=discrete-time&group=Simplified)] however only results in 48.4 GW of battery capacity - equivalent to ~1.42 times the 34 GW projected for 2049–50 in the AEMO ISP *Step Change* scenario for residential and commercial batteries^[2024 ISP, section 4.2, page 50]. Consequently, this scenario would likely be significantly more economical from a cost perspective compared to `8.3_VreCurtailReview`.
+The `6.1_6xVreTransitionZeroCoal` scenario achieves a 75% reduction in gas generation^[compared to 10,919 GWh - recent 12-month Open Electricity '1Y-Simplified' view. Source: [Open Electricity](https://explore.openelectricity.org.au/energy/nem/?range=1y&interval=1w&view=discrete-time&group=Simplified)] however only results in 48.4 GW of battery capacity - less than the 56 GW of installed capacity projected for 2049–50 in the AEMO ISP *Step Change* scenario^[2024 ISP, section 6.1, page 66]. Consequently, this scenario would likely be more economical from a cost perspective compared to `8.3_VreCurtailReview`.
 
 The high penetration VRE scenarios are also under-utilising hydro. Some of this can be explained by setting a small marginal price ($8.58) as per 2024 ISP Inputs and Assumptions workbook. An example of this marginal price sensitivity can be found in the Appendix. 2024 was a dry year, which also contributed to Hydro underperformance.
 
@@ -1505,7 +1505,7 @@ This demonstrates that while hourly resolution is a helpful indicator, it is not
 
 :::
 
-Potential future analysis would also incorporate:  
+Potential future analysis could incorporate:  
   -  increased transmission (lines/links currently stacked on top of each other as they join the same bus)  
   -  accurate geospatial resolution  
   -  as indicated above, more granular time resolution (possibly for May/June only due to increased computation)  

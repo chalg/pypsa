@@ -1985,6 +1985,93 @@ n.statistics.supply(comps=["Generator"]).droplevel(0) / 1e3  # Convert to GWh
 # Wind and Solar curtailment as a percentage of total supply
 n.statistics.curtailment().loc[(slice(None), ['Wind','Solar'])].sum() / 1e3 / (n.statistics.supply(comps=["Generator"]).sum() / 1e3)
 
+def calculate_renewable_curtailment_stats(n):
+    """Calculate renewable curtailment statistics"""
+    
+    # Get curtailment by technology
+    curtailment = n.statistics.curtailment().loc[(slice(None), ['Wind','Solar'])] / 1e3
+    
+    # Get actual generation by technology  
+    generation = n.statistics.supply(comps=["Generator"]).loc[(slice(None), ['Wind','Solar'])] / 1e3
+    
+    # Calculate potential generation
+    potential = generation + curtailment
+    
+    # Calculate curtailment rates
+    results = {}
+    
+    for tech in ['Wind', 'Solar']:
+        tech_curtailment = curtailment.loc[(slice(None), tech)].sum()
+        tech_generation = generation.loc[(slice(None), tech)].sum()
+        tech_potential = tech_curtailment + tech_generation
+        
+        results[tech] = {
+            'curtailed_gwh': tech_curtailment,
+            'generated_gwh': tech_generation,
+            'potential_gwh': tech_potential,
+            'curtailment_rate_pct': (tech_curtailment / tech_potential * 100) if tech_potential > 0 else 0
+        }
+    
+    # Overall renewable stats
+    total_curtailment = curtailment.sum()
+    total_generation = generation.sum()
+    total_potential = total_curtailment + total_generation
+    
+    results['Total_Renewables'] = {
+        'curtailed_gwh': total_curtailment,
+        'generated_gwh': total_generation,
+        'potential_gwh': total_potential,
+        'curtailment_rate_pct': (total_curtailment / total_potential * 100) if total_potential > 0 else 0
+    }
+    
+    return pd.DataFrame(results).T
+
+# Usage
+curtailment_stats = calculate_renewable_curtailment_stats(n)
+print(curtailment_stats)
+
+def calculate_renewable_curtailment_stats(n, technologies=['Wind', 'Solar', 'Rooftop Solar', 'Hydro']):
+    """Calculate renewable curtailment statistics"""
+    
+    # Get curtailment by technology
+    curtailment = n.statistics.curtailment().loc[(slice(None), technologies)] / 1e3
+    
+    # Get actual generation by technology  
+    generation = n.statistics.supply(comps=["Generator"]).loc[(slice(None), technologies)] / 1e3
+    
+    # Calculate results
+    results = {}
+    
+    for tech in technologies:
+        tech_curtailment = curtailment.loc[(slice(None), tech)].sum()
+        tech_generation = generation.loc[(slice(None), tech)].sum()
+        tech_potential = tech_curtailment + tech_generation
+        
+        results[tech] = {
+            'curtailed_gwh': tech_curtailment,
+            'generated_gwh': tech_generation,
+            'potential_gwh': tech_potential,
+            'curtailment_rate_pct': (tech_curtailment / tech_potential * 100) if tech_potential > 0 else 0
+        }
+    
+    # Overall renewable stats
+    total_curtailment = curtailment.sum()
+    total_generation = generation.sum()
+    total_potential = total_curtailment + total_generation
+    
+    results['Total_Renewables'] = {
+        'curtailed_gwh': total_curtailment,
+        'generated_gwh': total_generation,
+        'potential_gwh': total_potential,
+        'curtailment_rate_pct': (total_curtailment / total_potential * 100) if total_potential > 0 else 0
+    }
+    
+    return pd.DataFrame(results).T
+
+# Usage
+curtailment_stats = calculate_renewable_curtailment_stats(n, technologies=['Wind', 'Solar'])
+curtailment_stats
+
 
 # Calculate total supply excluding certain carriers (default: "Unserved Energy")
 # This is useful to get the total generation excluding unserved energy or other non-generating carriers
