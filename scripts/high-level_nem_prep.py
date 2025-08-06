@@ -1427,7 +1427,10 @@ def generate_scenarios(
         gas_idx = n.generators.index[n.generators.carrier == "Gas"]
         gas_GWh = 0.0
         if len(gas_idx):
-            gas_GWh = n.generators_t.p[gas_idx].sum().sum() / 1e3  # to GWh
+            # Get appropriate weights
+            weights = n.snapshot_weightings.iloc[:, 0] if n.snapshot_weightings.ndim > 1 else n.snapshot_weightings
+            # Multiply power by time weights before summing
+            gas_GWh = (n.generators_t.p[gas_idx].multiply(weights, axis=0)).sum().sum() / 1e3
         gas_GWh = round(gas_GWh, 3)
         
         # ── curtailment (built‑in helper) ─────────────────────────
@@ -1543,7 +1546,7 @@ scenario = "8.1_6xVre&BatteryZeroCoal"
 scenario = "8.2_6xVre&BatteryZeroCoal"
 scenario = "1.4_10xVre&BatteryZeroFF"
 scenario = "1.5_11xVre&BatteryZeroFF"
-scenario = "8.2.1_6xVreCurtailReview"
+scenario = "8.3_VreCurtailReview"
 objective_text = df_results.loc[df_results["Scenario"] == scenario, "Objective"].values[0]
 
 
@@ -1574,7 +1577,7 @@ n = pypsa.Network("results/scenarios/8.1_6xVre&BatteryZeroCoal.nc")
 n = pypsa.Network("results/scenarios/8.2_6xVre&BatteryZeroCoal.nc")
 n = pypsa.Network("results/scenarios/1.4_10xVre&BatteryZeroFF.nc")
 n = pypsa.Network("results/scenarios/1.5_11xVre&BatteryZeroFF.nc")
-n = pypsa.Network("results/scenarios/8.2.1_6xVreCurtailReview.nc")
+n = pypsa.Network("results/scenarios/8.3_VreCurtailReview.nc")
 
 
 
@@ -1610,6 +1613,7 @@ plot_dispatch(n, time="2024", regions=["QLD1"], show_imports=True)
 plot_dispatch(n, time="2024-06-12", days=8, regions=["TAS1"], show_imports=True, interactive=True, scenario_name=scenario, scenario_objective=objective_text)
 plot_dispatch(n, time="2024-07", regions=["QLD1"], show_imports=True, scenario_name=scenario, scenario_objective=objective_text, show_curtailment=True)
 plot_dispatch(n, time="2024-06-05",days=8, regions=["VIC1"], show_imports=True, scenario_name=scenario, scenario_objective=objective_text)
+plot_dispatch(n, time="2024-06-13",days=1, regions=["VIC1"], show_imports=True, scenario_name=scenario, scenario_objective=objective_text, interactive=True)    
 
 
 # Note: bus and region are synonymous in this context.
@@ -1985,51 +1989,6 @@ n.statistics.supply(comps=["Generator"]).droplevel(0) / 1e3  # Convert to GWh
 # Wind and Solar curtailment as a percentage of total supply
 n.statistics.curtailment().loc[(slice(None), ['Wind','Solar'])].sum() / 1e3 / (n.statistics.supply(comps=["Generator"]).sum() / 1e3)
 
-def calculate_renewable_curtailment_stats(n):
-    """Calculate renewable curtailment statistics"""
-    
-    # Get curtailment by technology
-    curtailment = n.statistics.curtailment().loc[(slice(None), ['Wind','Solar'])] / 1e3
-    
-    # Get actual generation by technology  
-    generation = n.statistics.supply(comps=["Generator"]).loc[(slice(None), ['Wind','Solar'])] / 1e3
-    
-    # Calculate potential generation
-    potential = generation + curtailment
-    
-    # Calculate curtailment rates
-    results = {}
-    
-    for tech in ['Wind', 'Solar']:
-        tech_curtailment = curtailment.loc[(slice(None), tech)].sum()
-        tech_generation = generation.loc[(slice(None), tech)].sum()
-        tech_potential = tech_curtailment + tech_generation
-        
-        results[tech] = {
-            'curtailed_gwh': tech_curtailment,
-            'generated_gwh': tech_generation,
-            'potential_gwh': tech_potential,
-            'curtailment_rate_pct': (tech_curtailment / tech_potential * 100) if tech_potential > 0 else 0
-        }
-    
-    # Overall renewable stats
-    total_curtailment = curtailment.sum()
-    total_generation = generation.sum()
-    total_potential = total_curtailment + total_generation
-    
-    results['Total_Renewables'] = {
-        'curtailed_gwh': total_curtailment,
-        'generated_gwh': total_generation,
-        'potential_gwh': total_potential,
-        'curtailment_rate_pct': (total_curtailment / total_potential * 100) if total_potential > 0 else 0
-    }
-    
-    return pd.DataFrame(results).T
-
-# Usage
-curtailment_stats = calculate_renewable_curtailment_stats(n)
-print(curtailment_stats)
-
 def calculate_renewable_curtailment_stats(n, technologies=['Wind', 'Solar', 'Rooftop Solar', 'Hydro']):
     """Calculate renewable curtailment statistics"""
     
@@ -2048,10 +2007,10 @@ def calculate_renewable_curtailment_stats(n, technologies=['Wind', 'Solar', 'Roo
         tech_potential = tech_curtailment + tech_generation
         
         results[tech] = {
-            'curtailed_gwh': tech_curtailment,
-            'generated_gwh': tech_generation,
-            'potential_gwh': tech_potential,
-            'curtailment_rate_pct': (tech_curtailment / tech_potential * 100) if tech_potential > 0 else 0
+            'Curtailed (GWh)': tech_curtailment,
+            'Generated (GWh)': tech_generation,
+            'Potential (GWh)': tech_potential,
+            'Curtailment Rate (%)': (tech_curtailment / tech_potential * 100) if tech_potential > 0 else 0
         }
     
     # Overall renewable stats
@@ -2060,17 +2019,17 @@ def calculate_renewable_curtailment_stats(n, technologies=['Wind', 'Solar', 'Roo
     total_potential = total_curtailment + total_generation
     
     results['Total_Renewables'] = {
-        'curtailed_gwh': total_curtailment,
-        'generated_gwh': total_generation,
-        'potential_gwh': total_potential,
-        'curtailment_rate_pct': (total_curtailment / total_potential * 100) if total_potential > 0 else 0
+        'Curtailed (GWh)': total_curtailment,
+        'Generated (GWh)': total_generation,
+        'Potential (GWh)': total_potential,
+        'Curtailment Rate (%)': (total_curtailment / total_potential * 100) if total_potential > 0 else 0
     }
     
     return pd.DataFrame(results).T
 
 # Usage
 curtailment_stats = calculate_renewable_curtailment_stats(n, technologies=['Wind', 'Solar'])
-curtailment_stats
+curtailment_stats.round(2)
 
 
 # Calculate total supply excluding certain carriers (default: "Unserved Energy")
@@ -2184,15 +2143,52 @@ def plot_gas_energy_across_scenarios(nc_dir, gas_carrier="Gas"):
     """
     Builds a bar chart of total Gas generation (GWh) for every .nc file in nc_dir.
     Assumes filenames look like '<Scenario>.nc'.
+    Properly accounts for snapshot weightings to handle different temporal resolutions.
     """
+    def calculate_generator_energy(network, carrier_type):
+        """
+        Calculate total energy generation for a specific carrier type.
+        Properly accounts for snapshot weightings.
+        """
+        # Get generators of the specified type
+        gen_idx = network.generators.index[network.generators.carrier == carrier_type]
+        
+        if len(gen_idx) == 0:
+            return 0.0
+        
+        # Get power generation data for these generators
+        power_data = network.generators_t.p[gen_idx]
+        
+        # Get snapshot weightings - handle different possible structures
+        if hasattr(network.snapshot_weightings, 'generators'):
+            # If separate weightings per component
+            weights = network.snapshot_weightings['generators']
+        elif 'generators' in network.snapshot_weightings.columns:
+            weights = network.snapshot_weightings['generators']
+        else:
+            # If single column or series
+            weights = network.snapshot_weightings.iloc[:, 0] if network.snapshot_weightings.ndim > 1 else network.snapshot_weightings
+        
+        # Calculate energy: Power (MW) × Time (hours) = Energy (MWh)
+        energy_mwh = (power_data.multiply(weights, axis=0)).sum().sum()
+        
+        # Convert to GWh
+        return energy_mwh / 1e3
+    
     data = []
     for path in glob.glob(os.path.join(nc_dir, "*.nc")):
-        scenario = os.path.basename(path).replace("", "").replace(".nc", "")
-        n = pypsa.Network(path)
+        scenario = os.path.basename(path).replace(".nc", "")
+        try:
+            n = pypsa.Network(path)
+            gas_GWh = calculate_generator_energy(n, gas_carrier)
+            data.append({"Scenario": scenario, "Gas_GWh": round(gas_GWh, 3)})
+        except Exception as e:
+            print(f"Error processing {scenario}: {e}")
+            continue
 
-        idx = n.generators.index[n.generators.carrier == gas_carrier]
-        gas_GWh = n.generators_t.p[idx].sum().sum() / 1e3
-        data.append({"Scenario": scenario, "Gas_GWh": gas_GWh})
+    if not data:
+        print("No valid scenarios found or processed successfully.")
+        return pd.DataFrame()
 
     df = pd.DataFrame(data).set_index("Scenario").sort_values(by='Gas_GWh')
 
@@ -2205,8 +2201,7 @@ def plot_gas_energy_across_scenarios(nc_dir, gas_carrier="Gas"):
     plt.tight_layout()
     plt.show()
 
-    return df  # handy if you want to inspect the numbers too
-
+    return df
 gas_scenarios = plot_gas_energy_across_scenarios(
     nc_dir="results/scenarios"
 )

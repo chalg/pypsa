@@ -1488,27 +1488,11 @@ The high penetration VRE scenarios are also under-utilising hydro. Some of this 
 
 Unserved energy predominantly occurred in May and June, particularly the evening of June 13.
 
-::: {.callout-important}
-
-I spent several hours adjusting scripts and running all of these scenarios at a 30-minute resolution, and I observed a greater amount of unserved energy. Only 3 out of the 20 scenarios resulted in no unserved energy - and in each of those three cases, gas generation capacity was not reduced.
-
-The three scenarios with no unserved energy were:  
-  - `0_2024_baseline`  
-  - `1_BalancedTransition`  
-  - `8.0_6xVre&BatteryZeroCoal`  
-
-This demonstrates that while hourly resolution is a helpful indicator, it is not fully reliable for evaluating the dispatch profile.
-
-<div style="text-align: center;">
-![Unserved Energy in the `8.3_VreCurtailReview` scenario at 30 minute resolution](images/unserved-energy-heatmap.png)
-</div>
-
-:::
 
 Potential future analysis could incorporate:  
   -  increased transmission (lines/links currently stacked on top of each other as they join the same bus)  
   -  accurate geospatial resolution  
-  -  as indicated above, more granular time resolution (possibly for May/June only due to increased computation)  
+  -  more granular time resolution (possibly for May/June only due to increased computation)  
   -  more detailed costs, including capital costs, and  
   -  carbon emissions.
   
@@ -2015,11 +1999,9 @@ df_results = generate_scenarios(n, tech_assumptions_path="data/inputs/tech_assum
 _Tip: Right-click or Cmd/Ctrl+Click to open in a new tab._
 
 ::: {.callout-note}
-*30mins* resolution was added as a drop-down option to view a modified subset of the hourly scenarios at 30-minute resolution.
 
-The modifications were primarily to reduce increased unserved energy at the more granular temporal resolution. 
+*30mins* resolution was added as a drop-down option to view the same scenarios at 30-minute resolution.
 
-I've deliberately left `8.1_6xVre&Battery_30min` to show an example of a small amount of remaining unserved energy on the evening of Jun 13 in VIC1.
 :::
 
 Like this webpage, the Streamlit app is better viewed on a large screen.
