@@ -2,6 +2,9 @@
 # Can try and use similar approach for DISPATCHLOAD
 # Data will be much larger as 5-min by DUIDs
 # Import rooftop solar data via nemosis and parse for PyPSA 
+
+# TODO: update script to use 30min resolution data
+
 import pandas as pd
 import nemosis
 import os
@@ -58,11 +61,11 @@ try:
         .pivot(index='INTERVAL_DATETIME', columns='REGIONID', values='POWER')
 
     # Resample to hourly resolution (mean of half-hour values)
-    hourly_df = pivot_df.resample('1h').mean().round(3)
+    # hourly_df = pivot_df.resample('1h').mean().round(3)
 
     # Save to CSV
-    output_path = os.path.join(data_folder, "rooftop_solar_hourly_2024.csv")
-    hourly_df.to_csv(output_path)
+    output_path = os.path.join(data_folder, "rooftop_solar_30min_2024.feather")
+    pivot_df.to_feather(output_path)
     print(f"Data saved successfully to {output_path}")
 
 except Exception as e:
@@ -71,10 +74,24 @@ except Exception as e:
 
 
 # Load uploaded rooftop solar data
-rooftop_df = pd.read_csv(f"{data_folder}/rooftop_solar_hourly_2024.csv", parse_dates=["INTERVAL_DATETIME"])
-rooftop_df = rooftop_df.set_index("INTERVAL_DATETIME")
+rooftop_df = pd.read_feather(f"{data_folder}/rooftop_solar_30min_2024.feather")
 
 rooftop_df.head(20)
+
+rooftop_df.info()  # should be 17568 rows for leap year 2024
+
+# Explicitly define your desired full date range
+full_index = pd.date_range(
+    start='2024-01-01 00:00:00',
+    end='2024-12-31 23:30:00',
+    freq='30min'
+)
+
+# Reindex your DataFrame to this full range
+rooftop_df = rooftop_df.reindex(full_index)
+
+# Fill missing values programmatically (there are only 3 rows with NaN values discovered while solving network)
+rooftop_df = rooftop_df.ffill().bfill()
 
 # Normalize to get p_max_pu values per region by dividing each column by its own max and fill any NaNs as it will create optimisation warnings
 p_max_pu_df = rooftop_df.div(rooftop_df.max()).fillna(0)
@@ -82,6 +99,10 @@ p_max_pu_df = rooftop_df.div(rooftop_df.max()).fillna(0)
 
 # Rename columns to match generator names like 'NSW1-ROOFTOP-SOLAR'
 p_max_pu_df.columns = [f"{col}-ROOFTOP-SOLAR" for col in p_max_pu_df.columns]
+
+
+# Inpspect
+p_max_pu_df.info()
 
 # Save p_max_pu time series
 p_max_pu_path = "data/generators-p_max_pu.csv"

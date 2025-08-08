@@ -1,0 +1,125 @@
+scenario,component,bus,carrier,scale_factor,comments
+0_2024_baseline_30min,generator,NSW1,Black Coal,1,
+0_2024_baseline_30min,generator,NSW1,Rooftop Solar,1,
+0_2024_baseline_30min,generator,NSW1,Solar,1,
+0_2024_baseline_30min,generator,NSW1,Wind,1,
+0_2024_baseline_30min,storage_unit,NSW1,Battery,1,
+0_2024_baseline_30min,generator,QLD1,Black Coal,1,
+0_2024_baseline_30min,generator,QLD1,Rooftop Solar,1,
+0_2024_baseline_30min,generator,QLD1,Solar,1,
+0_2024_baseline_30min,generator,QLD1,Wind,1,
+0_2024_baseline_30min,storage_unit,QLD1,Battery,1,
+0_2024_baseline_30min,generator,SA1,Rooftop Solar,1,
+0_2024_baseline_30min,generator,SA1,Solar,1,
+0_2024_baseline_30min,generator,SA1,Wind,1,
+0_2024_baseline_30min,storage_unit,SA1,Battery,1,
+0_2024_baseline_30min,generator,VIC1,Brown Coal,1,
+0_2024_baseline_30min,generator,VIC1,Rooftop Solar,1,
+0_2024_baseline_30min,generator,VIC1,Solar,1,
+0_2024_baseline_30min,generator,VIC1,Wind,1,
+0_2024_baseline_30min,storage_unit,VIC1,Battery,1,
+8.0_6xVre&Battery_30min,generator,NSW1,Black Coal,0,Zero coal
+8.0_6xVre&Battery_30min,generator,NSW1,Gas,1,Baseline Gas
+8.0_6xVre&Battery_30min,generator,NSW1,Rooftop Solar,6,
+8.0_6xVre&Battery_30min,generator,NSW1,Solar,6,
+8.0_6xVre&Battery_30min,generator,NSW1,Wind,6,
+8.0_6xVre&Battery_30min,storage_unit,NSW1,Battery,6,
+8.0_6xVre&Battery_30min,generator,QLD1,Black Coal,0,Zero coal
+8.0_6xVre&Battery_30min,generator,QLD1,Gas,1,Baseline Gas
+8.0_6xVre&Battery_30min,generator,QLD1,Rooftop Solar,6,
+8.0_6xVre&Battery_30min,generator,QLD1,Solar,6,
+8.0_6xVre&Battery_30min,generator,QLD1,Wind,6,
+8.0_6xVre&Battery_30min,storage_unit,QLD1,Battery,6,
+8.0_6xVre&Battery_30min,generator,SA1,Gas,1,Baseline Gas
+8.0_6xVre&Battery_30min,generator,SA1,Rooftop Solar,6,
+8.0_6xVre&Battery_30min,generator,SA1,Solar,6,
+8.0_6xVre&Battery_30min,generator,SA1,Wind,6,
+8.0_6xVre&Battery_30min,storage_unit,SA1,Battery,6,
+8.0_6xVre&Battery_30min,generator,TAS1,Gas,1,Baseline Gas
+8.0_6xVre&Battery_30min,generator,TAS1,Wind,6,
+8.0_6xVre&Battery_30min,storage_unit,TAS1,Battery,6,
+8.0_6xVre&Battery_30min,generator,VIC1,Gas,1,Baseline Gas
+8.0_6xVre&Battery_30min,generator,VIC1,Brown Coal,0,Zero coal
+8.0_6xVre&Battery_30min,generator,VIC1,Rooftop Solar,6,
+8.0_6xVre&Battery_30min,generator,VIC1,Solar,6,
+8.0_6xVre&Battery_30min,generator,VIC1,Wind,6,
+8.0_6xVre&Battery_30min,storage_unit,VIC1,Battery,6,
+8.1_6xVre&Battery_30min,generator,NSW1,Black Coal,0,Zero coal
+8.1_6xVre&Battery_30min,generator,NSW1,Gas,0.9,10% Gas reduction
+8.1_6xVre&Battery_30min,generator,NSW1,Rooftop Solar,6,
+8.1_6xVre&Battery_30min,generator,NSW1,Solar,6,
+8.1_6xVre&Battery_30min,generator,NSW1,Wind,6,
+8.1_6xVre&Battery_30min,storage_unit,NSW1,Battery,6,
+8.1_6xVre&Battery_30min,generator,QLD1,Black Coal,0,Zero coal
+8.1_6xVre&Battery_30min,generator,QLD1,Gas,0.9,10% Gas reduction
+8.1_6xVre&Battery_30min,generator,QLD1,Rooftop Solar,6,
+8.1_6xVre&Battery_30min,generator,QLD1,Solar,6,
+8.1_6xVre&Battery_30min,generator,QLD1,Wind,6,
+8.1_6xVre&Battery_30min,storage_unit,QLD1,Battery,6,
+8.1_6xVre&Battery_30min,generator,SA1,Gas,0.9,10% Gas reduction
+8.1_6xVre&Battery_30min,generator,SA1,Rooftop Solar,6,
+8.1_6xVre&Battery_30min,generator,SA1,Solar,6,
+8.1_6xVre&Battery_30min,generator,SA1,Wind,6,
+8.1_6xVre&Battery_30min,storage_unit,SA1,Battery,6,
+8.1_6xVre&Battery_30min,generator,TAS1,Gas,0.9,10% Gas reduction
+8.1_6xVre&Battery_30min,generator,TAS1,Wind,6,
+8.1_6xVre&Battery_30min,storage_unit,TAS1,Battery,6,
+8.1_6xVre&Battery_30min,generator,VIC1,Gas,0.9,10% Gas reduction
+8.1_6xVre&Battery_30min,generator,VIC1,Brown Coal,0,Zero coal
+8.1_6xVre&Battery_30min,generator,VIC1,Rooftop Solar,6,
+8.1_6xVre&Battery_30min,generator,VIC1,Solar,6,
+8.1_6xVre&Battery_30min,generator,VIC1,Wind,6,
+8.1_6xVre&Battery_30min,storage_unit,VIC1,Battery,6,
+8.2_7xVre&BatteryZeroCoal_30min,generator,NSW1,Black Coal,0,Zero coal
+8.2_7xVre&BatteryZeroCoal_30min,generator,NSW1,Gas,0.9,10% Gas reduction
+8.2_7xVre&BatteryZeroCoal_30min,generator,NSW1,Rooftop Solar,7,
+8.2_7xVre&BatteryZeroCoal_30min,generator,NSW1,Solar,6,
+8.2_7xVre&BatteryZeroCoal_30min,generator,NSW1,Wind,7,
+8.2_7xVre&BatteryZeroCoal_30min,storage_unit,NSW1,Battery,7,
+8.2_7xVre&BatteryZeroCoal_30min,generator,QLD1,Black Coal,0,Zero coal
+8.2_7xVre&BatteryZeroCoal_30min,generator,QLD1,Gas,0.9,10% Gas reduction
+8.2_7xVre&BatteryZeroCoal_30min,generator,QLD1,Rooftop Solar,6,
+8.2_7xVre&BatteryZeroCoal_30min,generator,QLD1,Solar,7,
+8.2_7xVre&BatteryZeroCoal_30min,generator,QLD1,Wind,7,
+8.2_7xVre&BatteryZeroCoal_30min,storage_unit,QLD1,Battery,7,
+8.2_7xVre&BatteryZeroCoal_30min,generator,SA1,Gas,0.9,10% Gas reduction
+8.2_7xVre&BatteryZeroCoal_30min,generator,SA1,Rooftop Solar,6,
+8.2_7xVre&BatteryZeroCoal_30min,generator,SA1,Solar,6,
+8.2_7xVre&BatteryZeroCoal_30min,generator,SA1,Wind,6,
+8.2_7xVre&BatteryZeroCoal_30min,storage_unit,SA1,Battery,7,
+8.2_7xVre&BatteryZeroCoal_30min,generator,TAS1,Gas,0.9,10% Gas reduction
+8.2_7xVre&BatteryZeroCoal_30min,generator,TAS1,Wind,6,
+8.2_7xVre&BatteryZeroCoal_30min,storage_unit,TAS1,Battery,7,
+8.2_7xVre&BatteryZeroCoal_30min,generator,VIC1,Gas,0.9,10% Gas reduction
+8.2_7xVre&BatteryZeroCoal_30min,generator,VIC1,Brown Coal,0,Zero coal
+8.2_7xVre&BatteryZeroCoal_30min,generator,VIC1,Rooftop Solar,6,
+8.2_7xVre&BatteryZeroCoal_30min,generator,VIC1,Solar,7,
+8.2_7xVre&BatteryZeroCoal_30min,generator,VIC1,Wind,7,
+8.2_7xVre&BatteryZeroCoal_30min,storage_unit,VIC1,Battery,7,
+8.3_VreCurtailReview_30min,generator,NSW1,Black Coal,0,Zero coal
+8.3_VreCurtailReview_30min,generator,NSW1,Gas,0.75,25% Gas reduction
+8.3_VreCurtailReview_30min,generator,NSW1,Rooftop Solar,3,Wind-back curtailment
+8.3_VreCurtailReview_30min,generator,NSW1,Solar,3,Wind-back curtailment
+8.3_VreCurtailReview_30min,generator,NSW1,Wind,6,
+8.3_VreCurtailReview_30min,storage_unit,NSW1,Battery,10,
+8.3_VreCurtailReview_30min,generator,QLD1,Black Coal,0,Zero coal
+8.3_VreCurtailReview_30min,generator,QLD1,Gas,0.75,25% Gas reduction
+8.3_VreCurtailReview_30min,generator,QLD1,Rooftop Solar,3,Wind-back curtailment
+8.3_VreCurtailReview_30min,generator,QLD1,Solar,3,Wind-back curtailment
+8.3_VreCurtailReview_30min,generator,QLD1,Wind,6,
+8.3_VreCurtailReview_30min,storage_unit,QLD1,Battery,8,
+8.3_VreCurtailReview_30min,generator,SA1,Gas,0.75,25% Gas reduction
+8.3_VreCurtailReview_30min,generator,SA1,Rooftop Solar,2,Wind-back curtailment
+8.3_VreCurtailReview_30min,generator,SA1,Solar,3,Wind-back curtailment
+8.3_VreCurtailReview_30min,generator,SA1,Wind,2,Wind-back curtailment
+8.3_VreCurtailReview_30min,storage_unit,SA1,Battery,8,
+8.3_VreCurtailReview_30min,generator,TAS1,Gas,0.75,25% Gas reduction
+8.3_VreCurtailReview_30min,generator,TAS1,Rooftop Solar,3,
+8.3_VreCurtailReview_30min,generator,TAS1,Wind,5,
+8.3_VreCurtailReview_30min,storage_unit,TAS1,Battery,8,
+8.3_VreCurtailReview_30min,generator,VIC1,Gas,0.75,25% Gas reduction
+8.3_VreCurtailReview_30min,generator,VIC1,Brown Coal,0,Zero coal
+8.3_VreCurtailReview_30min,generator,VIC1,Rooftop Solar,4,Wind-back curtailment
+8.3_VreCurtailReview_30min,generator,VIC1,Solar,4,Wind-back curtailment
+8.3_VreCurtailReview_30min,generator,VIC1,Wind,6,Wind-back curtailment
+8.3_VreCurtailReview_30min,storage_unit,VIC1,Battery,12,Bridge Jun 13 evening

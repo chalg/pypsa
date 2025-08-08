@@ -20,11 +20,12 @@ A concise, five‑node PyPSA model of the Australian National Electricity Market
 
 ## Overview
 
-The **High‑Level NEM** model provides a baseline representation of the NEM’s five regions (one bus per region) at hourly resolution, using actual 2024 generation and demand data. It enables:
+The **High‑Level NEM** model provides a baseline representation of the NEM’s five regions (one bus per region) at 30-minute resolution, using actual 2024 generation and demand data. It enables:
 
 - Analysis of current dispatch and grid topology
 - Exploration of high‑renewable scenarios with storage
 - Visualisation of network topology, generation mix, dispatch and curtailment
+- Streamlit app for interactive scenario analysis
 
 
 <div align="center">
@@ -43,7 +44,7 @@ The **High‑Level NEM** model provides a baseline representation of the NEM’s
 ## Features
 
 - **5‑bus network** representing NSW, QLD, SA, TAS, VIC
-- **Hourly time series** for loads and generator availability
+- **30-min time series** for loads and generator availability
 - **Baseline vs. Future Scenarios**: easily swap in higher VRE/storage capacities
 - **Optimisation** via linear programming (HiGHS/Gurobi)
 - **Interactive & static plots** of dispatch, imports/exports, and curtailment

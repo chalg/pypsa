@@ -1,7 +1,7 @@
 ---
 title: "A High-level Open Source Model for the Australian National Electricity Market (NEM)"
 author: "Grant Chalmers"
-date: "2025-08-04"
+date: "2025-08-08"
 format:
   html:
     output-file: index.html
@@ -31,14 +31,14 @@ As the NEM undergoes rapid transformation, driven by government policy promoting
 
 
 
-This Quarto document presents the development of a high-level baseline model for the NEM power system using [PyPSA (Python for Power System Analysis)](https://pypsa.readthedocs.io/en/latest/), an open-source framework for simulating and optimising modern energy systems. The model, referred to as High-level NEM, is a 5-node model (one bus per region) based on actual 2024 generation and demand profiles at hourly resolution. A comparison of the 2024 baseline model with a future scenario is presented in this document.
+This Quarto document presents the development of a high-level baseline model for the NEM power system using [PyPSA (Python for Power System Analysis)](https://pypsa.readthedocs.io/en/latest/), an open-source framework for simulating and optimizing modern energy systems. The model, referred to as High-level_NEM, is a 5-node model (one bus per region) based on actual 2024 generation and demand profiles at 30-minute resolution. A comparison of the 2024 baseline model with a future scenario is presented in this document.
 The future scenario has increased renewable energy and storage and associated reduction in thermal generation.
 
 The workflow implemented in this Quarto document encompasses the following key steps:  
   - **Data Import and Preprocessing:** Loading and preparing network topology, generator, storage, and time series data from actual NEM system records and relevant administrative datasets.  
   - **Network Construction:** Building the PyPSA network by adding buses, loads, generators, storage units, and transmission lines.  
   - **Temporal Resolution and Snapshots:** Setting up the model to operate at a chosen temporal granularity, allowing for the study of daily and seasonal variability in demand and renewable generation.  
-  - **Optimisation and Scenario Analysis:** Solving the baseline model using linear optimisation to determine the optimal dispatch of resources, and extending the analysis to a future scenario with an aggressive increase in variable renewable energy and associated reduction in thermal generation.   
+  - **Optimisation and Scenario Analysis:** Solving the baseline model using linear optimisation to determine the optimal dispatch of resources, and extending the analysis to a plausible future scenario with an aggressive increase in variable renewable energy and associated reduction in thermal generation.   
   - **Results Visualisation and Verification:** Generating plots and statistics to interpret model outputs, including network topology, dispatch profiles, generation mix, and importantly, curtailment.  
   - **Scenario Functions:** Providing reusable functions for projecting various scaled-up generation scenarios. 
   
@@ -50,8 +50,8 @@ The workflow implemented in this Quarto document encompasses the following key s
 
 Develop a high-level 5-node baseline PyPSA model for the NEM and VRE/storage scale-up scenarios with:  
   1. One bus per NEM region with transmission interconnectors  
-  2. Hourly time resolution to capture some RE intermittency  
-  3. Comparison of 2024 baseline model (*0_2024_baseline*) to a high-penetration renewable energy scenario (*8.3_VreCurtailReview*)  
+  2. 30-minute time resolution to capture some level of RE intermittency  
+  3. Comparison of 2024 baseline model (*0_2024_baseline*) to a high penetration renewable energy scenario (*8.3_VreCurtailReview*)  
   4. Develop an interactive web prototype Streamlit [app](https://chalg-pypsa-dispatch-app-streamlit-app-4arpu2.streamlit.app/) for visualising dispatch profiles.  
 
 
@@ -62,7 +62,8 @@ Baseline 2024 model:
   - 2024 generation profiles  
   - 2024 renewable energy availability (capacity) factors (incl. hydro).  
   - Generator registered capacities sourced from [Open Electricity facilities](https://explore.openelectricity.org.au/facilities/nem/?status=operating,committed) Inclusive of operating and **committed**, therefore includes Snowy 2.0, Hunter Gas and a significant increase in battery storage over what is currently operating.  
-  - Time series data is at hourly resolution.  
+  - Time series data is at 30-minute resolution.  
+  - Marginal price of wind, utility-scale solar, rooftop solar and hydro^[The marginal price for hydro is $8.58 according to the 2024 ISP Inputs and Assumptions workbook; however, I wanted to prevent the solver from underutilising hydro.] set to zero  
   - Rooftop solar sourced from AEMO via [nemosis](https://github.com/UNSW-CEEM/NEMOSIS) python package (TYPE = *'MEASUREMENT'*).  
   - Efficiency of storage on the way in and out set at 0.917 (round trip 0.84) via [2024 ISP Inputs and Assumptions workbook](https://aemo.com.au/-/media/files/major-publications/isp/2024/2024-isp-inputs-and-assumptions-workbook.xlsx?la=en).  
   - Starter battery (600MW Cellars Hill) added in TAS1 in order to be able to scale up (not currently operating, but has some level of state govt. support).  
@@ -72,6 +73,7 @@ Baseline 2024 model:
 ::: {.callout-note}
 Apart from the baseline model, 19 additional scenarios were created by varying the scale-up of VRE and storage, and the scale-down of thermal generation, ultimately culminating in the final `8.3_VreCurtailReview` scenario.
 :::
+
 
 By following this workflow, the document provides a high-level example for those learning power system analysis with PyPSA.
 
@@ -83,12 +85,13 @@ By following this workflow, the document provides a high-level example for those
 [GitHub PyPSA Sources](https://github.com/PyPSA)  
 [PyPSA-PH: High-Resolution Open Source Power System Model for the Philippines](https://github.com/arizeosalac/PyPSA-PH/tree/main)  
 [2024 Integrated System Plan (ISP)](https://aemo.com.au/energy-systems/major-publications/integrated-system-plan-isp/2024-integrated-system-plan-isp)  
-[Open Electricity](https://openelectricity.org.au/)
+[Open Electricity](https://openelectricity.org.au/)  
+[Github Repository](https://github.com/chalg/pypsa/tree/main)      
 
 
 ### 01 Import 
 
-This section imports all necessary Python packages and libraries required for data processing, power system modelling, geospatial analysis, and visualisation. These packages provide the foundational tools for building, analysing, and visualising the High-level NEM baseline model and high-penetration renewable energy model.
+This section imports all necessary Python packages and libraries required for data processing, power system modelling, geospatial analysis, and visualisation. These packages provide the foundational tools for building, analysing, and visualising the High-level NEM baseline model and high penetration renewable energy model.
 
 ```{python}
 import pandas as pd
@@ -144,7 +147,7 @@ if not load_ts.index.equals(generators_ts.index):
 ```
 
 
-#### 02.02 Initialize the network
+#### 02.02 Initialise the network
 
 ```{python}
 n = pypsa.Network()
@@ -153,7 +156,7 @@ n = pypsa.Network()
 
 ### 03 Add Network Components
 
-This section details the process of adding key components to the network, including buses, loads, generators, storage units, and transmission lines. Each component is integrated with relevant time series data at hourly resolution.
+This section details the process of adding key components to the network, including buses, loads, generators, storage units, and transmission lines. Each component is integrated with relevant time series data at 30-minute resolution.
 
 ```{python}
 # Add components
@@ -176,10 +179,24 @@ for name, row in storage_units.iterrows():
     n.add("StorageUnit", name, **row.to_dict())    
 
 
-# Set time series
+# Explicitly set index with correct frequency in a robust way (handles different temporal resolutions)
+load_ts.index = pd.date_range('2024-01-01', periods=len(load_ts), freq='30min')
+generators_ts.index = load_ts.index
+
+# Explicitly set snapshots in PyPSA
 n.set_snapshots(load_ts.index)
+
+# Re-initialise snapshot_weightings explicitly
+n.snapshot_weightings.loc[:, :] = n.snapshot_weightings.index.to_series().diff().dt.total_seconds().div(3600).fillna(0.5).values[:, None]
+
+# Assign load and generator profiles again
 n.loads_t.p_set = load_ts
 n.generators_t.p_max_pu = generators_ts
+
+print("Final snapshot weighting preview:")
+print(n.snapshot_weightings.head())
+
+print("Unique snapshot weights:", n.snapshot_weightings.iloc[:, 0].unique())
 
 assert all(n.generators_t.p_max_pu.index == n.snapshots)
 
@@ -664,7 +681,7 @@ def plot_dispatch(n, time="2024", days=None, regions=None,
 
 Review dispatch for a 5-day period in NSW.
 
-Note here that very little gas is dispatched due to having a higher marginal price than black coal. In reality the ramping up and down of coal plants is smoother than this. The hourly resolution does not constrain the ramping much compared to actual five-minute dispatching in the NEM. For example, Eraring black coal units maximum ramp-up of 4MW/min, is 240MW per model snapshot (hourly).
+Note here that very little gas is dispatched due to having a higher marginal price than black coal. In reality the ramping up and down of coal plants is smoother than this. The 30-min resolution does not constrain the ramping much compared to actual five-minute dispatching in the NEM. For example, Eraring black coal units maximum ramp-up of 4MW/min, is 120MW per model snapshot.
 
 ```{python}
 #| warning: false
@@ -737,6 +754,7 @@ Plot peak demand vs installed generation capacity per bus/region.
 def plot_peak_demand_vs_capacity(network, stack_carrier=False, relative=False, sort_by="Max Demand"):
     """
     Plot peak demand vs installed generation capacity per bus, filtering out zero-capacity carriers.
+    Consistent styling and behavior with plot_total_demand_vs_generation function.
 
     Parameters:
     -----------
@@ -770,61 +788,83 @@ def plot_peak_demand_vs_capacity(network, stack_carrier=False, relative=False, s
 
     # --- 4) Relative scaling if requested ---
     if relative:
+        # Create a copy to avoid modifying original data
+        df_plot = df.copy()
         # avoid div-by-zero
-        df["Max Demand"] = df["Max Demand"].replace(0, np.nan)
+        df_plot["Max Demand"] = df_plot["Max Demand"].replace(0, np.nan)
         relative_capacity = capacity_by_bus_carrier.div(df["Max Demand"], axis=0) * 100
-        df["Total Capacity"] = df["Total Capacity"] / df["Max Demand"] * 100
-        df["Max Demand"] = 100
+        relative_capacity = relative_capacity.fillna(0)  # Handle NaN from division by zero
+        df_plot["Total Capacity"] = df_plot["Total Capacity"] / df_plot["Max Demand"] * 100
+        df_plot["Max Demand"] = 100
         ylabel = "Capacity as % of Peak Demand"
     else:
-        # convert to GW
-        df[["Max Demand", "Total Capacity"]] = df[["Max Demand", "Total Capacity"]] / 1e3
+        df_plot = df.copy()
+        # convert to GW for consistency
+        df_plot[["Max Demand", "Total Capacity"]] = df_plot[["Max Demand", "Total Capacity"]] / 1e3
         relative_capacity = capacity_by_bus_carrier / 1e3
-        ylabel = "GW"
+        ylabel = "Power (GW)"
 
-    # --- 5) Sort if needed ---
-    if sort_by in df.columns:
-        df = df.sort_values(by=sort_by, ascending=False)
+    # --- 5) Sort consistently (always descending, handle NaN) ---
+    if sort_by in df_plot.columns:
+        df_plot = df_plot.sort_values(by=sort_by, ascending=False, na_position='last')
+        
+    # Reindex capacity data to match sorted order
+    relative_capacity = relative_capacity.reindex(df_plot.index, fill_value=0)
 
-    # --- 6) Plotting ---
-    fig, ax = plt.subplots(figsize=(8, 5))
+    # --- 6) Plotting with consistent styling ---
+    fig, ax = plt.subplots(figsize=(8, 5))  # Consistent figure size
     bar_width = 0.35
-    bar_pos = np.arange(len(df))
+    bar_pos = np.arange(len(df_plot))
 
     if stack_carrier:
-        # stack each non-zero carrier
-        bottom = np.zeros(len(df))
-        for carrier in capacity_by_bus_carrier.columns:
-            vals = relative_capacity[carrier].reindex(df.index).fillna(0).values
-            color = (network.carriers.loc[carrier, 'color']
-                     if 'color' in network.carriers.columns and carrier in network.carriers.index
-                     else None)
+        # Stack each non-zero carrier
+        bottom = np.zeros(len(df_plot))
+        
+        # Sort carriers by total capacity for consistent stacking
+        carriers = list(capacity_by_bus_carrier.columns)
+        carrier_totals = {c: capacity_by_bus_carrier[c].sum() for c in carriers}
+        carriers = sorted(carriers, key=lambda x: carrier_totals[x], reverse=True)
+        
+        for carrier in carriers:
+            vals = relative_capacity[carrier].fillna(0).values
+            
+            # Get color from network.carriers if available, otherwise use default colors
+            if (hasattr(network, 'carriers') and 
+                carrier in network.carriers.index and 
+                'color' in network.carriers.columns):
+                color = network.carriers.loc[carrier, 'color']
+            else:
+                # Default color cycle
+                colors = plt.cm.Set3(np.linspace(0, 1, len(carriers)))
+                color = colors[carriers.index(carrier)]
+                
             ax.bar(bar_pos + bar_width/2, vals, bar_width,
-                   bottom=bottom, label=carrier, color=color)
+                   bottom=bottom, label=f'Capacity ({carrier})', color=color)
             bottom += vals
-        # plot peak demand on left
-        ax.bar(bar_pos - bar_width/2, df["Max Demand"], bar_width,
+            
+        # Plot peak demand on left
+        ax.bar(bar_pos - bar_width/2, df_plot["Max Demand"], bar_width,
                label='Peak Demand', color='gray', alpha=0.7)
     else:
-        ax.bar(bar_pos - bar_width/2, df["Max Demand"], bar_width,
+        ax.bar(bar_pos - bar_width/2, df_plot["Max Demand"], bar_width,
                label='Peak Demand', color='gray', alpha=0.7)
-        ax.bar(bar_pos + bar_width/2, df["Total Capacity"], bar_width,
+        ax.bar(bar_pos + bar_width/2, df_plot["Total Capacity"], bar_width,
                label='Total Capacity', color='tab:blue')
 
-    # --- 7) Labels and legend ---
+    # --- 7) Consistent labels and styling ---
     ax.set_xticks(bar_pos)
-    ax.set_xticklabels(df.index, rotation=0, ha='right', fontsize=8)
+    ax.set_xticklabels(df_plot.index, rotation=45, ha='right')  # Consistent rotation
     ax.set_ylabel(ylabel)
-    # fig.patch.set_facecolor('#F0FFFF') 
-    ax.set_facecolor('#F0FFFF')
     ax.set_xlabel("Region/Bus")
     ax.set_title("Peak Demand vs Generation Capacity per Region" + (" (Relative)" if relative else ""))
-    ax.grid(True)
-    # place legend outside
-    # ax.legend(loc='upper left', bbox_to_anchor=(1.01, 1.0))
-    ax.legend(loc='upper right')
+    ax.set_facecolor('#F0FFFF')  # Consistent background color
+    ax.legend(loc='upper right')  # Consistent legend placement
+    ax.grid(True, alpha=0.3)  # Consistent grid styling
     plt.tight_layout()
     plt.show()
+    
+    # Return the actual values (not plot data which might be relative)
+    # return df
 
 
 plot_peak_demand_vs_capacity(n, stack_carrier=True)
@@ -832,22 +872,41 @@ plot_peak_demand_vs_capacity(n, stack_carrier=True)
 
 Plot total electricity demand vs generation per bus/region.
 
+
 ```{python}
 def plot_total_demand_vs_generation(network, stack_carrier=False, relative=False):
     """
     Plot total electricity demand vs generation per bus.
+    Properly accounts for snapshot weightings to handle different temporal resolutions.
 
     Parameters:
     - network: PyPSA Network object
     - stack_carrier: If True, stack generation by carrier (color-coded)
     - relative: If True, show generation as % of total demand (demand = 100%)
     """
-    # Total demand per bus in GWh
-    total_demand_per_bus = network.loads_t.p_set.sum().div(1e3)
+    
+    def get_snapshot_weights(network):
+        """Get snapshot weightings in a robust way"""
+        if hasattr(network.snapshot_weightings, 'generators'):
+            return network.snapshot_weightings['generators']
+        elif 'generators' in network.snapshot_weightings.columns:
+            return network.snapshot_weightings['generators']
+        else:
+            # If single column or series, use first column
+            return network.snapshot_weightings.iloc[:, 0] if network.snapshot_weightings.ndim > 1 else network.snapshot_weightings
+    
+    # Get snapshot weights
+    weights = get_snapshot_weights(network)
+    
+    # Total demand per bus in GWh (properly weighted)
+    demand_energy = network.loads_t.p_set.multiply(weights, axis=0)
+    total_demand_per_bus = demand_energy.sum().div(1e3)
     total_demand_per_bus.name = "Total Demand"
 
-    # Total generation per generator in GWh
-    gen_energy = network.generators_t.p.sum().div(1e3)
+    # Total generation per generator in GWh (properly weighted)
+    gen_energy_weighted = network.generators_t.p.multiply(weights, axis=0)
+    gen_energy = gen_energy_weighted.sum().div(1e3)
+    
     gen_info = network.generators[["bus", "carrier"]]
     gen_energy_by_carrier = (
         gen_info.assign(energy=gen_energy)
@@ -865,37 +924,60 @@ def plot_total_demand_vs_generation(network, stack_carrier=False, relative=False
     ]
 
     if relative:
-        generation_vs_demand["Total Demand"].replace(0, np.nan, inplace=True)  # avoid div by 0
-        generation_vs_demand.sort_values(by="Total Demand", ascending=False)
+        # Create a copy to avoid modifying original data
+        generation_vs_demand_plot = generation_vs_demand.copy()
+        generation_vs_demand_plot["Total Demand"].replace(0, np.nan, inplace=True)  # avoid div by 0
+        generation_vs_demand_plot = generation_vs_demand_plot.sort_values(by="Total Demand", ascending=False, na_position='last')
+        
+        # Calculate relative generation by carrier
         relative_generation = gen_energy_by_carrier.div(generation_vs_demand["Total Demand"], axis=0) * 100
-        generation_vs_demand["Total Generation"] = (
-            generation_vs_demand["Total Generation"] / generation_vs_demand["Total Demand"] * 100
+        relative_generation = relative_generation.fillna(0)  # Handle NaN from division by zero
+        
+        generation_vs_demand_plot["Total Generation"] = (
+            generation_vs_demand_plot["Total Generation"] / generation_vs_demand_plot["Total Demand"] * 100
         )
-        generation_vs_demand["Total Demand"] = 100
+        generation_vs_demand_plot["Total Demand"] = 100
         ylabel = "Generation vs Demand (%)"
     else:
+        generation_vs_demand_plot = generation_vs_demand.copy()
         relative_generation = gen_energy_by_carrier
-        ylabel = "GWh"
+        ylabel = "Energy (GWh)"
 
     # Sort by Total Demand (descending) and reindex    
-    generation_vs_demand = generation_vs_demand.sort_values(by="Total Demand", ascending=False)
-    relative_generation = relative_generation.reindex(generation_vs_demand.index)
-    
+    generation_vs_demand_plot = generation_vs_demand_plot.sort_values(by="Total Demand", ascending=False, na_position='last')
+    relative_generation = relative_generation.reindex(generation_vs_demand_plot.index, fill_value=0)
 
     # Plot
     fig, ax = plt.subplots(figsize=(8, 5))
     bar_width = 0.35
-    bar_positions = np.arange(len(generation_vs_demand))
+    bar_positions = np.arange(len(generation_vs_demand_plot))
 
     if stack_carrier:
-        bottom = np.zeros(len(generation_vs_demand))
+        bottom = np.zeros(len(generation_vs_demand_plot))
+        
+        # Get carriers that actually have generation
         carriers = [
-        c for c in relative_generation.columns
-        if (c in network.carriers.index) and (relative_generation.loc[generation_vs_demand.index, c].sum() > 0)
+            c for c in relative_generation.columns
+            if (relative_generation[c].sum() > 0)
         ]
+        
+        # Sort carriers by total generation for consistent stacking
+        carrier_totals = {c: relative_generation[c].sum() for c in carriers}
+        carriers = sorted(carriers, key=lambda x: carrier_totals[x], reverse=True)
+        
         for carrier in carriers:
-            values = relative_generation.get(carrier, pd.Series(0, index=generation_vs_demand.index))
-            color = network.carriers.loc[carrier, 'color'] if 'color' in network.carriers.columns else None
+            values = relative_generation[carrier].fillna(0)
+            
+            # Get color from network.carriers if available, otherwise use default colors
+            if (hasattr(network, 'carriers') and 
+                carrier in network.carriers.index and 
+                'color' in network.carriers.columns):
+                color = network.carriers.loc[carrier, 'color']
+            else:
+                # Default color cycle
+                colors = plt.cm.Set3(np.linspace(0, 1, len(carriers)))
+                color = colors[carriers.index(carrier)]
+            
             ax.bar(
                 bar_positions + bar_width / 2, values, bar_width,
                 label=f'Generation ({carrier})', bottom=bottom, color=color
@@ -904,7 +986,7 @@ def plot_total_demand_vs_generation(network, stack_carrier=False, relative=False
 
         ax.bar(
             bar_positions - bar_width / 2,
-            generation_vs_demand["Total Demand"],
+            generation_vs_demand_plot["Total Demand"],
             bar_width,
             label="Total Demand",
             color="gray", alpha=0.7
@@ -912,31 +994,32 @@ def plot_total_demand_vs_generation(network, stack_carrier=False, relative=False
     else:
         ax.bar(
             bar_positions - bar_width / 2,
-            generation_vs_demand["Total Demand"],
+            generation_vs_demand_plot["Total Demand"],
             bar_width,
             label="Total Demand",
             color="gray", alpha=0.7
         )
         ax.bar(
             bar_positions + bar_width / 2,
-            generation_vs_demand["Total Generation"],
+            generation_vs_demand_plot["Total Generation"],
             bar_width,
             label="Total Generation",
             color="tab:blue"
         )
 
-    
     ax.set_xlabel("Region/Bus")
     ax.set_ylabel(ylabel)
     ax.set_title("Total Demand vs Total Generation per Region" + (" (Relative)" if relative else ""))
     ax.set_xticks(bar_positions)
-    ax.set_xticklabels(generation_vs_demand.index, rotation=45, ha="right")
+    ax.set_xticklabels(generation_vs_demand_plot.index, rotation=45, ha="right")
     ax.set_facecolor('#F0FFFF')
     ax.legend(loc='upper right')
-    ax.grid(True)
+    ax.grid(True, alpha=0.3)
     plt.tight_layout()
     plt.show()
-
+    
+    # Return the actual energy values (not the plot data which might be relative)
+    # return generation_vs_demand
 
 plot_total_demand_vs_generation(n, stack_carrier=True, relative=False)
 ```
@@ -945,7 +1028,7 @@ Load previously generated scenario data.
 
 The `0_2024_baseline` scenario is the baseline and hence scale-up factor is 1. The 19 others are scaled up from the baseline model according to the Objective column.
 
-Note: some of the scenarios have unserved energy (bold, red font), which tends to show up in NSW and VIC before other regions.
+Note: one of the scenarios have unserved energy (bold, red font), which tends to show up in NSW and VIC before other regions.
 
 ```{python}
 #| output: asis
@@ -953,7 +1036,7 @@ Note: some of the scenarios have unserved energy (bold, red font), which tends t
 
 # Previously saved results generated from the generate_scenarios function in the Appendix
 # Note: 0_2024_baseline is the baseline scenario and is equivalent to 'high-level_nem'.
-df_results = pd.read_csv("results/scenarios/scenarios_summary_20250731_1443.csv")
+df_results = pd.read_csv("results/scenarios/scenarios_summary_20250807_1819.csv")
 
 # Format in a more user-friendly format for HTML
 results_tbl = df_results.copy()
@@ -961,7 +1044,8 @@ for col in df_results.select_dtypes(include=['object']).columns:
     results_tbl[col] = results_tbl[col].str.replace('\n', '<br>', regex=False)
 
 # Drop to make more space.
-results_tbl = results_tbl.drop(['Unserved Energy (GWh)', 'Wind & Solar Curtailment (GWh)'], axis=1)
+# 'Wind & Solar Curtailment (GWh)'
+results_tbl = results_tbl.drop(['Unserved Energy (GWh)'], axis=1)
 
 # Get the last column name
 last_col = results_tbl.columns[-1]
@@ -1020,7 +1104,7 @@ In the `0_2024_baseline` scenario above, GPG (GWh) is much lower than in reality
 
 It is worth adding a comparison column to compare more realistic gas generation from [Open Electricity](https://explore.openelectricity.org.au/energy/nem/?range=1y&interval=1w&view=discrete-time&group=Simplified) to the high VRE scenario that I'm interested in: `8.3_VreCurtailReview` . This scenario has zero coal generation and an 83% reduction in gas generation.
 
-The `8.3_VreCurtailReview` is one of the more plausible scenarios found by scaling up VRE and storage from the baseline model using a csv import file with different scale-up factors. Please note that, in this scenario, battery storage capacity is 1.55 times the level forecasted for 2049-50 in the AEMO ISP *Step Change* scenario for installed storage capacity.
+The `8.3_VreCurtailReview` is one of the more plausible scenarios found by scaling up VRE and storage from the baseline model using a csv import file with different scale-up factors. Please note that, in this scenario, battery storage capacity is 87GW vs the 56 GW forecasted for 2049-50 in the AEMO ISP *Step Change* scenario for installed capacity.
 
 
 ```{python}
@@ -1484,16 +1568,17 @@ During the development of the `8.3_VreCurtailReview` scenario, several scenarios
 
 The `6.1_6xVreTransitionZeroCoal` scenario achieves a 75% reduction in gas generation^[compared to 10,919 GWh - recent 12-month Open Electricity '1Y-Simplified' view. Source: [Open Electricity](https://explore.openelectricity.org.au/energy/nem/?range=1y&interval=1w&view=discrete-time&group=Simplified)] however only results in 48.4 GW of battery capacity - less than the 56 GW of installed capacity projected for 2049–50 in the AEMO ISP *Step Change* scenario^[2024 ISP, section 6.1, page 66]. Consequently, this scenario would likely be more economical from a cost perspective compared to `8.3_VreCurtailReview`.
 
-The high penetration VRE scenarios are also under-utilising hydro. Some of this can be explained by setting a small marginal price ($8.58) as per 2024 ISP Inputs and Assumptions workbook. An example of this marginal price sensitivity can be found in the Appendix. 2024 was a dry year, which also contributed to Hydro underperformance.
+The `8.3_VreCurtailReview` scenario results in a 21.6% curtailment rate for wind and utility-scale solar, which is quite close to the 20% level projected by the ISP for 2050 (2024 ISP, section 4.3, page 52). However, since some curtailment is already embedded in the source data for this scenario, the effective curtailment rate is significantly higher.
+
 
 Unserved energy predominantly occurred in May and June, particularly the evening of June 13.
 
-
 Potential future analysis could incorporate:  
-  -  increased transmission (lines/links currently stacked on top of each other as they join the same bus)  
+  -  increased transmission (lines/links currently stacked on top of each other as they join the same bus/region)  
   -  accurate geospatial resolution  
-  -  more granular time resolution (possibly for May/June only due to increased computation)  
-  -  more detailed costs, including capital costs, and  
+  -  more granular time resolution (possibly for May/June only due to increased computation)   
+  -  remove the built-in curtailment from the data or apply an alternative measurement approach, such as using synthetic wind and solar traces.   
+  -  more detailed costs, including capital costs  
   -  carbon emissions.
   
 
@@ -1511,10 +1596,10 @@ It is possible to determine in rough terms, how often for example the network wo
 It is worth noting that these reserve requirements are dynamic and always changing, see example below of a recent LOR notice from AEMO in reference to the South Australian region:
 
 <div style="text-align: center;">
-![LOR notice example showing dynamic reserve requirements](images/lor-notice-example.png)
+![LOR notice example showing dynamic reserve requirements in SA1 region](images/lor-notice-example.png)
 </div>
 
-In the `count_reserve_breaches_df` funtion below, we can pass reserve thresholds per region, published in the 2024 ISP Inputs and Assumptions workbook.xlsx (sheet: Reserves):
+In the `count_reserve_breaches_df` funtion below, we can pass reserve thresholds per region, published in the 2024 ISP Inputs and Assumptions workbook.xlsx as a rough guide(sheet: Reserves):
 
 `{"NSW1":705, "VIC1":550, "QLD1":710, "SA1":195, "TAS1":140}`
 
@@ -1538,8 +1623,8 @@ def count_reserve_breaches_df(n, threshold_mw=850):
     -------
     pd.DataFrame
         DataFrame with columns:
-          'breach_hours': number of hours below threshold
-          'breach_ratio': breach_hours / total_snapshots
+          'breach_obs': number of hours below threshold
+          'breach_ratio': breach_obs / total_snapshots
         Index is bus name.
     """
     avail = n.generators_t.p_max_pu.multiply(n.generators.p_nom, axis=1)
@@ -1565,7 +1650,7 @@ def count_reserve_breaches_df(n, threshold_mw=850):
     total_snapshots = reserve.shape[0]
 
     df = pd.DataFrame({
-        'breach_hours': breaches,
+        'breach_obs': breaches,
         'breach_ratio': breaches / total_snapshots
     })
 
@@ -1579,7 +1664,7 @@ count_reserve_breaches_df(n, threshold_mw=per_region)
 
 ```
 
-New South Wales is attracting the most breaches at just over one third of hours breached.
+New South Wales is attracting the most breaches at just over 37% of observations breached.
 
 We can take a quick look at the gas generation coverage.
 
@@ -1602,104 +1687,6 @@ gas
 ```
 
 There is enough reserve of gas capacity, however the model will operate under this on many occasions (as highlighted above), unless a custom constraint is added, which will increase solver run times.
-
-
-#### Generator Sensitivity to Marginal Costs
-
-Review potential vs dispatch of Hydro in the current network. This example highlights how changing one input assumption can make a big difference to the dispatch result.
-
-When the marginal price is set to $8.58 Hydro is seldomly dispatched - mainly in the winter months.
-
-```{python}
-# Plot hydro dispatch vs potential
-def plot_hydro_dispatch_vs_potential(n):
-    hydro_gens  = n.generators.index[n.generators.carrier == 'Hydro']
-    hydro_cols  = hydro_gens.intersection(n.generators_t.p_max_pu.columns)
-    n_hydro     = len(hydro_cols)
-    ncols       = 2
-    nrows       = (n_hydro + ncols - 1) // ncols
-
-    # set up the date locator/formatter once
-    locator   = AutoDateLocator()
-    formatter = ConciseDateFormatter(locator)
-
-    fig, axes = plt.subplots(
-        nrows=nrows, ncols=ncols,
-        figsize=(8.5, 4*nrows),
-        sharex=True, sharey=True
-    )
-    axes = axes.flatten()
-
-    legend_handles, legend_labels = [], []
-
-    for i, gen in enumerate(hydro_cols):
-        ax = axes[i]
-        potential = n.generators_t.p_max_pu[gen] * n.generators.loc[gen, 'p_nom']
-        dispatch  = n.generators_t.p[gen]
-
-        ln1 = ax.plot(
-            n.snapshots, potential,
-            label='Potential', linestyle=':', color='orange', alpha=0.9
-        )
-        ln2 = ax.plot(
-            n.snapshots, dispatch,
-            label='Dispatch', linestyle='-', color='#1E81D4'
-        )
-
-        # apply concise date formatting
-        ax.xaxis.set_major_locator(locator)
-        ax.xaxis.set_major_formatter(formatter)
-        ax.tick_params(axis='x', labelrotation=0, labelsize=8)
-
-        ax.set_title(f'Hydro Gen: {gen}')
-        ax.set_facecolor('#F0FFFF')
-        ax.grid(True)
-
-        if i == 0:
-            legend_handles = ln1 + ln2
-            legend_labels  = ['Potential', 'Dispatch']
-
-    # drop any empty subplots
-    for j in range(i+1, len(axes)):
-        fig.delaxes(axes[j])
-
-    # one shared legend & axis labels
-    fig.legend(legend_handles, legend_labels, loc='lower center',
-     ncol=2, bbox_to_anchor=(0.5, -0.04))
-    fig.supxlabel('Time')
-    fig.supylabel('Power (MW)')
-    fig.suptitle("Hydro Potential vs Dispatch")
-    fig.subplots_adjust(top=0.91, bottom=0.08, left=0.1, right=0.9, hspace=0.2, wspace=0.1)
-    
-    plt.show()
-
-
-plot_hydro_dispatch_vs_potential(n)
-
-```
-
-Now set marginal cost of Hydro generators to zero.
-
-Optimize the network.
-
-```{python}
-# Ilustrate sensitivity of Hydro generation to marginal cost setting
-
-# Get indices of Hydro generators
-hydro_gens = n.generators.index[n.generators.carrier == 'Hydro']
-
-# Set marginal_cost to zero & optimise
-n.generators.loc[hydro_gens, 'marginal_cost'] = 0.0
-n.optimize()
-
-```
-
-Run the same function again to compare the difference.
-
-```{python}
-# Re-run function
-plot_hydro_dispatch_vs_potential(n)
-```
 
 
 
@@ -1896,8 +1883,8 @@ def generate_scenarios(
 
         # ── solve ──────────────────────────────────────────────────────
         # Change to open source solver if required, default is HiGHS
-        n.optimize()
-        # n.optimize(solver_name="gurobi")
+        # n.optimize()
+        n.optimize(solver_name="gurobi")
 
         # ── unserved energy ───────────────────────────────────────────
         if "Unserved Energy" in n.generators.carrier.values:
@@ -1915,7 +1902,10 @@ def generate_scenarios(
         gas_idx = n.generators.index[n.generators.carrier == "Gas"]
         gas_GWh = 0.0
         if len(gas_idx):
-            gas_GWh = n.generators_t.p[gas_idx].sum().sum() / 1e3  # to GWh
+            # Get appropriate weights
+            weights = n.snapshot_weightings.iloc[:, 0] if n.snapshot_weightings.ndim > 1 else n.snapshot_weightings
+            # Multiply power by time weights before summing
+            gas_GWh = (n.generators_t.p[gas_idx].multiply(weights, axis=0)).sum().sum() / 1e3
         gas_GWh = round(gas_GWh, 3)
         
         # ── curtailment (built‑in helper) ─────────────────────────
@@ -1998,10 +1988,9 @@ df_results = generate_scenarios(n, tech_assumptions_path="data/inputs/tech_assum
 
 _Tip: Right-click or Cmd/Ctrl+Click to open in a new tab._
 
-::: {.callout-note}
+::: {.callout-tip}
 
-*30mins* resolution was added as a drop-down option to view the same scenarios at 30-minute resolution.
+Like this Quarto document, the Streamlit app is better viewed on a large screen.
 
 :::
 
-Like this webpage, the Streamlit app is better viewed on a large screen.

@@ -3,6 +3,7 @@ import zipfile
 import io
 import pandas as pd
 import pytz
+import pyarrow.feather as feather
 
 
 # Function to download and extract dispatch load data from NEMWEB archive
@@ -116,6 +117,8 @@ print(combined_df.tail())
 # Save raw data to Feather format for later use
 combined_df.to_feather('data/nemweb/raw/dispatchload_2024.feather')
 
+combined_df = feather.read_feather('data/nemweb/raw/dispatchload_2024.feather')
+
 # AEMO spreadsheet processing:
 import tempfile
 import requests
@@ -167,14 +170,9 @@ dispatchload_joined = dispatchload_joined.drop_duplicates()
 print(dispatchload_joined.info())
 print(dispatchload_joined.head())
 
-# pandas doesn’t have direct "participant:nameplate_cap" slicing, so:
-# Find column positions of 'participant' and 'nameplate_cap'
-cols = list(dispatchload_joined.columns)
-start_idx = cols.index('participant')
-end_idx = cols.index('nameplate_cap')
 
 # Build the list of columns to select
-selected_cols = ['settlementdate', 'duid', 'initialmw', 'totalcleared'] + cols[start_idx:end_idx+1]
+selected_cols = ['settlementdate', 'duid', 'region', 'fuel_source_descriptor', 'initialmw',  'nameplate_cap']
 
 # Subset the DataFrame
 dispatchload_joined = dispatchload_joined[selected_cols]
@@ -184,17 +182,10 @@ dispatchload_joined['cf'] = dispatchload_joined.apply(
     axis=1
 )
 
-# Optional - half-hour timestamp
+# Half-hour timestamp
 dispatchload_joined['datetime_30min'] = dispatchload_joined['settlementdate'].dt.floor('30T')
 
-
-# Extract hour and date from settlementdate
-dispatchload_joined['hour'] = dispatchload_joined['settlementdate'].dt.hour
-dispatchload_joined['date'] = dispatchload_joined['settlementdate'].dt.date  # datetime.date object
-
-# Group by the specified columns and calculate mean of cf
-group_cols = ['duid', 'date', 'hour', 'region', 'station_name', 'participant', 'fuel_source_primary', 'fuel_source_descriptor']
-# Optional: half-hourly aggregation
+# Half-hourly aggregation
 group_cols = ['datetime_30min', 'region', 'fuel_source_descriptor']
 
 dispatchload_prepared = (
@@ -213,6 +204,8 @@ dispatchload_prepared = dispatchload_prepared[dispatchload_prepared['mean_cf'].n
 dispatchload_prepared['Generator'] = (
     dispatchload_prepared['region'] + "-" + dispatchload_prepared['fuel_source_descriptor']
 ).str.upper()
+
+dispatchload_prepared.head(10)  # Show the first 10 rows for verification
 
 # Replace 'WATER' with 'HYDRO' in generator names
 dispatchload_prepared['Generator'] = dispatchload_prepared['Generator'].str.replace(r'-WATER$', '-HYDRO', regex=True)

@@ -24,7 +24,7 @@ loads_time_series_df = feather.read_feather('data/nem_demand_2024.feather')
 loads_time_series_df = loads_time_series_df.pivot(index='settlementdate', columns='regionid', values='totaldemand')
 
 # Setting temporal resolution, this can be adjusted as needed
-freq = '1h'
+freq = '30min'  # 30 minutes
 
 # Resample the time series data to 1-hourly resolution
 loads_time_series_df = loads_time_series_df.resample(freq).mean().round(2)
@@ -35,17 +35,11 @@ loads_time_series_df.index = loads_time_series_df.index.tz_localize(None)
 # Use nemosis in similar fashion to the import_rooftop_solar script...
 
 # Load renewable energy CF data from the Feather file
-renewable_cf_df = feather.read_feather('data/re_cf_2024.feather')
+renewable_cf_df = feather.read_feather('data/nemweb/clean/re_cf_30mins_2024.feather')
 
-# Pivot so Generator is across the top (columns)
-renewable_cf_df = renewable_cf_df.pivot(index='datetime', columns='Generator', values='regional_hrly_cf')
-
-# Resample the time series data to 1-hourly resolution
-renewable_cf_df = renewable_cf_df.resample(freq).mean().round(3)
-
-renewable_cf_df.index = renewable_cf_df.index.tz_localize(None)
 
 # JOIN rooftop solar from import_rooftop_solar script
+# TODO: up to here
 p_max_pu_path = "data/generators-p_max_pu.csv"
 p_max_pu_df = pd.read_csv(p_max_pu_path, index_col=0, parse_dates=True)
 
@@ -53,7 +47,7 @@ p_max_pu_df = pd.read_csv(p_max_pu_path, index_col=0, parse_dates=True)
 renewable_cf_df = renewable_cf_df.merge(
     p_max_pu_df,
     how='left',
-    left_on='datetime',   # column in left DF
+    left_on='datetime_30min',   # column in left DF
     right_index=True      # use index of right DF
 )
 
@@ -137,12 +131,27 @@ for name, row in storage_units.iterrows():
     n.add("StorageUnit", name, **row.to_dict())    
 
 
-# Set time series
+# Explicitly set index with correct frequency in a robust way (handles different temporal resolutions)
+load_ts.index = pd.date_range('2024-01-01', periods=len(load_ts), freq='30min')
+generators_ts.index = load_ts.index
+
+# Explicitly set snapshots in PyPSA
 n.set_snapshots(load_ts.index)
+
+# Re-initialize snapshot_weightings explicitly
+n.snapshot_weightings.loc[:, :] = n.snapshot_weightings.index.to_series().diff().dt.total_seconds().div(3600).fillna(0.5).values[:, None]
+
+# Assign load and generator profiles again
 n.loads_t.p_set = load_ts
 n.generators_t.p_max_pu = generators_ts
 
+print("Final snapshot weighting preview:")
+print(n.snapshot_weightings.head())
+
+print("Unique snapshot weights:", n.snapshot_weightings.iloc[:, 0].unique())
+
 assert all(n.generators_t.p_max_pu.index == n.snapshots)
+
 
 # Remove negative values in p_max_pu (Hydro is the culprit)
 n.generators_t.p_max_pu = n.generators_t.p_max_pu.clip(lower=0.0, upper=1.0)
@@ -408,12 +417,15 @@ def check_reserve_margins(n, threshold):
         if len(bus_gens) == 0:
             continue
             
-        # Get dispatch and availability for this bus
-        dispatch = n.generators_t.p[bus_gens].sum(axis=1)
+        # Get load and availability for this bus
+        # dispatch = n.generators_t.p[bus_gens].sum(axis=1)
         available = avail[bus_gens].sum(axis=1)
+        load_at_bus = n.loads_t.p_set[n.loads.index[n.loads.bus == bus]].sum(axis=1)
+        
         
         # Calculate actual reserves
-        actual_reserves = available - dispatch
+        # actual_reserves = available - dispatch
+        actual_reserves = available - load_at_bus
         required_reserves = threshold[bus]
         
         # Check if reserves are maintained
@@ -1473,7 +1485,7 @@ def generate_scenarios(
             ),
             # "Total System Cost (B$)": round(n.objective / 1e9, 3),
             # "Total New Capacity (GW)": round(n.generators.p_nom_opt.sum() / 1e3, 3),
-            "Gas Generation (GWh)": gas_GWh,
+            "GPG (GWh)": gas_GWh,
             # "Total Curtailment (GWh)": round(curt_GWh, 3),
             "Battery Capacity (GW)": battery_capacity_GW,
             "Generator Capacity (GW)": dict_to_multiline_string(capacity_by_carrier),
@@ -1523,61 +1535,25 @@ df_results
 
 
 # Optionally; load from previously saved network file:
-df_results = pd.read_csv("results/scenarios/scenarios_summary_20250711_1007.csv")
+df_results = pd.read_csv("results/scenarios/scenarios_summary_20250806_0947.csv")
 df_results["Objective"] = df_results["Objective"].str.replace("\\n", "\n")
 # Choose a scenario to view then assign objective_text (not relevant to baseline)
-scenario = "0_2024_baseline"
-scenario = "1_BalancedTransition"
-scenario = "2_BalancedAggressiveTransition"
-scenario = "3.0_VreStorageRampTransition"
-scenario = "3.1_VreStorageRampGasReduction"
-scenario = "3.1.2_VreStorageRampGasReduction"
-scenario = "3.2_VreStorageRampGasReduction"
-scenario = "3.3_VreStorageRampGasReduction"
-scenario = "4_VreStorageRampTransitionZeroCoal"
-scenario = "4_4xVreTransitionZeroCoal"
-scenario = "5_5xVreTransitionZeroCoal"
-scenario = "6.0_6xVreTransitionZeroCoal"
-scenario = "6.1_6xVreTransitionZeroCoal"
-scenario = "6.2_6xVreTransitionZeroCoal"
-scenario = "7.0_6xVre4xRoofZeroCoal"
-scenario = "8.0_6xVre&BatteryZeroCoal"
-scenario = "8.1_6xVre&BatteryZeroCoal"
-scenario = "8.2_6xVre&BatteryZeroCoal"
-scenario = "1.4_10xVre&BatteryZeroFF"
-scenario = "1.5_11xVre&BatteryZeroFF"
+scenario = "0_2024_baseline_30min"
+scenario = "8.0_6xVre&Battery_30min"
+scenario = "8.1_6xVre&Battery_30min"
+scenario = "8.2_7xVre&BatteryZeroCoal_30min"
 scenario = "8.3_VreCurtailReview"
 objective_text = df_results.loc[df_results["Scenario"] == scenario, "Objective"].values[0]
 
 
-# Load scenarios for analysis
-# Baseline (2024)
-n = pypsa.Network("results/high-level_nem.nc")
-
-
 
 # Scenarios
-n = pypsa.Network("results/scenarios/1_BalancedTransition.nc")
-n = pypsa.Network("results/scenarios/2_BalancedAggressiveTransition.nc")
-n = pypsa.Network("results/scenarios/3.0_VreStorageRampTransition.nc")
-n = pypsa.Network("results/scenarios/3.1_VreStorageRampGasReduction.nc")
-n = pypsa.Network("results/scenarios/3.1.2_VreStorageRampGasReduction.nc")
-n = pypsa.Network("results/scenarios/3.2_VreStorageRampGasReduction.nc")
-n = pypsa.Network("results/scenarios/3.3_VreStorageRampGasReduction.nc")
-n = pypsa.Network("results/scenarios/4_VreStorageRampTransitionZeroCoal.nc")
-n = pypsa.Network("results/scenarios/4_4xVreTransitionZeroCoal.nc")
-n = pypsa.Network("results/scenarios/5_5xVreTransitionZeroCoal.nc")
-n = pypsa.Network("results/scenarios/6.0_6xVreTransitionZeroCoal.nc")
-n = pypsa.Network("results/scenarios/6.1_6xVreTransitionZeroCoal.nc")
-
-n = pypsa.Network("results/scenarios/6.2_6xVreTransitionZeroCoal.nc")
-n = pypsa.Network("results/scenarios/7.0_6xVre4xRoofZeroCoal.nc")
-n = pypsa.Network("results/scenarios/8.0_6xVre&BatteryZeroCoal.nc")
-n = pypsa.Network("results/scenarios/8.1_6xVre&BatteryZeroCoal.nc")
-n = pypsa.Network("results/scenarios/8.2_6xVre&BatteryZeroCoal.nc")
-n = pypsa.Network("results/scenarios/1.4_10xVre&BatteryZeroFF.nc")
-n = pypsa.Network("results/scenarios/1.5_11xVre&BatteryZeroFF.nc")
+n = pypsa.Network("results/scenarios/0_2024_baseline_30min.nc")
+n = pypsa.Network("results/scenarios/8.0_6xVre&Battery_30min.nc")
+n = pypsa.Network("results/scenarios/8.1_6xVre&Battery_30min.nc")
+n = pypsa.Network("results/scenarios/8.2_7xVre&BatteryZeroCoal_30min.nc")
 n = pypsa.Network("results/scenarios/8.3_VreCurtailReview.nc")
+
 
 
 
@@ -1588,6 +1564,7 @@ plot_dispatch(n, time="2024", regions=None, scenario_name=scenario, scenario_obj
 # Curtailment can show here
 plot_dispatch(n, time="2024-06-01", days=60, regions=None, scenario_name=scenario, scenario_objective=objective_text)
 plot_dispatch(n, time="2024-06-12", days=5, regions=["NSW1"], scenario_name=scenario, scenario_objective=objective_text)
+plot_dispatch(n, time="2024-06-12", days=5, regions=["NSW1"])
 
 # Curtailment can show here
 plot_dispatch(n, time="2024-06-10", days=6, regions=["VIC1"], show_imports=True, interactive=False, scenario_name=scenario, scenario_objective=objective_text)
@@ -1601,8 +1578,9 @@ plot_dispatch(n, time="2024-05-18", days=10, regions=["VIC1"], show_imports=True
 plot_dispatch(n, time="2024-04-01", days=10, regions=["QLD1"], show_imports=True, scenario_name=scenario, scenario_objective=objective_text, interactive=True)
 plot_dispatch(n, time="2024-05", regions=["VIC1"], show_imports=True, scenario_name=scenario, scenario_objective=objective_text)
 plot_dispatch(n, time="2024-05-21", days=8, regions=["VIC1"], show_imports=True, scenario_name=scenario, scenario_objective=objective_text, interactive=True)
-plot_dispatch(n, time="2024-06-17", days=6, regions=["NSW1"], show_imports=True, scenario_name=scenario, scenario_objective=objective_text, interactive=False)
-plot_dispatch(n, time="2024-06-17", days=2, regions=["NSW1"], show_imports=True, scenario_name=None, scenario_objective=None)
+plot_dispatch(n, time="2024-06-17", days=9, regions=["NSW1"], show_imports=True, scenario_name=scenario, scenario_objective=objective_text, interactive=False)
+plot_dispatch(n, time="2024-06-06", days=9, regions=["VIC1"], show_imports=True, scenario_name=scenario, scenario_objective=objective_text, interactive=False)
+plot_dispatch(n, time="2024-06-12", days=3, regions=["NSW1"], show_imports=True, scenario_name=None, scenario_objective=None)
 plot_dispatch(n, time="2024-07-24", days=7, regions=["VIC1"], show_imports=False)
 # Low wind period
 plot_dispatch(n, time="2024-05-20", days=10, regions=["SA1"], show_imports=True, scenario_name=scenario, scenario_objective=objective_text, interactive=False)
@@ -1612,8 +1590,7 @@ plot_dispatch(n, time="2024-04-07", days=90, regions=["TAS1"], show_imports=True
 plot_dispatch(n, time="2024", regions=["QLD1"], show_imports=True)
 plot_dispatch(n, time="2024-06-12", days=8, regions=["TAS1"], show_imports=True, interactive=True, scenario_name=scenario, scenario_objective=objective_text)
 plot_dispatch(n, time="2024-07", regions=["QLD1"], show_imports=True, scenario_name=scenario, scenario_objective=objective_text, show_curtailment=True)
-plot_dispatch(n, time="2024-06-05",days=8, regions=["VIC1"], show_imports=True, scenario_name=scenario, scenario_objective=objective_text)
-plot_dispatch(n, time="2024-06-13",days=1, regions=["VIC1"], show_imports=True, scenario_name=scenario, scenario_objective=objective_text, interactive=True)    
+plot_dispatch(n, time="2024-06-13",days=1, regions=["VIC1"], show_imports=True, scenario_name=scenario, scenario_objective=objective_text, interactive=True)
 
 
 # Note: bus and region are synonymous in this context.
@@ -1807,7 +1784,7 @@ day_snaps = [ts for ts in n.snapshots if ts.date() == target_day.date()]
 
 # availability (MW) and dispatch (MW) for VRE
 gen_mask = n.generators.bus.isin(['VIC1'])
-mask_vre = ["Wind","Solar"]
+mask_vre = ["Wind","Solar", "Rooftop Solar"]
 mask_vre = gen_mask & n.generators.carrier.isin(mask_vre)
 
 avail = (
@@ -1842,7 +1819,7 @@ def count_reserve_breaches_df(n, threshold_mw=850):
     -------
     pd.DataFrame
         DataFrame with columns:
-          'breach_hours': number of hours below threshold
+          'breach_obs': number of observations below threshold
           'breach_ratio': breach_hours / total_snapshots
         Index is bus name.
     """
@@ -1867,9 +1844,10 @@ def count_reserve_breaches_df(n, threshold_mw=850):
     breaches = (reserve.lt(thresh, axis=1)).sum()
 
     total_snapshots = reserve.shape[0]
+    
 
     df = pd.DataFrame({
-        'breach_hours': breaches,
+        'breach_obs': breaches,
         'breach_ratio': breaches / total_snapshots
     })
 
@@ -1988,6 +1966,22 @@ n.statistics.supply(comps=["Generator"]).droplevel(0) / 1e3  # Convert to GWh
 
 # Wind and Solar curtailment as a percentage of total supply
 n.statistics.curtailment().loc[(slice(None), ['Wind','Solar'])].sum() / 1e3 / (n.statistics.supply(comps=["Generator"]).sum() / 1e3)
+
+# Total renewable curtailment
+renewable_curtailment = n.statistics.curtailment().loc[(slice(None), ['Wind','Solar'])].sum() / 1e3
+
+# Total renewable generation (actual output)
+renewable_generation = n.statistics.supply(comps=["Generator"]).loc[(slice(None), ['Wind','Solar'])].sum() / 1e3
+
+# Curtailment as % of actual renewable generation
+curtailment_rate = renewable_curtailment / renewable_generation * 100
+curtailment_rate.round(2)
+
+renewable_curtailment_pct = (
+    n.statistics.curtailment().loc[(slice(None), ['Wind','Solar'])].sum() / 
+    (n.statistics.curtailment().loc[(slice(None), ['Wind','Solar'])].sum() + 
+     n.statistics.supply(comps=["Generator"]).loc[(slice(None), ['Wind','Solar'])].sum()) * 100
+)
 
 def calculate_renewable_curtailment_stats(n, technologies=['Wind', 'Solar', 'Rooftop Solar', 'Hydro']):
     """Calculate renewable curtailment statistics"""
@@ -2138,8 +2132,7 @@ plot_residual_load(n, time="2024-09", days=30, regions=None)
 
 
 
-
-def plot_gas_energy_across_scenarios(nc_dir, gas_carrier="Gas"):
+def plot_carrier_energy_across_scenarios(nc_dir, carrier="Gas"):
     """
     Builds a bar chart of total Gas generation (GWh) for every .nc file in nc_dir.
     Assumes filenames look like '<Scenario>.nc'.
@@ -2180,7 +2173,7 @@ def plot_gas_energy_across_scenarios(nc_dir, gas_carrier="Gas"):
         scenario = os.path.basename(path).replace(".nc", "")
         try:
             n = pypsa.Network(path)
-            gas_GWh = calculate_generator_energy(n, gas_carrier)
+            gas_GWh = calculate_generator_energy(n, carrier)
             data.append({"Scenario": scenario, "Gas_GWh": round(gas_GWh, 3)})
         except Exception as e:
             print(f"Error processing {scenario}: {e}")
@@ -2194,15 +2187,16 @@ def plot_gas_energy_across_scenarios(nc_dir, gas_carrier="Gas"):
 
     # ── bar chart ───────────────────────────────────────────────────────
     ax = df["Gas_GWh"].plot.bar(color="#E6622D", figsize=(8, 6))
-    ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha="right")
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha="right", size=8)
     ax.margins(x=0.01)  # optional: tiny side padding
     ax.set_ylabel("Gas Generation (GWh)")
-    ax.set_title(f"Total Gas Dispatch Across Scenarios ({gas_carrier})")
+    ax.set_title(f"Total Gas Dispatch Across Scenarios ({carrier})")
     plt.tight_layout()
     plt.show()
 
     return df
-gas_scenarios = plot_gas_energy_across_scenarios(
+
+gas_scenarios = plot_carrier_energy_across_scenarios(
     nc_dir="results/scenarios"
 )
 
@@ -2335,7 +2329,7 @@ combos = [
 ]
 
 fig, axes = plt.subplots(
-    nrows=2, ncols=2, figsize=(8, 8),
+    nrows=2, ncols=2, figsize=(8.5, 8),
     sharex=True, sharey=True   # share y for common scale
 )
 axes = axes.flatten()
@@ -2375,13 +2369,15 @@ for ax, (sol_col, rt_col) in zip(axes, combos):
 # shared legend
 handles = [bp1["boxes"][0], bp2["boxes"][0]]
 labels  = ['Utility-scale Solar', 'Rooftop Solar']
-fig.legend(handles, labels, loc='upper center', ncol=2, bbox_to_anchor=(0.5, 0.98))
+fig.legend(handles, labels, loc='lower center', ncol=2, bbox_to_anchor=(0.5, -0.04))
 
 # one common y-axis label
-fig.supxlabel('Hour of Day')
+fig.supxlabel('Hour of Day (2024)')
 fig.supylabel('Capacity Factor')
+fig.suptitle("Utility Solar vs Rooftop Solar Capacity Factors")
+# adjust spacing
+fig.subplots_adjust(top=0.90, bottom=0.08, left=0.1, right=0.9, hspace=0.2, wspace=0.1)
 
-fig.tight_layout(rect=[0, 0, 1, 0.95])
 plt.show()
 
 
@@ -2448,6 +2444,75 @@ labels  = ['Utility-scale Solar', 'Rooftop Solar']
 fig.legend(handles, labels, loc='upper center', ncol=2, bbox_to_anchor=(0.5, 0.97))
 
 fig.tight_layout(rect=[0,0,1,0.95])  # leave room for legend
+plt.show()
+
+# Wind vs Rooftop Solar Capacity Factors
+wind_cf = n.generators_t.p_max_pu[['SA1-WIND', 'SA1-ROOFTOP-SOLAR',
+                         'VIC1-WIND', 'VIC1-ROOFTOP-SOLAR',
+                         'QLD1-WIND', 'QLD1-ROOFTOP-SOLAR',
+                         'NSW1-WIND', 'NSW1-ROOFTOP-SOLAR']].reset_index()
+
+wind_cf['hour'] = wind_cf['snapshot'].dt.hour
+hours = sorted(wind_cf['hour'].unique())
+even_hours = [h for h in hours if h % 2 == 0]
+even_positions = [hours.index(h) for h in even_hours]
+
+combos = [
+    ['SA1-WIND', 'SA1-ROOFTOP-SOLAR'],
+    ['VIC1-WIND', 'VIC1-ROOFTOP-SOLAR'],
+    ['QLD1-WIND', 'QLD1-ROOFTOP-SOLAR'],
+    ['NSW1-WIND', 'NSW1-ROOFTOP-SOLAR']
+]
+
+fig, axes = plt.subplots(
+    nrows=2, ncols=2, figsize=(8.5, 8),
+    sharex=True, sharey=True   # share y for common scale
+)
+axes = axes.flatten()
+
+width = 0.35
+x = np.arange(len(hours))
+
+for ax, (sol_col, rt_col) in zip(axes, combos):
+    wind_data = [wind_cf[wind_cf['hour']==h][sol_col].dropna().values for h in hours]
+    rt_data  = [wind_cf[wind_cf['hour']==h][rt_col].dropna().values for h in hours]
+
+    bp1 = ax.boxplot(
+        wind_data,
+        positions=x - width/2, widths=width, patch_artist=True,
+        boxprops=dict(facecolor='#3BBFE5', edgecolor='black'),
+        medianprops=dict(color='blue'),
+        whiskerprops=dict(color='black'),
+        capprops=dict(color='black'),
+        flierprops=dict(markeredgecolor='black')
+    )
+    bp2 = ax.boxplot(
+        rt_data,
+        positions=x + width/2, widths=width, patch_artist=True,
+        boxprops=dict(facecolor='#FFE066', edgecolor='black'),
+        medianprops=dict(color='green'),
+        whiskerprops=dict(color='black'),
+        capprops=dict(color='black'),
+        flierprops=dict(markeredgecolor='black')
+    )
+
+    ax.set_title(f"{sol_col} vs {rt_col}")
+    ax.set_xticks(even_positions)
+    ax.set_xticklabels(even_hours)
+    ax.set_facecolor('#F0FFFF')
+    # no individual ylabel here
+
+# shared legend
+handles = [bp1["boxes"][0], bp2["boxes"][0]]
+labels  = ['Wind', 'Rooftop Solar']
+fig.legend(handles, labels, loc='lower center', ncol=2, bbox_to_anchor=(0.5, -0.04))
+
+# one common y-axis label
+fig.supxlabel('Hour of Day (2024)')
+fig.supylabel('Capacity Factor')
+fig.suptitle("Wind vs Rooftop Solar Capacity Factors")
+
+fig.subplots_adjust(top=0.90, bottom=0.08, left=0.1, right=0.9, hspace=0.2, wspace=0.1)
 plt.show()
 
 
@@ -2657,6 +2722,7 @@ df = df.query("carrier in ['Wind', 'Solar', 'Rooftop Solar']") \
 # 3a) If you want per-generator curtailments:
 print(df['curt_pct'].dropna())
 
+# Unserved Energy analysis
 
 def analyse_unserved_energy(n):
     """
@@ -2724,5 +2790,20 @@ sns.heatmap(pivot_df.T, cmap='Reds', cbar_kws={'label': 'Unserved Energy (GWh)'}
 plt.xlabel('Date')
 plt.ylabel('Region')
 plt.title('Heatmap of Unserved Energy by Region and Date')
+# Reduce x-axis tick label size:
+plt.xticks(rotation=90, fontsize=8)  
 plt.tight_layout()
 plt.show()
+
+# barplot of total unserved energy by bus
+total_unserved_by_bus = unserved_energy_df.groupby('Bus')['GWh'].sum().sort_values()
+
+plt.figure(figsize=(10, 6))
+total_unserved_by_bus.plot(kind='barh', color='salmon')
+plt.xlabel('Total Unserved Energy (GWh)')
+plt.ylabel('Region')
+plt.title('Total Unserved Energy by Bus')
+plt.grid(axis='x')
+plt.tight_layout()
+plt.show()
+
