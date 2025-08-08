@@ -67,7 +67,7 @@ Baseline 2024 model:
   - Rooftop solar sourced from AEMO via [nemosis](https://github.com/UNSW-CEEM/NEMOSIS) python package (TYPE = *'MEASUREMENT'*).  
   - Efficiency of storage on the way in and out set at 0.917 (round trip 0.84) via [2024 ISP Inputs and Assumptions workbook](https://aemo.com.au/-/media/files/major-publications/isp/2024/2024-isp-inputs-and-assumptions-workbook.xlsx?la=en).  
   - Starter battery (600MW Cellars Hill) added in TAS1 in order to be able to scale up (not currently operating, but has some level of state govt. support).  
-  - Project EnergyConnect and Marinus stage 1 implemented on top of existing interconnectors (constrained by nominal capacity)  
+  - Project EnergyConnect, Marinus stage 1 & VNI West implemented on top of existing interconnectors (constrained by nominal capacity)  
   - One generator of each major source and one battery setup per region/bus
 
 ::: {.callout-note}
@@ -1028,7 +1028,7 @@ Load previously generated scenario data.
 
 The `0_2024_baseline` scenario is the baseline and hence scale-up factor is 1. The 19 others are scaled up from the baseline model according to the Objective column.
 
-Note: one of the scenarios have unserved energy (bold, red font), which tends to show up in NSW and VIC before other regions.
+Note: some of the scenarios have unserved energy (bold, red font), which tends to show up in NSW and VIC before other regions.
 
 ```{python}
 #| output: asis

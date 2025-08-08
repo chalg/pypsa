@@ -39,7 +39,6 @@ renewable_cf_df = feather.read_feather('data/nemweb/clean/re_cf_30mins_2024.feat
 
 
 # JOIN rooftop solar from import_rooftop_solar script
-# TODO: up to here
 p_max_pu_path = "data/generators-p_max_pu.csv"
 p_max_pu_df = pd.read_csv(p_max_pu_path, index_col=0, parse_dates=True)
 
@@ -1535,7 +1534,7 @@ df_results
 
 
 # Optionally; load from previously saved network file:
-df_results = pd.read_csv("results/scenarios/scenarios_summary_20250806_0947.csv")
+df_results = pd.read_csv("results/scenarios/scenarios_summary_20250807_1819.csv")
 df_results["Objective"] = df_results["Objective"].str.replace("\\n", "\n")
 # Choose a scenario to view then assign objective_text (not relevant to baseline)
 scenario = "0_2024_baseline_30min"
@@ -1877,35 +1876,6 @@ gas = gas[['bus', 'p_nom', 'reserve']]
 print(gas)
 
 # Reviewing the p_nom of gas generators in this scenario, there is enough coverage for MSL directed events. TAS1 has the lowest reserve margin, but still has 140 MW of gas generation available.
-
-# ------------------------------------------------------------------
-# Add Cellars Hill Battery 600 MW battery at bus TAS1
-# ------------------------------------------------------------------
-# Streamlined major project status 
-# If this is not added, scenarios multiply by zero, giving no scale-up
-# Note: this battery seems the most advanced, but is not committed yet in 
-# Open Electricity.
-# Now added to storage_units.csv, so this is not needed.
-name = "TAS1-BATTERY"
-
-if name in n.storage_units.index:
-    # If it already exists, just update p_nom
-    n.storage_units.loc[name, "p_nom"] = 600
-else:
-    # Otherwise create it with some reasonable defaults
-    n.add(
-        "StorageUnit",
-        names       =[name],
-        bus         =["TAS1"],
-        carrier     =["Battery"],
-        p_nom       =[600],          # MW
-        max_hours   =[2],            # energy = 2 × p_nom  (adjust as needed)
-        efficiency_store=[0.95],      # charge efficiency
-        efficiency_dispatch=[0.95],   # discharge efficiency
-        capital_cost=[922000],            # leave 0 if you’re not using investment optimisation
-        marginal_cost=[0],           # storage usually treated as zero‐marginal
-        p_nom_extendable=[False],    # fixed-size asset
-    )
 
 
 # Total supply by generator

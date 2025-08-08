@@ -105,6 +105,7 @@ def load_dispatchloads_multiple(dates):
     
 # Usage: 
 # Attempt a whole year of data, but this may take a while (51,743,231 rows).
+# Works however chews up a lot of memory.
 dates = ['20240101', '20240201', '20240301', '20240401',
          '20240501', '20240601', '20240701', '20240801',
          '20240901', '20241001', '20241101', '20241201']
