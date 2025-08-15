@@ -1,7 +1,7 @@
 ---
 title: "A High-level Open Source Model for the Australian National Electricity Market (NEM)"
 author: "Grant Chalmers"
-date: "2025-08-08"
+date: "2025-08-16"
 format:
   html:
     output-file: index.html
@@ -63,12 +63,12 @@ Baseline 2024 model:
   - 2024 renewable energy availability (capacity) factors (incl. hydro).  
   - Generator registered capacities sourced from [Open Electricity facilities](https://explore.openelectricity.org.au/facilities/nem/?status=operating,committed) Inclusive of operating and **committed**, therefore includes Snowy 2.0, Hunter Gas and a significant increase in battery storage over what is currently operating.  
   - Time series data is at 30-minute resolution.  
-  - Marginal price of wind, utility-scale solar, rooftop solar and hydro^[The marginal price for hydro is $8.58 according to the 2024 ISP Inputs and Assumptions workbook; however, I wanted to prevent the solver from underutilising hydro.] set to zero  
+  - Marginal price of wind, utility-scale solar, rooftop solar and hydro^[The marginal price for hydro is $8.58 according to the 2024 ISP Inputs and Assumptions workbook; however, I wanted to prevent the solver from underutilising hydro.] set to zero.  
   - Rooftop solar sourced from AEMO via [nemosis](https://github.com/UNSW-CEEM/NEMOSIS) python package (TYPE = *'MEASUREMENT'*).  
   - Efficiency of storage on the way in and out set at 0.917 (round trip 0.84) via [2024 ISP Inputs and Assumptions workbook](https://aemo.com.au/-/media/files/major-publications/isp/2024/2024-isp-inputs-and-assumptions-workbook.xlsx?la=en).  
   - Starter battery (600MW Cellars Hill) added in TAS1 in order to be able to scale up (not currently operating, but has some level of state govt. support).  
-  - Project EnergyConnect, Marinus stage 1 & VNI West implemented on top of existing interconnectors (constrained by nominal capacity)  
-  - One generator of each major source and one battery setup per region/bus
+  - Project EnergyConnect, Marinus stage 1 & VNI West implemented on top of existing interconnectors (constrained by nominal capacity).  
+  - One generator of each major source and one battery setup per region/bus.
 
 ::: {.callout-note}
 Apart from the baseline model, 19 additional scenarios were created by varying the scale-up of VRE and storage, and the scale-down of thermal generation, ultimately culminating in the final `8.3_VreCurtailReview` scenario.
@@ -1036,7 +1036,7 @@ Note: some of the scenarios have unserved energy (bold, red font), which tends t
 
 # Previously saved results generated from the generate_scenarios function in the Appendix
 # Note: 0_2024_baseline is the baseline scenario and is equivalent to 'high-level_nem'.
-df_results = pd.read_csv("results/scenarios/scenarios_summary_20250807_1819.csv")
+df_results = pd.read_csv("results/scenarios/scenarios_summary_20250815_1121.csv")
 
 # Format in a more user-friendly format for HTML
 results_tbl = df_results.copy()
@@ -1556,7 +1556,7 @@ plt.show()
 ### 05 Conclusion and Next Steps
 
 
-This simple model suggests that achieving a high-penetration renewable energy grid may be possible, at least in principle. However, there is an inherent trade-off between deploying large amounts of variable renewable energy and managing increased curtailment. The model focuses solely on power flow analysis and does not consider system security or full system cost implications, beyond assigning marginal costs to generators for least-cost dispatch. Additionally, I’ve assigned a very small negative marginal cost to storage units, encouraging batteries to charge earlier rather than at the last possible moment - an approach enabled by the model’s assumption of perfect foresight.
+This simple model suggests that achieving a high-penetration renewable energy grid may be possible, at least in principle. However, there is an inherent trade-off between deploying large amounts of variable renewable energy and managing increased curtailment. The model focuses solely on power flow analysis and does not consider system security or full system cost implications, beyond assigning marginal costs to generators for least-cost dispatch. 
 
 ::: {.callout-note}
 There is no assurance the system would operate in a **secure state** within the `8.3_VreCurtailReview` scenario/network.
@@ -1591,7 +1591,7 @@ Potential future analysis could incorporate:
 
 As mentioned in the conclusion, there is no certainty around whether or not the `8.3_VreCurtailReview` network could operate in a secure state.
 
-It is possible to determine in rough terms, how often for example the network would be issued Lack of Reserve (LOR) notices by the system operator. Here we'll use the per region thresholds published by AEMO.
+It is possible to determine in very rough terms, how often for example the network would be issued Lack of Reserve (LOR)^[[AEMO LoR factsheet:](https://www.aemo.com.au/learn/energy-explained/fact-sheets/lack-of-reserve-notices)] notices by the system operator. Here we'll use the per region thresholds published by AEMO.
 
 It is worth noting that these reserve requirements are dynamic and always changing, see example below of a recent LOR notice from AEMO in reference to the South Australian region:
 
@@ -1604,7 +1604,7 @@ In the `count_reserve_breaches_df` funtion below, we can pass reserve thresholds
 `{"NSW1":705, "VIC1":550, "QLD1":710, "SA1":195, "TAS1":140}`
 
 ```{python}
-def count_reserve_breaches_df(n, threshold_mw=850):
+def count_reserve_breaches_df(n, threshold_mw=850, include_storage=True):
     """
     Count how many hours in 2024 the reserve margin
     (available capacity minus load) at each bus dips below threshold_mw.
@@ -1618,6 +1618,8 @@ def count_reserve_breaches_df(n, threshold_mw=850):
         If float, same threshold (in MW) for every bus.
         If dict, keys are bus names and values are thresholds for those buses;
         any bus not in the dict uses the global default (if provided) or 0.
+    include_storage : bool, default True
+        Whether to include storage units in available capacity calculation.
 
     Returns
     -------
@@ -1627,26 +1629,109 @@ def count_reserve_breaches_df(n, threshold_mw=850):
           'breach_ratio': breach_obs / total_snapshots
         Index is bus name.
     """
-    avail = n.generators_t.p_max_pu.multiply(n.generators.p_nom, axis=1)
-    avail_by_bus = avail.T.groupby(n.generators.bus).sum().T
+    # Generator availability
+    gen_avail = n.generators_t.p_max_pu.multiply(n.generators.p_nom, axis=1)
+    gen_avail_by_bus = gen_avail.T.groupby(n.generators.bus).sum().T
+    
+    # Storage availability (if requested and storage exists)
+    if include_storage and hasattr(n, 'storage_units') and not n.storage_units.empty:
+        # Storage can contribute reserves through:
+        # 1. Discharge capacity (limited by p_nom and state_of_charge)
+        # 2. Charge reduction (if currently charging)
+        
+        # Maximum discharge capacity
+        if hasattr(n, 'storage_units_t') and hasattr(n.storage_units_t, 'p_max_pu') and not n.storage_units_t.p_max_pu.empty:
+            # Use time-varying p_max_pu if available
+            storage_p_max = n.storage_units_t.p_max_pu.multiply(n.storage_units.p_nom, axis=1)
+        else:
+            # Fallback: use nominal capacity for all timesteps
+            # Create a DataFrame with p_nom values repeated for each timestep
+            timesteps = n.snapshots
+            n_timesteps = len(timesteps)
+            n_storage = len(n.storage_units)
+            
+            # Create array with p_nom values repeated for all timesteps
+            data = np.tile(n.storage_units.p_nom.values, (n_timesteps, 1))
+            
+            storage_p_max = pd.DataFrame(
+                data=data,
+                index=timesteps,
+                columns=n.storage_units.index
+            )
+        
+        # Account for State of Charge constraints if available
+        if hasattr(n.storage_units_t, 'state_of_charge') and not n.storage_units_t.state_of_charge.empty:
+            soc = n.storage_units_t.state_of_charge
+            # Calculate maximum energy capacity (MWh)
+            max_energy = n.storage_units.p_nom * n.storage_units.max_hours
+            # Calculate available energy at each timestep (MWh)
+            available_energy = soc.multiply(max_energy, axis=1)
+            
+            # Limit discharge reserves by available energy 
+            # For 30-minute reserves (matching snapshot duration):
+            energy_limited_discharge = available_energy / 0.5  # MW for 30 minutes
+            # Alternative: For 1-hour reserves, use: available_energy / 1.0
+            
+            # Save original for diagnostic comparison
+            storage_p_max_original = storage_p_max.copy()
+            
+            # Use the minimum of power capacity and energy-limited capacity
+            storage_p_max = np.minimum(storage_p_max, energy_limited_discharge)
+            
+            # Diagnostic: Check which constraint is binding
+            power_binding = (storage_p_max.values == storage_p_max_original.values).sum()
+            energy_binding = (storage_p_max.values == energy_limited_discharge.values).sum()
+            print(f"Times power constraint was binding: {power_binding}")
+            print(f"Times energy constraint was binding: {energy_binding}")
+        
+        # Current storage dispatch (positive = discharge, negative = charge)
+        storage_dispatch = n.storage_units_t.p
+        
+        # Available upward reserve from storage:
+        # - If discharging: remaining discharge capacity
+        # - If charging: can reduce charging (turn charging into reserve)
+        storage_reserve = storage_p_max.subtract(storage_dispatch.abs(), fill_value=0)
+        
+        # Ensure non-negative reserves
+        storage_reserve = storage_reserve.clip(lower=0)
+        
+        # Group storage reserves by bus
+        storage_avail_by_bus = storage_reserve.T.groupby(n.storage_units.bus).sum().T
+        
+        # Combine generator and storage availability
+        all_gen_buses = set(gen_avail_by_bus.columns) if not gen_avail_by_bus.empty else set()
+        all_storage_buses = set(storage_avail_by_bus.columns) if not storage_avail_by_bus.empty else set()
+        all_avail_buses = sorted(all_gen_buses | all_storage_buses)
+        
+        gen_avail_by_bus = gen_avail_by_bus.reindex(columns=all_avail_buses, fill_value=0)
+        storage_avail_by_bus = storage_avail_by_bus.reindex(columns=all_avail_buses, fill_value=0)
+        storage_avail_by_bus = storage_avail_by_bus.reindex(index=gen_avail_by_bus.index, fill_value=0)
+        
+        total_avail_by_bus = gen_avail_by_bus.add(storage_avail_by_bus, fill_value=0)
+    else:
+        total_avail_by_bus = gen_avail_by_bus
 
+    # Load data
     loads = n.loads_t.p_set
     load_by_bus = loads.T.groupby(n.loads.bus).sum().T
 
-    all_buses = sorted(set(avail_by_bus.columns) | set(load_by_bus.columns))
-    avail_by_bus = avail_by_bus.reindex(columns=all_buses, fill_value=0)
-    load_by_bus  = load_by_bus.reindex(columns=all_buses, fill_value=0)
-    avail_by_bus = avail_by_bus.reindex(index=load_by_bus.index, fill_value=0)
+    # Align all buses
+    all_buses = sorted(set(total_avail_by_bus.columns) | set(load_by_bus.columns))
+    total_avail_by_bus = total_avail_by_bus.reindex(columns=all_buses, fill_value=0)
+    load_by_bus = load_by_bus.reindex(columns=all_buses, fill_value=0)
+    total_avail_by_bus = total_avail_by_bus.reindex(index=load_by_bus.index, fill_value=0)
 
-    reserve = avail_by_bus.subtract(load_by_bus, fill_value=0)
+    # Calculate reserve margin
+    reserve = total_avail_by_bus.subtract(load_by_bus, fill_value=0)
 
+    # Apply thresholds
     if isinstance(threshold_mw, dict):
         thresh = pd.Series({bus: threshold_mw.get(bus, 0.0) for bus in all_buses})
     else:
         thresh = pd.Series(threshold_mw, index=all_buses)
 
+    # Count breaches
     breaches = (reserve.lt(thresh, axis=1)).sum()
-
     total_snapshots = reserve.shape[0]
 
     df = pd.DataFrame({
@@ -1656,15 +1741,28 @@ def count_reserve_breaches_df(n, threshold_mw=850):
 
     return df
 
+
+# Usage examples:
+
 # For per-region thresholds
 # Source: 2024 ISP Inputs and Assumptions workbook.xlsx (sheet: Reserves)
-per_region = {"NSW1":705, "VIC1":550, "QLD1":710, "SA1":195, "TAS1":140}
+per_region = {"NSW1": 705, "VIC1": 550, "QLD1": 710, "SA1": 195, "TAS1": 140}
 
-count_reserve_breaches_df(n, threshold_mw=per_region)
+# Compare with generators only
+results_gen_only = count_reserve_breaches_df(n, threshold_mw=per_region, include_storage=False)
 
+# Include storage (default)
+results_with_storage = count_reserve_breaches_df(n, threshold_mw=per_region)
+
+# Print comparison
+print("Reserve breach analysis:")
+print("\nGenerators only:")
+print(results_gen_only)
+print("\nWith storage included:")
+print(results_with_storage)
 ```
 
-New South Wales is attracting the most breaches at just over 37% of observations breached.
+New South Wales is attracting the most breaches at just over 37% of observations breached, however when storage is factored in, the number of breaches are dramatically reduced.
 
 We can take a quick look at the gas generation coverage.
 
