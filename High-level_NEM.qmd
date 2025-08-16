@@ -1591,7 +1591,7 @@ Potential future analysis could incorporate:
 
 As mentioned in the conclusion, there is no certainty around whether or not the `8.3_VreCurtailReview` network could operate in a secure state.
 
-It is possible to determine in very rough terms, how often for example the network would be issued Lack of Reserve (LOR)^[[AEMO LoR factsheet:](https://www.aemo.com.au/learn/energy-explained/fact-sheets/lack-of-reserve-notices)] notices by the system operator. Here we'll use the per region thresholds published by AEMO.
+It is possible to determine in very rough terms, how often for example the network would be issued Lack of Reserve (LOR)^[[AEMO LoR factsheet](https://www.aemo.com.au/learn/energy-explained/fact-sheets/lack-of-reserve-notices)] notices by the system operator. Here we'll use the per region thresholds published by AEMO.
 
 It is worth noting that these reserve requirements are dynamic and always changing, see example below of a recent LOR notice from AEMO in reference to the South Australian region:
 
