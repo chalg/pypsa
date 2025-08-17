@@ -386,7 +386,7 @@ n.export_to_netcdf("results/scenarios/lor_constraint_test.nc")
 n = pypsa.Network("results/high-level_nem.nc")
 n = pypsa.Network("results/scenarios/lor_constraint_test.nc")
 
-# After optimization, check if reserves are maintained
+# After optimisation, check if reserves are maintained
 def check_reserve_margins(n, threshold):
     """Check if reserve margins are being maintained"""
     
@@ -443,7 +443,7 @@ def check_reserve_margins(n, threshold):
     
     return pd.DataFrame(results)
 
-# Use it after optimization
+# Use it after optimisation
 reserve_analysis = check_reserve_margins(n, {
     "NSW1":705,
     "VIC1":550,
@@ -545,7 +545,7 @@ def plot_network(n, show_buses=True, show_loading=True, show_linecap=True):
     import cartopy.crs as ccrs
     from pypsa.plot import add_legend_patches
 
-    # 1) Filter out any generators with zero optimized capacity
+    # 1) Filter out any generators with zero optimised capacity
     gen_nonzero = n.generators[n.generators.p_nom_opt > 0]
 
     # 2) Calculate bus generation capacities (only non-zero gens)
@@ -2699,7 +2699,7 @@ def analyse_unserved_energy(n):
     Analyze instances of Unserved Energy in a PyPSA network.
 
     Parameters:
-        n (pypsa.Network): The PyPSA network object after optimization.
+        n (pypsa.Network): The PyPSA network object after optimisation.
 
     Returns:
         pd.DataFrame: DataFrame containing bus, datetime, and unserved energy (GWh).

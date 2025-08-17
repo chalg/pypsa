@@ -1,7 +1,7 @@
 ---
 title: "A High-level Open Source Model for the Australian National Electricity Market (NEM)"
 author: "Grant Chalmers"
-date: "2025-08-16"
+date: "2025-08-18"
 format:
   html:
     output-file: index.html
@@ -31,11 +31,11 @@ As the NEM undergoes rapid transformation, driven by government policy promoting
 
 
 
-This Quarto document presents the development of a high-level baseline model for the NEM power system using [PyPSA (Python for Power System Analysis)](https://pypsa.readthedocs.io/en/latest/), an open-source framework for simulating and optimizing modern energy systems. The model, referred to as High-level_NEM, is a 5-node model (one bus per region) based on actual 2024 generation and demand profiles at 30-minute resolution. A comparison of the 2024 baseline model with a future scenario is presented in this document.
+This Quarto document presents the development of a high-level baseline model for the NEM power system using [PyPSA (Python for Power System Analysis)](https://pypsa.readthedocs.io/en/latest/), an open-source framework for simulating and optimising modern energy systems. The model, referred to as High-level_NEM, is a 5-node model (one bus per region) based on actual 2024 generation and demand profiles at 30-minute resolution. A comparison of the 2024 baseline model with a future scenario is presented in this document.
 The future scenario has increased renewable energy and storage and associated reduction in thermal generation.
 
 The workflow implemented in this Quarto document encompasses the following key steps:  
-  - **Data Import and Preprocessing:** Loading and preparing network topology, generator, storage, and time series data from actual NEM system records and relevant administrative datasets.  
+  - **Data Import and Preprocessing:** Loading and preparing network topology, generator, storage, time series data from actual NEM system records and relevant scenario input data.  
   - **Network Construction:** Building the PyPSA network by adding buses, loads, generators, storage units, and transmission lines.  
   - **Temporal Resolution and Snapshots:** Setting up the model to operate at a chosen temporal granularity, allowing for the study of daily and seasonal variability in demand and renewable generation.  
   - **Optimisation and Scenario Analysis:** Solving the baseline model using linear optimisation to determine the optimal dispatch of resources, and extending the analysis to a plausible future scenario with an aggressive increase in variable renewable energy and associated reduction in thermal generation.   
@@ -48,7 +48,7 @@ The workflow implemented in this Quarto document encompasses the following key s
 
 *Objective:*
 
-Develop a high-level 5-node baseline PyPSA model for the NEM and VRE/storage scale-up scenarios with:  
+Develop a high-level 5-node baseline PyPSA model for the NEM and VRE/storage scale-up and thermal generation scale-down scenarios with:  
   1. One bus per NEM region with transmission interconnectors  
   2. 30-minute time resolution to capture some level of RE intermittency  
   3. Comparison of 2024 baseline model (*0_2024_baseline*) to a high penetration renewable energy scenario (*8.3_VreCurtailReview*)  
@@ -58,7 +58,7 @@ Develop a high-level 5-node baseline PyPSA model for the NEM and VRE/storage sca
 *Key Assumptions*  
 
 Baseline 2024 model:  
-  - 2024 demand  
+  - 2024 demand (load)  
   - 2024 generation profiles  
   - 2024 renewable energy availability (capacity) factors (incl. hydro).  
   - Generator registered capacities sourced from [Open Electricity facilities](https://explore.openelectricity.org.au/facilities/nem/?status=operating,committed) Inclusive of operating and **committed**, therefore includes Snowy 2.0, Hunter Gas and a significant increase in battery storage over what is currently operating.  
@@ -86,7 +86,7 @@ By following this workflow, the document provides a high-level example for those
 [PyPSA-PH: High-Resolution Open Source Power System Model for the Philippines](https://github.com/arizeosalac/PyPSA-PH/tree/main)  
 [2024 Integrated System Plan (ISP)](https://aemo.com.au/energy-systems/major-publications/integrated-system-plan-isp/2024-integrated-system-plan-isp)  
 [Open Electricity](https://openelectricity.org.au/)  
-[Github Repository](https://github.com/chalg/pypsa/tree/main)      
+[High‑Level NEM PyPSA Model Github Repository](https://github.com/chalg/pypsa/tree/main)      
 
 
 ### 01 Import 
@@ -115,7 +115,7 @@ from IPython.display import display, HTML
 
 ### 02 Create Network
 
-This section covers the creation of the High-level NEM network, including loading network data, initializing the PyPSA network object, and preparing the structure for adding buses, loads, generators, storage units, and transmission lines. 
+This section covers the creation of the High-level NEM network, including loading network data, initialising the PyPSA network object, and preparing the structure for adding buses, loads, generators, storage units, and transmission lines (links & lines). 
 
 
 
@@ -681,7 +681,7 @@ def plot_dispatch(n, time="2024", days=None, regions=None,
 
 Review dispatch for a 5-day period in NSW.
 
-Note here that very little gas is dispatched due to having a higher marginal price than black coal. In reality the ramping up and down of coal plants is smoother than this. The 30-min resolution does not constrain the ramping much compared to actual five-minute dispatching in the NEM. For example, Eraring black coal units maximum ramp-up of 4MW/min, is 120MW per model snapshot.
+Note here that very little gas is dispatched due to having a higher marginal price than black coal. In reality the ramping up and down of coal plants is smoother than this. The 30-min resolution does not constrain the ramping much compared to actual five-minute dispatching in the NEM. For example, Eraring black coal units maximum ramp-up of 4MW/min, is 120MW per model snapshot^[The *ramp_limit_up* & *ramp_limit_down* values in generators.csv are slightly different because I'm averaging similar units in NSW1 (NSW1-COAL is a single generator representing all coal generators in region NSW1)].
 
 ```{python}
 #| warning: false
@@ -741,14 +741,14 @@ def plot_generator_capacity_by_carrier(network):
 plot_generator_capacity_by_carrier(n)
 ```
 
-According to the AEMO's ISP Step Change - all coal fired generation will be retired by 2038.
+According to the AEMO's ISP Step Change - all coal fired generation will be retired by 2038. This is 'just around the corner' in terms of long lead times for generators and associated infrastructure build-outs.
 
 <div style="text-align: center;">
 ![ISP Step Change Coal Retirements](images/step-change-coal-retirments.png)
 </div>
 
 
-Plot peak demand vs installed generation capacity per bus/region.
+Plot peak demand vs installed generation capacity per region.
 
 ```{python}
 def plot_peak_demand_vs_capacity(network, stack_carrier=False, relative=False, sort_by="Max Demand"):
@@ -1100,7 +1100,7 @@ print(html_table)
 ```
 
   
-In the `0_2024_baseline` scenario above, GPG (GWh) is much lower than in reality because I've set the marginal cost of gas higher than coal and there are no other influencing constraints such as carbon emissions. PyPSA is solving based on least-cost optimisation of power plant and storage dispatch within network constraints. This is much simpler than in real life, which involves a bid stack and many more constraints.  
+In the `0_2024_baseline` scenario above, gas-powered generation - GPG (GWh) is much lower than in reality because I've set the marginal cost of gas higher than coal and there are no other influencing constraints such as carbon emissions. PyPSA is solving based on least-cost optimisation of power plant and storage dispatch within network constraints. This is much simpler than in real life, which involves a bid stack and many more constraints.  
 
 It is worth adding a comparison column to compare more realistic gas generation from [Open Electricity](https://explore.openelectricity.org.au/energy/nem/?range=1y&interval=1w&view=discrete-time&group=Simplified) to the high VRE scenario that I'm interested in: `8.3_VreCurtailReview` . This scenario has zero coal generation and an 83% reduction in gas generation.
 
