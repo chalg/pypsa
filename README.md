@@ -25,7 +25,7 @@ The **High‑Level NEM** model provides a baseline representation of the NEM’s
 - Analysis of current dispatch and grid topology
 - Exploration of high‑renewable scenarios with storage
 - Visualisation of network topology, generation mix, dispatch and curtailment
-- Streamlit app for interactive scenario analysis
+- Streamlit [app](https://chalg-pypsa-dispatch-app-streamlit-app-4arpu2.streamlit.app/) for interactive scenario analysis
 
 
 <div align="center">
