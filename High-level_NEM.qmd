@@ -1381,7 +1381,7 @@ curtailment_gt = curtailment_tbl.tab_header(
 curtailment_gt
 ```
 
-The model applies relatively harsh curtailment to solar and wind, but particularly rooftop solar. This is a result of curtailment already being incorporated into utility-scale solar availability (capacity) factors, which I've sourced and then calculated from AEMO’s NEMWEB dispatch data. 
+The model applies relatively harsh curtailment to solar and wind particularly rooftop solar. This is a result of curtailment already being incorporated into utility-scale solar availability (capacity) factors, which I've sourced and then calculated from AEMO’s NEMWEB dispatch data. 
 
 > Almost every large solar farm in Australia’s southeastern states will be forced to switch off at least one-third of the power they generate by 2027 as delays to critical energy transition projects cause major bottlenecks on the electricity grid. - Ryan Cropp, Australian Financial Review, Jul 10, 2025 [[link]](https://www.afr.com/policy/energy-and-climate/solar-farms-forced-to-switch-off-due-to-energy-grid-logjam-20250710-p5mdw5). 
 

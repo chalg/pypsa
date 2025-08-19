@@ -278,12 +278,13 @@ class StorageUtilisationAnalyser:
         renewable_gens = []
         if hasattr(self.n, 'generators_t') and hasattr(self.n.generators_t, 'p'):
             # Look for solar/wind generators (adjust carrier names as needed)
-            renewable_carriers = ['solar', 'wind', 'Solar', 'Wind', 'PV', 'onwind', 'offwind']
+            renewable_carriers = ['Solar', 'Wind']
             for carrier in renewable_carriers:
                 gens = self.n.generators[self.n.generators.carrier.str.contains(carrier, case=False, na=False)]
                 renewable_gens.extend(gens.index.tolist())
-        
+        renewable_gens = list(set(renewable_gens))
         if renewable_gens:
+            
             print(f"Found {len(renewable_gens)} renewable generators")
             
             # Calculate total renewable output by region/time
@@ -410,14 +411,16 @@ results, oversized_storage = analyse_storage_utilisation(n)
 # or for quick summary:
 # summary = storage_utilisation_summary(n)
 
+
+
 # OPTIONAL adjustment - toggle to more conservative SOC
 # artificially incentivise staying charged
 # Update storage units' marginal costs directly in the network object
-n.storage_units["marginal_cost"] = -0.01
-n.storage_units["marginal_cost_storage"] = -0.01
-n.storage_units
+# n.storage_units["marginal_cost"] = -0.01
+# n.storage_units["marginal_cost_storage"] = -0.01
+# n.storage_units
 
-n.optimize(solver='gurobi')
+# n.optimize(solver='gurobi')
 
-# Run the analysis again with updated network:
-results, oversized_storage = analyse_storage_utilisation(n)
+# # Run the analysis again with updated network:
+# results, oversized_storage = analyse_storage_utilisation(n)
