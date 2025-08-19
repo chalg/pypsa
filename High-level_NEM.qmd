@@ -63,7 +63,7 @@ Baseline 2024 model:
   - 2024 renewable energy availability (capacity) factors (incl. hydro).  
   - Generator registered capacities sourced from [Open Electricity facilities](https://explore.openelectricity.org.au/facilities/nem/?status=operating,committed) Inclusive of operating and **committed**, therefore includes Snowy 2.0, Hunter Gas and a significant increase in battery storage over what is currently operating.  
   - Time series data is at 30-minute resolution.  
-  - Marginal price of wind, utility-scale solar, rooftop solar and hydro^[The marginal price for hydro is $8.58 according to the 2024 ISP Inputs and Assumptions workbook; however, I wanted to prevent the solver from underutilising hydro.] set to zero.  
+  - Marginal price of wind, utility-scale solar, rooftop solar, battery storage and hydro^[The marginal price for hydro is $8.58 according to the 2024 ISP Inputs and Assumptions workbook; however, I wanted to prevent the solver from underutilising hydro. I also initially set a very small negative marginal price for battery storage to try and make the model behave more conservatively about discharge decisions - however this created unintended consequences such as discharge underutilisation. In real life (no perfect forsight) storage would be retained at a higher state of charge (SOC) as insurance.] set to zero.  
   - Rooftop solar sourced from AEMO via [nemosis](https://github.com/UNSW-CEEM/NEMOSIS) python package (TYPE = *'MEASUREMENT'*).  
   - Efficiency of storage on the way in and out set at 0.917 (round trip 0.84) via [2024 ISP Inputs and Assumptions workbook](https://aemo.com.au/-/media/files/major-publications/isp/2024/2024-isp-inputs-and-assumptions-workbook.xlsx?la=en).  
   - Starter battery (600MW Cellars Hill) added in TAS1 in order to be able to scale up (not currently operating, but has some level of state govt. support).  
@@ -1036,7 +1036,7 @@ Note: some of the scenarios have unserved energy (bold, red font), which tends t
 
 # Previously saved results generated from the generate_scenarios function in the Appendix
 # Note: 0_2024_baseline is the baseline scenario and is equivalent to 'high-level_nem'.
-df_results = pd.read_csv("results/scenarios/scenarios_summary_20250815_1121.csv")
+df_results = pd.read_csv("results/scenarios/scenarios_summary_20250818_1534.csv")
 
 # Format in a more user-friendly format for HTML
 results_tbl = df_results.copy()
@@ -1102,9 +1102,9 @@ print(html_table)
   
 In the `0_2024_baseline` scenario above, gas-powered generation - GPG (GWh) is much lower than in reality because I've set the marginal cost of gas higher than coal and there are no other influencing constraints such as carbon emissions. PyPSA is solving based on least-cost optimisation of power plant and storage dispatch within network constraints. This is much simpler than in real life, which involves a bid stack and many more constraints.  
 
-It is worth adding a comparison column to compare more realistic gas generation from [Open Electricity](https://explore.openelectricity.org.au/energy/nem/?range=1y&interval=1w&view=discrete-time&group=Simplified) to the high VRE scenario that I'm interested in: `8.3_VreCurtailReview` . This scenario has zero coal generation and an 83% reduction in gas generation.
+It is worth adding a comparison column to compare more realistic gas generation from [Open Electricity](https://explore.openelectricity.org.au/energy/nem/?range=1y&interval=1w&view=discrete-time&group=Simplified) to the high VRE scenario that I'm interested in: `8.3_VreCurtailReview` . This scenario has zero coal generation and an 82.5% reduction in gas generation.
 
-The `8.3_VreCurtailReview` is one of the more plausible scenarios found by scaling up VRE and storage from the baseline model using a csv import file with different scale-up factors. Please note that, in this scenario, battery storage capacity is 87GW vs the 56 GW forecasted for 2049-50 in the AEMO ISP *Step Change* scenario for installed capacity.
+The `8.3_VreCurtailReview` is one of the more plausible scenarios found by scaling up VRE and storage from the baseline model using a csv import file with different scale-up factors. Please note that, in this scenario, battery storage capacity is 84GW vs the 56 GW forecasted for 2049-50 in the AEMO ISP *Step Change* scenario for installed capacity.
 
 
 ```{python}
@@ -1340,7 +1340,7 @@ curtailment_gt = curtailment_tbl.tab_header(
             )
         ) \
         .tab_source_note(
-            source_note=md("**Scenario**: 8.3_VreCurtailReview (Zero coal & 83% reduction in GPG).<br><br> **Scale-up objective from 2024 baseline**: *NSW1-Black Coal: x0.0, NSW1-Gas: x0.5, NSW1-Rooftop Solar: x3.0, NSW1-Solar: x3.0, NSW1-Wind: x6.0, NSW1-Battery: x8.0, QLD1-Black Coal: x0.0, QLD1-Gas: x0.5, QLD1-Rooftop Solar: x3.0, QLD1-Solar: x3.0, QLD1-Wind: x6.0, QLD1-Battery: x6.0, SA1-Gas: x0.5, SA1-Rooftop Solar: x2.0, SA1-Solar: x3.0, SA1-Wind: x2.0, SA1-Battery: x6.0, TAS1-Gas: x0.5, TAS1-Rooftop Solar: x3.0, TAS1-Wind: x5.0, TAS1-Battery: x8.0, VIC1-Gas: x0.5, VIC1-Brown Coal: x0.0, VIC1-Rooftop Solar: x4.0, VIC1-Solar: x4.0, VIC1-Wind: x4.0, VIC1-Battery: x8.0*")
+            source_note=md("**Scenario**: 8.3_VreCurtailReview (Zero coal & 83% reduction in GPG).<br><br> **Scale-up objective from 2024 baseline**: *NSW1-Black Coal: x0.0, NSW1-Gas: x0.5, NSW1-Rooftop Solar: x3.0, NSW1-Solar: x3.0, NSW1-Wind: x6.0, NSW1-Battery: x8.0, QLD1-Black Coal: x0.0, QLD1-Gas: x0.5, QLD1-Rooftop Solar: x3.0, QLD1-Solar: x3.0, QLD1-Wind: x6.0, QLD1-Battery: x6.0, SA1-Gas: x0.5, SA1-Rooftop Solar: x2.0, SA1-Solar: x3.0, SA1-Wind: x2.0, SA1-Battery: x5.0, TAS1-Gas: x0.5, TAS1-Rooftop Solar: x3.0, TAS1-Wind: x5.0, TAS1-Battery: x6.0, VIC1-Gas: x0.5, VIC1-Brown Coal: x0.0, VIC1-Rooftop Solar: x4.0, VIC1-Solar: x4.0, VIC1-Wind: x4.0, VIC1-Battery: x8.0*")
         ) \
         .fmt_nanoplot("Rooftop Solar Curtailment",
                       plot_type="bar",
@@ -1381,7 +1381,7 @@ curtailment_gt = curtailment_tbl.tab_header(
 curtailment_gt
 ```
 
-The model applies relatively harsh curtailment to rooftop solar. This is a result of curtailment already being incorporated into utility-scale solar availability (capacity) factors, which I've sourced and then calculated from AEMO’s NEMWEB dispatch data. 
+The model applies relatively harsh curtailment to solar and wind, but particularly rooftop solar. This is a result of curtailment already being incorporated into utility-scale solar availability (capacity) factors, which I've sourced and then calculated from AEMO’s NEMWEB dispatch data. 
 
 > Almost every large solar farm in Australia’s southeastern states will be forced to switch off at least one-third of the power they generate by 2027 as delays to critical energy transition projects cause major bottlenecks on the electricity grid. - Ryan Cropp, Australian Financial Review, Jul 10, 2025 [[link]](https://www.afr.com/policy/energy-and-climate/solar-farms-forced-to-switch-off-due-to-energy-grid-logjam-20250710-p5mdw5). 
 
@@ -1568,8 +1568,9 @@ During the development of the `8.3_VreCurtailReview` scenario, several scenarios
 
 The `6.1_6xVreTransitionZeroCoal` scenario achieves a 75% reduction in gas generation^[compared to 10,919 GWh - recent 12-month Open Electricity '1Y-Simplified' view. Source: [Open Electricity](https://explore.openelectricity.org.au/energy/nem/?range=1y&interval=1w&view=discrete-time&group=Simplified)] however only results in 48.4 GW of battery capacity - less than the 56 GW of installed capacity projected for 2049–50 in the AEMO ISP *Step Change* scenario^[2024 ISP, section 6.1, page 66]. Consequently, this scenario would likely be more economical from a cost perspective compared to `8.3_VreCurtailReview`.
 
-The `8.3_VreCurtailReview` scenario results in a 21.6% curtailment rate for wind and utility-scale solar, which is quite close to the 20% level projected by the ISP for 2050 (2024 ISP, section 4.3, page 52). However, since some curtailment is already embedded in the source data for this scenario, the effective curtailment rate is significantly higher.
+The `8.3_VreCurtailReview` scenario results in a 44.5% curtailment rate for wind and utility-scale solar, which is more than double to the 20% level projected by the ISP for 2050 (2024 ISP, section 4.3, page 52). In addition, since some curtailment is already embedded in the source data for this scenario, the effective curtailment rate is higher again.
 
+A key trade-off emerged when applying different assumptions under the `8.3_VreCurtailReview` scenario. Under an economic optimisation approach, curtailment of utility solar and wind reached 44.5%, but storage was used efficiently. By contrast, renewable maximisation reduced curtailment to 21.6%, though at the cost of economically inefficient storage utilisation.
 
 Unserved energy predominantly occurred in May and June, particularly the evening of June 13.
 
@@ -1577,7 +1578,7 @@ Potential future analysis could incorporate:
   -  increased transmission (lines/links currently stacked on top of each other as they join the same bus/region)  
   -  accurate geospatial resolution  
   -  more granular time resolution (possibly for May/June only due to increased computation)   
-  -  remove the built-in curtailment from the data or apply an alternative measurement approach, such as using synthetic wind and solar traces.   
+  -  remove the built-in curtailment from the utility solar and wind data or apply an alternative measurement approach, such as using synthetic wind and solar traces.   
   -  more detailed costs, including capital costs  
   -  carbon emissions.
   
@@ -1787,6 +1788,73 @@ gas
 There is enough reserve of gas capacity, however the model will operate under this on many occasions (as highlighted above), unless a custom constraint is added, which will increase solver run times.
 
 
+#### VRE Curtailment Stats
+
+```{python}
+def calculate_renewable_curtailment_stats(n, technologies=['Wind', 'Solar', 'Rooftop Solar', 'Hydro']):
+    """Calculate renewable curtailment statistics"""
+    
+    # Get curtailment by technology
+    curtailment = n.statistics.curtailment().loc[(slice(None), technologies)] / 1e3
+    
+    # Get actual generation by technology  
+    generation = n.statistics.supply(comps=["Generator"]).loc[(slice(None), technologies)] / 1e3
+    
+    # Calculate results
+    results = {}
+    
+    for tech in technologies:
+        tech_curtailment = curtailment.loc[(slice(None), tech)].sum()
+        tech_generation = generation.loc[(slice(None), tech)].sum()
+        tech_potential = tech_curtailment + tech_generation
+        
+        results[tech] = {
+            'Curtailed (GWh)': tech_curtailment,
+            'Generated (GWh)': tech_generation,
+            'Potential (GWh)': tech_potential,
+            'Curtailment Rate (%)': (tech_curtailment / tech_potential * 100) if tech_potential > 0 else 0
+        }
+    
+    # Overall renewable stats
+    total_curtailment = curtailment.sum()
+    total_generation = generation.sum()
+    total_potential = total_curtailment + total_generation
+    
+    results['Total'] = {
+        'Curtailed (GWh)': total_curtailment,
+        'Generated (GWh)': total_generation,
+        'Potential (GWh)': total_potential,
+        'Curtailment Rate (%)': (total_curtailment / total_potential * 100) if total_potential > 0 else 0
+    }
+    
+    return pd.DataFrame(results).T
+
+# Usage
+curtailment_stats = calculate_renewable_curtailment_stats(n, technologies=['Wind', 'Solar'])
+curtailment_stats.round(2)
+```
+
+
+#### Storage v Curtailment Trade-off
+
+The two plots below highlight the different storage behaviour under economic optimisation of storage versus maximising utility solar and wind by reducing curtailment. Curtailment was reduced (from 44.5% to 21.6%) by forcing more conservative discharge decisions (by setting a very small negative marginal cost and cost of storage):
+
+`n.storage_units["marginal_cost"] = -0.01`  
+`n.storage_units["marginal_cost_storage"] = -0.01`
+
+After optimisation...
+
+Under zero marginal and storage costs:
+
+<div style="text-align: center;">
+![Storage utilisation statistics under economic optimisation^[Plots created using `storage_utilisation.py` located under the scripts folder]](images/storage-utilisation-economic-optimisation.png)
+</div>
+
+Under -0.01 marginal and storage costs:
+
+<div style="text-align: center;">
+![Storage utilisation statistics under renewable maximisation](images/storage-utilisation-renewable-maximisation.png)
+</div>
 
 #### GPG in 2_BalancedAggressiveTransition
 
@@ -1889,6 +1957,8 @@ plot_dispatch(n, time="2024-05-18", days=10, regions=["VIC1"], show_imports=True
 ```
 
 ---
+
+
 
 
 #### Generate Scenarios Function

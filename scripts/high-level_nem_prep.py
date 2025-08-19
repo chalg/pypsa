@@ -1534,7 +1534,7 @@ df_results
 
 
 # Optionally; load from previously saved network file:
-df_results = pd.read_csv("results/scenarios/scenarios_summary_20250807_1819.csv")
+df_results = pd.read_csv("results/scenarios/scenarios_summary_20250818_1534.csv")
 df_results["Objective"] = df_results["Objective"].str.replace("\\n", "\n")
 # Choose a scenario to view then assign objective_text (not relevant to baseline)
 scenario = "0_2024_baseline_30min"
@@ -1982,7 +1982,7 @@ def calculate_renewable_curtailment_stats(n, technologies=['Wind', 'Solar', 'Roo
     total_generation = generation.sum()
     total_potential = total_curtailment + total_generation
     
-    results['Total_Renewables'] = {
+    results['Total'] = {
         'Curtailed (GWh)': total_curtailment,
         'Generated (GWh)': total_generation,
         'Potential (GWh)': total_potential,
