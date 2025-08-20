@@ -767,6 +767,12 @@ def plot_peak_demand_vs_capacity(network, stack_carrier=False, relative=False, s
     sort_by : str, optional
         Column to sort buses by on the x-axis. Options: "Max Demand", "Total Capacity", or None.
     """
+    # Define preferred carrier order (thermal/dispatchable at bottom, renewables on top)
+    preferred_order = [
+        'Black Coal', 'Brown Coal', 'Gas', 'Diesel', 'Hydro', 
+        'Wind', 'Solar', 'Rooftop Solar', 'Unserved Energy'
+    ]
+    
     # --- 1) Max demand per bus ---
     max_demand = network.loads_t.p_set.max()
 
@@ -817,13 +823,24 @@ def plot_peak_demand_vs_capacity(network, stack_carrier=False, relative=False, s
     bar_pos = np.arange(len(df_plot))
 
     if stack_carrier:
-        # Stack each non-zero carrier
+        # Stack each non-zero carrier in preferred order
         bottom = np.zeros(len(df_plot))
         
-        # Sort carriers by total capacity for consistent stacking
-        carriers = list(capacity_by_bus_carrier.columns)
-        carrier_totals = {c: capacity_by_bus_carrier[c].sum() for c in carriers}
-        carriers = sorted(carriers, key=lambda x: carrier_totals[x], reverse=True)
+        # Get available carriers and order them according to preferred_order
+        available_carriers = list(capacity_by_bus_carrier.columns)
+        
+        # Order carriers: first by preferred order, then any remaining carriers
+        ordered_carriers = []
+        for carrier in preferred_order:
+            if carrier in available_carriers:
+                ordered_carriers.append(carrier)
+        
+        # Add any carriers not in preferred_order at the end
+        for carrier in available_carriers:
+            if carrier not in ordered_carriers:
+                ordered_carriers.append(carrier)
+        
+        carriers = ordered_carriers
         
         for carrier in carriers:
             vals = relative_capacity[carrier].fillna(0).values
@@ -855,7 +872,7 @@ def plot_peak_demand_vs_capacity(network, stack_carrier=False, relative=False, s
     ax.set_xticks(bar_pos)
     ax.set_xticklabels(df_plot.index, rotation=45, ha='right')  # Consistent rotation
     ax.set_ylabel(ylabel)
-    ax.set_xlabel("Region/Bus")
+    ax.set_xlabel("Region")
     ax.set_title("Peak Demand vs Generation Capacity per Region" + (" (Relative)" if relative else ""))
     ax.set_facecolor('#F0FFFF')  # Consistent background color
     ax.legend(loc='upper right')  # Consistent legend placement
@@ -867,6 +884,7 @@ def plot_peak_demand_vs_capacity(network, stack_carrier=False, relative=False, s
     # return df
 
 
+# Call the function with your preferred ordering
 plot_peak_demand_vs_capacity(n, stack_carrier=True)
 ```
 
@@ -884,6 +902,12 @@ def plot_total_demand_vs_generation(network, stack_carrier=False, relative=False
     - stack_carrier: If True, stack generation by carrier (color-coded)
     - relative: If True, show generation as % of total demand (demand = 100%)
     """
+    
+    # Define preferred carrier order (thermal/dispatchable at bottom, renewables on top)
+    preferred_order = [
+        'Black Coal', 'Brown Coal', 'Gas', 'Diesel', 'Hydro', 
+        'Wind', 'Solar', 'Rooftop Solar', 'Unserved Energy'
+    ]
     
     def get_snapshot_weights(network):
         """Get snapshot weightings in a robust way"""
@@ -956,14 +980,23 @@ def plot_total_demand_vs_generation(network, stack_carrier=False, relative=False
         bottom = np.zeros(len(generation_vs_demand_plot))
         
         # Get carriers that actually have generation
-        carriers = [
+        available_carriers = [
             c for c in relative_generation.columns
             if (relative_generation[c].sum() > 0)
         ]
         
-        # Sort carriers by total generation for consistent stacking
-        carrier_totals = {c: relative_generation[c].sum() for c in carriers}
-        carriers = sorted(carriers, key=lambda x: carrier_totals[x], reverse=True)
+        # Order carriers according to preferred_order
+        ordered_carriers = []
+        for carrier in preferred_order:
+            if carrier in available_carriers:
+                ordered_carriers.append(carrier)
+        
+        # Add any carriers not in preferred_order at the end
+        for carrier in available_carriers:
+            if carrier not in ordered_carriers:
+                ordered_carriers.append(carrier)
+        
+        carriers = ordered_carriers
         
         for carrier in carriers:
             values = relative_generation[carrier].fillna(0)
@@ -1007,7 +1040,7 @@ def plot_total_demand_vs_generation(network, stack_carrier=False, relative=False
             color="tab:blue"
         )
 
-    ax.set_xlabel("Region/Bus")
+    ax.set_xlabel("Region")
     ax.set_ylabel(ylabel)
     ax.set_title("Total Demand vs Total Generation per Region" + (" (Relative)" if relative else ""))
     ax.set_xticks(bar_positions)
@@ -1021,6 +1054,7 @@ def plot_total_demand_vs_generation(network, stack_carrier=False, relative=False
     # Return the actual energy values (not the plot data which might be relative)
     # return generation_vs_demand
 
+# Call the function with your preferred ordering
 plot_total_demand_vs_generation(n, stack_carrier=True, relative=False)
 ```
 
@@ -1872,6 +1906,16 @@ Under -0.01 marginal and storage costs:
 > In practice, system operators often prefer strategies that minimise curtailment (for policy/environmental reasons) even if they're not perfectly economically optimal.
 >
 > *Claude (Sonnet 4). (2025, August 19). Storage utilisation analysis and renewable curtailment insights. Interactive analysis session. Anthropic.*
+
+#### No Marinus Link
+
+Marinus Link Stage 1, which has recently reached Final Investment Decision (FID), is included in all scenarios, including the baseline. If this link is removed, the VIC1 region experiences 14.3 GWh of unserved energy. Examination of the challenging winter snapshot below highlights that a significant portion of this shortfall occurs during that period.
+
+Whether building a very costly interconnector to bridge this gap is a justifiable business case remains open to debate.
+
+<div style="text-align: center;">
+![Unserved energy example in VIC1 with no Marinus Link](images/vic1-unserved-energy-no-marinus-s1.png)
+</div>
 
 
 
