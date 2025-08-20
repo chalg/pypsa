@@ -1919,10 +1919,10 @@ Whether investing in a very costly interconnector to address these rare gaps rep
 
 
 ::: {.callout-note}
-On the evening of June 13 at 18:30, wind generation across the entire NEM was 2.084 GW in the 8.3_VreCurtailReview scenario. This scenario assumes between 2–6 times the baseline wind capacity and 5–8 times the baseline battery storage. Despite this, storage resources were fully depleted, leading to unserved energy in the early hours of June 14.
+On the evening of June 13 at 18:30, wind generation across the entire NEM was 2.084 GW in the `8.3_VreCurtailReview` scenario. This scenario assumes between 2–6 times the baseline wind capacity and 5–8 times the baseline battery storage. Despite this, storage resources were fully depleted, leading to unserved energy in the early hours of June 14.
 
 <div style="text-align: center;">
-![NEM-wide output at 18:00 on June 13, 2024](images/nem-jun13-to14-no-marinus-s1.png)
+![NEM-wide output at 18:30, 13 Jun 2024 - Wind CF: NSW1 0.33%, VIC1 0.62%, SA1 12.5%, TAS1 1.97%](images/nem-jun13-to14-no-marinus-s1.png)
 </div>
 
 :::
