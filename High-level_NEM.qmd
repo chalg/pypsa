@@ -1227,6 +1227,7 @@ plot_total_demand_vs_generation(n, stack_carrier=True, relative=False)
 
 ```{python}
 # Note: bus and region are synonymous in this context.
+# when calculating curtailment manually (not using inbuild statistics module) we must consider 30-minute timesteps..
 def curtailment_region_carrier(n, carriers=['Rooftop Solar', 'Solar', 'Wind']):
     """
     Calculate curtailment % by bus and carrier (excluding Hydro) and pivot carriers wide.
@@ -1254,10 +1255,16 @@ def curtailment_region_carrier(n, carriers=['Rooftop Solar', 'Solar', 'Wind']):
             if len(idx) == 0:
                 pct = 0.0
             else:
+                # Get time step duration automatically
+                if len(n.snapshots) > 1:
+                    timestep_hours = (n.snapshots[1] - n.snapshots[0]).total_seconds() / 3600
+                else:
+                    timestep_hours = 1.0  # Default to 1 hour if single snapshot
+
                 pot = (n.generators_t.p_max_pu[idx]
-                       .multiply(n.generators.loc[idx, 'p_nom'], axis=1)
-                      ).sum().sum()
-                act = n.generators_t.p[idx].sum().sum()
+                    .multiply(n.generators.loc[idx, 'p_nom'], axis=1)
+                    ).sum().sum() * timestep_hours
+                act = n.generators_t.p[idx].sum().sum() * timestep_hours
                 curtailed = pot - act
                 pct = 100 * curtailed / pot if pot > 0 else 0.0
 
@@ -1266,11 +1273,12 @@ def curtailment_region_carrier(n, carriers=['Rooftop Solar', 'Solar', 'Wind']):
             # monthly curtailed MWh per bus/carrier
             if len(idx) > 0:
                 pot_m = (n.generators_t.p_max_pu[idx]
-                         .multiply(n.generators.loc[idx, 'p_nom'], axis=1))
+                        .multiply(n.generators.loc[idx, 'p_nom'], axis=1))
                 act_m = n.generators_t.p[idx]
 
-                pot_mon = pot_m.groupby(snapshot_month).sum().sum(axis=1)
-                act_mon = act_m.groupby(snapshot_month).sum().sum(axis=1)
+                # Apply timestep correction when summing (reusing timestep_hours from above)
+                pot_mon = pot_m.groupby(snapshot_month).sum().sum(axis=1) * timestep_hours
+                act_mon = act_m.groupby(snapshot_month).sum().sum(axis=1) * timestep_hours
                 curtailed_mon = pot_mon - act_mon
             else:
                 # build a zero‐series indexed by each unique period
@@ -1284,7 +1292,7 @@ def curtailment_region_carrier(n, carriers=['Rooftop Solar', 'Solar', 'Wind']):
                     'curtailed_mwh': val
                 })
 
-    # build the bus × carrier % pivot
+    # build the bus×carrier % pivot
     df = pd.DataFrame(records)
     pivot_df = df.pivot(index='bus', columns='carrier', values='curtailment_pct').fillna(0.0)
 
