@@ -1,7 +1,7 @@
 ---
 title: "A High-level Open Source Model for the Australian National Electricity Market (NEM)"
 author: "Grant Chalmers"
-date: "2025-08-19"
+date: "2025-09-04"
 format:
   html:
     output-file: index.html
@@ -1608,13 +1608,23 @@ Incorporating the necessary constraints to ensure secure system operation would 
 
 During the development of the `8.3_VreCurtailReview` scenario, several scenarios with aggressive coal reduction - such as `2_BalancedAggressiveTransition` - led to a doubling of gas-powered generation (GPG). This occurred because GPG was required to compensate for the loss of 75% of baseload capacity previously provided by coal. Further details can be found in the Appendix.
 
-The `6.1_6xVreTransitionZeroCoal` scenario achieves a 75% reduction in gas generation^[compared to 10,919 GWh - recent 12-month Open Electricity '1Y-Simplified' view. Source: [Open Electricity](https://explore.openelectricity.org.au/energy/nem/?range=1y&interval=1w&view=discrete-time&group=Simplified)] however only results in 48.4 GW of battery capacity - less than the 56 GW of installed capacity projected for 2049–50 in the AEMO ISP *Step Change* scenario^[2024 ISP, section 6.1, page 66]. Consequently, this scenario would likely be more economical from a cost perspective compared to `8.3_VreCurtailReview`.
+The `6.1_6xVreTransitionZeroCoal` scenario achieves a 75% reduction in gas generation^[Compared to 10,919 GWh - recent 12-month Open Electricity '1Y-Simplified' view. Source: [Open Electricity](https://explore.openelectricity.org.au/energy/nem/?range=1y&interval=1w&view=discrete-time&group=Simplified)] however only results in 48.4 GW of battery capacity - less than the 56 GW of installed capacity projected for 2049–50 in the AEMO ISP *Step Change* scenario^[2024 ISP, section 6.1, page 66]. Consequently, this scenario would likely be more economical from a cost perspective compared to `8.3_VreCurtailReview`.
 
 The `8.3_VreCurtailReview` scenario results in a 44.5% curtailment rate for wind and utility-scale solar, which is more than double to the 20% level projected by the ISP for 2050 (2024 ISP, section 4.3, page 52). In addition, since some curtailment is already embedded in the source data for this scenario, the effective curtailment rate is higher again.
 
 A key trade-off emerged when applying different assumptions under the `8.3_VreCurtailReview` scenario. Under an economic optimisation approach, curtailment of utility solar and wind reached 44.5%, but storage was used efficiently. By contrast, renewable maximisation reduced curtailment to 21.6%, though at the cost of economically inefficient storage utilisation.
 
 Unserved energy predominantly occurred in May and June, particularly the evening of June 13.
+
+Its is also worth re-visiting that 2024 was a challenging year for wind and hydro production, with the presence of numerous high-pressure systems. These systems typically block winter low-pressure weather patterns, leading to reduced wind speeds and rainfall. This makes 2024 a valuable year for stress-testing future scenarios, especially given CSIRO’s projection that such conditions may become more frequent over time.
+
+> Mean sea level atmospheric pressure is increasing over Australia, and there has been an increase in the number of high-pressure systems over southern Australia, which bring dry, clear weather and little rainfall. This increase in atmospheric pressure across southern latitudes is a response to climate change [[link]](https://www.csiro.au/en/research/environmental-impacts/climate-change/state-of-the-climate/australias-changing-climate). 
+
+The below animation highlights the relationship between 5-day moving average (MA) Moomba to Adelaide gas pipeline utilisation, barometric pressure and wind speeds at Port Pirie in South Australia.
+
+<div style="text-align: center;">
+![Moomba to Adelaide gas pipeline utilisation vs barometric pressure and wind speed at Port Pirie, South Australia.](images/gas_pipeline_wind_animation.gif)
+</div>
 
 Potential future analysis could incorporate:  
   -  increased transmission (lines/links currently stacked on top of each other as they join the same bus/region)  
