@@ -132,15 +132,16 @@ storage_units = pd.read_csv("data/storage_units.csv", index_col=0)
 ```
 
 ```{python}
-# Load time series data, which has 8784 rows due to 2024 being a leap year.
+# Load time series data, which has 17,568 rows due to 2024 being a leap year (30-min resolution).
 load_ts = pd.read_csv("data/loads_t.p_set.csv", index_col=0)
 load_ts.index = pd.to_datetime(load_ts.index, errors="raise")
-print(load_ts.index.dtype) 
+print(f'Length: {len(load_ts)}, Index data type: {load_ts.index.dtype}') 
 # Below should be empty if all dates are valid
 load_ts[~load_ts.index.notnull()]
 generators_ts = pd.read_csv("data/generators_t.p_max_pu.csv", index_col=0)
 generators_ts.index = pd.to_datetime(generators_ts.index, errors="raise")
-print(generators_ts.index.dtype)
+print(f'Length: {len(generators_ts)}, Index data type: {generators_ts.index.dtype}') 
+
 
 if not load_ts.index.equals(generators_ts.index):    
     raise ValueError("Time series indices are not aligned")
