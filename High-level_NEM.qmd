@@ -1627,6 +1627,16 @@ The below animation highlights the relationship between 5-day moving average (MA
 ![Moomba to Adelaide gas pipeline utilisation vs barometric pressure, wind speed and temperature at Port Pirie, South Australia.](images/gas_pipeline_all_weather_animation.gif)
 </div>
 
+Interestingly, 2023 also featured blocking high-pressure systems, however was one of the warmest winters on record.
+
+> Many of the cold fronts that usually sweep over Australia in winter were also pushed south by blocking high pressure systems in winter. This caused unusually warm and dry weather over parts of southern Australia and played a big role in starving the Alps of snow [[link]](https://www.weatherzone.com.au/news/australias-warmest-winter-on-record/1480359?utm_source=chatgpt.com).
+
+Taking a quick look at gas storage levels at the Iona underground storage facility hightlights the sensitivity of temperature to gas utilisation in 2023 compared to 2024, which had closer to average winter temperatures.
+
+<div style="text-align: center;">
+![Gas storage levels at Iona underground storage, near Port Campbell in southwestern Victoria.](images/iona_storage_by_year.png)
+</div>
+
 Potential future analysis could incorporate:  
   -  increased transmission (lines/links currently stacked on top of each other as they join the same bus/region)  
   -  accurate geospatial resolution  
