@@ -1209,7 +1209,7 @@ In this scenario, the wind generation capacity closely matches the 2049-50 ISP S
 Coal has been reduced to zero and there is only a small amount of Gas. There are no changes to diesel.
 
 <div style="text-align: center;">
-![ISP Step Change Onshore wind ~69GW)](images/isp-nem-capacity-forecast.png)
+![ISP Step Change Onshore wind ~69GW](images/isp-nem-capacity-forecast.png)
 </div>
 
 Assessing peak demand alongside installed generation capacity for each region in the `8.3_VreCurtailReview` network clearly illustrates the substantial overbuilding of renewable energy relative to demand.
@@ -1624,7 +1624,7 @@ Its is also worth re-visiting that 2024 was a challenging year for wind and hydr
 The below animation highlights the relationship between 5-day moving average (MA) Moomba to Adelaide gas pipeline utilisation, barometric pressure, wind speed and temperature at Port Pirie in South Australia.
 
 <div style="text-align: center;">
-![Moomba to Adelaide gas pipeline utilisation vs barometric pressure, wind speed and temperature at Port Pirie, South Australia.](images/gas_pipeline_all_weather_animation.gif)
+![Moomba to Adelaide gas pipeline utilisation vs barometric pressure, wind speed and temperature at Port Pirie, South Australia.^[Gif created using `maps_utilisation_animation.py` located under the scripts folder]](images/gas_pipeline_all_weather_animation.gif)
 </div>
 
 Interestingly, 2023 also featured blocking high-pressure systems, however was one of the warmest winters on record.
@@ -1634,7 +1634,7 @@ Interestingly, 2023 also featured blocking high-pressure systems, however was on
 Taking a quick look at gas storage levels at the Iona underground storage facility hightlights the sensitivity of temperature to gas utilisation in 2023 compared to 2024, which had closer to average winter temperatures.
 
 <div style="text-align: center;">
-![Gas storage levels at Iona underground storage, near Port Campbell in southwestern Victoria.](images/iona_storage_by_year.png)
+![Gas storage levels at Iona underground storage, near Port Campbell in southwestern Victoria.^[Plot created using `iona_storage_by_year.py` located under the scripts folder]](images/iona_storage_by_year.png)
 </div>
 
 
