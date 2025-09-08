@@ -1621,10 +1621,10 @@ Its is also worth re-visiting that 2024 was a challenging year for wind and hydr
 
 > Mean sea level atmospheric pressure is increasing over Australia, and there has been an increase in the number of high-pressure systems over southern Australia, which bring dry, clear weather and little rainfall. This increase in atmospheric pressure across southern latitudes is a response to climate change [[link]](https://www.csiro.au/en/research/environmental-impacts/climate-change/state-of-the-climate/australias-changing-climate). 
 
-The below animation highlights the relationship between 5-day moving average (MA) Moomba to Adelaide gas pipeline utilisation, barometric pressure, wind speed and temperature at Port Pirie in South Australia.
+The below plot highlights the relationship between 5-day moving average (MA) Moomba to Adelaide gas pipeline utilisation, barometric pressure, wind speed and temperature at Port Pirie in South Australia.
 
 <div style="text-align: center;">
-![Moomba to Adelaide gas pipeline utilisation vs barometric pressure, wind speed and temperature at Port Pirie, South Australia.^[Gif created using `maps_utilisation_animation.py` located under the scripts folder]](images/gas_pipeline_all_weather_animation.gif)
+![Moomba to Adelaide gas pipeline utilisation vs barometric pressure, wind speed and temperature at Port Pirie, South Australia.^[Plot created using `maps_utilisation_animation.py` located under the scripts folder]](images/gas_pipeline_all_weather_animation_static.png)
 </div>
 
 Interestingly, 2023 also featured blocking high-pressure systems, however was one of the warmest winters on record.
