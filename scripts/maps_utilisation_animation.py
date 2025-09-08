@@ -7,7 +7,7 @@ import os
 import requests
 import zipfile
 import io
-import pyarrow.feather as feather     
+     
 # from io import StringIO
 # Load the datasets (latest from GBB)
 # Data sources: 
@@ -84,23 +84,14 @@ combined_df = flow_df.merge(cap_df[['GasDate', 'FacilityId', 'OutlookQuantity']]
 combined_df['Utilisation'] = combined_df['Flow'] / combined_df['OutlookQuantity']
 
 # Join weather data
-weather_df = pd.read_pickle('data/port_pirie_daily_weather_data.pkl')
+
+weather_df = pd.read_csv('data/port_pirie_daily_weather_data.csv', parse_dates=['day'])
 
 combined_df = combined_df.merge(weather_df,
                                 left_on='GasDate',
                                 right_on='day',
                                 how='left')
 
-# Join SA mean daily RRP data
-# feather file exported from from R script (delta_prices.R)
-
-prices = feather.read_feather("data/sa_daily_mean_rrp.feather")
-prices['date'] = prices['date'].dt.tz_localize(None)
-combined_df = combined_df.merge(prices,
-                  left_on='GasDate',
-                  right_on='date',
-                  how='left') \
-                      .drop(columns='date')
 
 # Matplotlib plot - reconciles to Pipelines view of the GBB interactive map
 plt.figure(figsize=(12, 6))
@@ -512,6 +503,7 @@ def create_animated_gas_pipeline_all_weather_gif(prepared_df, output_filename='g
     """
     Creates an animated GIF showing gas pipeline utilisation vs barometric pressure,
     wind speed, and temperature over time, with data progressively revealing by date.
+    Also saves a static final image showing all data.
     
     Parameters:
     prepared_df: DataFrame with columns ['GasDate', 'Utilisation', 'avg_barometric_pressure_hpa', 'avg_wind_speed_ms', 'avg_temperature_deg_c']
@@ -550,6 +542,143 @@ def create_animated_gas_pipeline_all_weather_gif(prepared_df, output_filename='g
     # Sort by date to ensure proper animation sequence
     prepared_df = prepared_df.sort_values('GasDate').reset_index(drop=True)
 
+    # Calculate correlations for display
+    bp_corr = prepared_df['util_5d_ma'].corr(prepared_df['bp_5d_ma'], method='pearson')
+    wind_corr = prepared_df['util_5d_ma'].corr(prepared_df['wind_5d_ma'], method='pearson')
+    temp_corr = prepared_df['util_5d_ma'].corr(prepared_df['temp_5d_ma'], method='pearson')
+
+    # --- CREATE STATIC FINAL IMAGE FIRST ---
+    def create_static_plot():
+        """Create the static final image showing all data"""
+        fig_static, (ax1_s, ax3_s, ax5_s) = plt.subplots(3, 1, figsize=(8, 12))
+        
+        # Create twin axes
+        ax2_s = ax1_s.twinx()
+        ax4_s = ax3_s.twinx()
+        ax6_s = ax5_s.twinx()
+        
+        # Plot all data
+        ax1_s.plot(prepared_df['GasDate'], prepared_df['util_5d_ma'], 
+                  linestyle='-', color='tab:blue', label='5-Day MA Utilisation')
+        ax2_s.plot(prepared_df['GasDate'], prepared_df['bp_5d_ma'], 
+                  linestyle='-', color='tab:green', alpha=0.8, label='5-Day MA Barometric Pressure (hPa)')
+        
+        ax3_s.plot(prepared_df['GasDate'], prepared_df['util_5d_ma'], 
+                  linestyle='-', color='tab:blue', label='5-Day MA Utilisation')
+        ax4_s.plot(prepared_df['GasDate'], prepared_df['wind_5d_ma'], 
+                  linestyle='-', color='tab:orange', alpha=0.8, label='5-Day MA Wind Speed (m/s)')
+        
+        ax5_s.plot(prepared_df['GasDate'], prepared_df['util_5d_ma'], 
+                  linestyle='-', color='tab:blue', label='5-Day MA Utilisation')
+        ax6_s.plot(prepared_df['GasDate'], prepared_df['temp_5d_ma'], 
+                  linestyle='-', color='tab:purple', alpha=0.8, label='5-Day MA Temperature (°C)')
+
+        # Set up axes properties for top chart (Barometric Pressure)
+        ax1_s.set_ylabel('Pipeline Utilisation (%)', color='tab:blue')
+        ax1_s.yaxis.set_major_formatter(mtick.PercentFormatter(1.0))
+        ax1_s.tick_params(axis='y', labelcolor='tab:blue')
+        ax1_s.grid(True)
+        final_date = prepared_df['GasDate'].iloc[-1].strftime('%Y-%m-%d')
+        ax1_s.set_title(f'Moomba to Adelaide Gas Pipeline Utilisation & Barometric Pressure at Port Pirie\nFinal Date: {final_date}')
+
+        ax2_s.set_ylabel('Barometric Pressure (hPa)', color='tab:green')
+        ax2_s.tick_params(axis='y', labelcolor='tab:green')
+
+        # Set up axes properties for middle chart (Wind Speed)
+        ax3_s.set_ylabel('Pipeline Utilisation (%)', color='tab:blue')
+        ax3_s.yaxis.set_major_formatter(mtick.PercentFormatter(1.0))
+        ax3_s.tick_params(axis='y', labelcolor='tab:blue')
+        ax3_s.grid(True)
+        ax3_s.set_title(f'Moomba to Adelaide Gas Pipeline Utilisation & Wind Speed at Port Pirie\nFinal Date: {final_date}')
+
+        ax4_s.set_ylabel('Wind Speed (m/s)', color='tab:orange')
+        ax4_s.tick_params(axis='y', labelcolor='tab:orange')
+
+        # Set up axes properties for bottom chart (Temperature)
+        ax5_s.set_xlabel('Date')
+        ax5_s.set_ylabel('Pipeline Utilisation (%)', color='tab:blue')
+        ax5_s.yaxis.set_major_formatter(mtick.PercentFormatter(1.0))
+        ax5_s.tick_params(axis='y', labelcolor='tab:blue')
+        ax5_s.grid(True)
+        ax5_s.set_title(f'Moomba to Adelaide Gas Pipeline Utilisation & Temperature at Port Pirie\nFinal Date: {final_date}')
+
+        ax6_s.set_ylabel('Temperature (°C)', color='tab:purple')
+        ax6_s.tick_params(axis='y', labelcolor='tab:purple')
+
+        # Set axis limits
+        ax1_s.set_xlim(prepared_df['GasDate'].min(), prepared_df['GasDate'].max())
+        ax3_s.set_xlim(prepared_df['GasDate'].min(), prepared_df['GasDate'].max())
+        ax5_s.set_xlim(prepared_df['GasDate'].min(), prepared_df['GasDate'].max())
+
+        ax1_s.set_ylim(prepared_df['util_5d_ma'].min() * 0.95, prepared_df['util_5d_ma'].max() * 1.05)
+        ax3_s.set_ylim(prepared_df['util_5d_ma'].min() * 0.95, prepared_df['util_5d_ma'].max() * 1.05)
+        ax5_s.set_ylim(prepared_df['util_5d_ma'].min() * 0.95, prepared_df['util_5d_ma'].max() * 1.05)
+
+        # Tighter y-axis range for barometric pressure to zoom in
+        bp_range = prepared_df['bp_5d_ma'].max() - prepared_df['bp_5d_ma'].min()
+        bp_padding = bp_range * 0.1  # 10% padding
+        if bp_range == 0:  # avoid identical min/max
+            bp_padding = 1.0
+        ax2_s.set_ylim(prepared_df['bp_5d_ma'].min() - bp_padding, prepared_df['bp_5d_ma'].max() + bp_padding)
+
+        ax4_s.set_ylim(prepared_df['wind_5d_ma'].min() * 0.95, prepared_df['wind_5d_ma'].max() * 1.05)
+        ax6_s.set_ylim(prepared_df['temp_5d_ma'].min() * 0.95, prepared_df['temp_5d_ma'].max() * 1.05)
+
+        # Correlation text in top-right of each axes
+        corr_bbox = dict(boxstyle='round,pad=0.3', facecolor='white', alpha=0.9, edgecolor='lightgray')
+        ax1_s.text(0.98, 0.98, f'r = {bp_corr:.3f}', transform=ax1_s.transAxes,
+                 fontsize=8.25, fontstyle='italic', color='gray', zorder=10,
+                 ha='right', va='top', bbox=corr_bbox)
+        ax3_s.text(0.98, 0.98, f'r = {wind_corr:.3f}', transform=ax3_s.transAxes,
+                 fontsize=8.25, fontstyle='italic', color='gray', zorder=10,
+                 ha='right', va='top', bbox=corr_bbox)
+        ax5_s.text(0.98, 0.98, f'r = {temp_corr:.3f}', transform=ax5_s.transAxes,
+                 fontsize=8.25, fontstyle='italic', color='gray', zorder=10,
+                 ha='right', va='top', bbox=corr_bbox)
+
+        # Add legends
+        lines1, labels1 = ax1_s.get_legend_handles_labels()
+        lines2, labels2 = ax2_s.get_legend_handles_labels()
+        ax1_s.legend(lines1 + lines2, labels1 + labels2, loc='upper left', fontsize=8.25)
+
+        lines3, labels3 = ax3_s.get_legend_handles_labels()
+        lines4, labels4 = ax4_s.get_legend_handles_labels()
+        ax3_s.legend(lines3 + lines4, labels3 + labels4, loc='upper left', fontsize=8.25)
+
+        lines5, labels5 = ax5_s.get_legend_handles_labels()
+        lines6, labels6 = ax6_s.get_legend_handles_labels()
+        ax5_s.legend(lines5 + lines6, labels5 + labels6, loc='upper left', fontsize=8.25)
+
+        # Add caption
+        fig_static.text(
+            0.98, 0.01,
+            "Source: AEMO GBB, https://data.sa.gov.au/data/dataset/port-pirie-oliver-st-air-quality-monitoring-station-meteorology-data",
+            ha='right', va='bottom',
+            fontsize=8,
+            fontstyle='italic',
+            color='gray'
+        )
+
+        plt.tight_layout()
+        plt.subplots_adjust(top=0.95, bottom=0.06, hspace=0.30)
+        
+        return fig_static
+
+    # Create and save static image
+    static_fig = create_static_plot()
+    
+    # Create static image filename from GIF filename
+    static_filename = output_filename.replace('gifs/', 'docs/images/').replace('.gif', '_static.png')
+    static_outdir = os.path.dirname(static_filename)
+    if static_outdir:
+        os.makedirs(static_outdir, exist_ok=True)
+    
+    print(f"Saving static image: {static_filename}")
+    static_fig.savefig(static_filename, dpi=150, bbox_inches='tight')
+    plt.close(static_fig)
+    print(f"Static image saved as: {static_filename}")
+
+    # --- NOW CREATE THE ANIMATED VERSION ---
     # 2) Set up the figure with subplots for all three charts
     fig, (ax1, ax3, ax5) = plt.subplots(3, 1, figsize=(8, 12))
 
@@ -615,11 +744,6 @@ def create_animated_gas_pipeline_all_weather_gif(prepared_df, output_filename='g
 
     ax4.set_ylim(prepared_df['wind_5d_ma'].min() * 0.95, prepared_df['wind_5d_ma'].max() * 1.05)
     ax6.set_ylim(prepared_df['temp_5d_ma'].min() * 0.95, prepared_df['temp_5d_ma'].max() * 1.05)
-
-    # Calculate and add correlations for display
-    bp_corr = prepared_df['util_5d_ma'].corr(prepared_df['bp_5d_ma'], method='pearson')
-    wind_corr = prepared_df['util_5d_ma'].corr(prepared_df['wind_5d_ma'], method='pearson')
-    temp_corr = prepared_df['util_5d_ma'].corr(prepared_df['temp_5d_ma'], method='pearson')
 
     # Correlation text in top-right of each axes
     corr_bbox = dict(boxstyle='round,pad=0.3', facecolor='white', alpha=0.9, edgecolor='lightgray')
