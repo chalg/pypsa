@@ -1637,7 +1637,9 @@ Taking a quick look at gas storage levels at the Iona underground storage facili
 ![Gas storage levels at Iona underground storage, near Port Campbell in southwestern Victoria.^[Plot created using `iona_storage_by_year.py` located under the scripts folder]](images/iona_storage_by_year.png)
 </div>
 
-
+::: {.callout-note}
+I've now added a new 5-min resolution network scenario to the web [app](https://chalg-pypsa-dispatch-app-streamlit-app-4arpu2.streamlit.app/). The *8.4.1_ZeroThermal* scenario is a battery scale-up scenario with no thermal generation. This scenario only covers the problematic months of May and June 2024 where there were multiple low-wind events. The full year at 5-min resolution network is too large to serve via the web app.
+:::
 
 Potential future analysis could incorporate:  
   -  increased transmission (lines/links currently stacked on top of each other as they join the same bus/region)  
