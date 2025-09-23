@@ -1645,7 +1645,6 @@ Potential future analysis could incorporate:
   -  increased transmission (lines/links currently stacked on top of each other as they join the same bus/region)  
   -  Explore Power Transfer Distribution Factors (PTDF) - interconnector limits that move with dispatch (like AEMO’s constraint equations)  
   -  accurate geospatial resolution  
-  -  more granular time resolution (possibly for May/June only due to increased computation)   
   -  remove built-in curtailment from the utility solar and wind data or apply an alternative measurement approach, such as using synthetic wind and solar traces.   
   -  more detailed costs, including capital costs  
   -  carbon emissions.
