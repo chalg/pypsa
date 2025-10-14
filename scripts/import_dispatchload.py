@@ -4,6 +4,7 @@ import io
 import pandas as pd
 import pytz
 import pyarrow.feather as feather
+import numpy as np
 
 
 # Function to download and extract dispatch load data from NEMWEB archive
@@ -158,8 +159,15 @@ generator_data_tbl = generator_data_tbl[generator_data_tbl['reg_cap_generation_m
 # Convert 'reg_cap_generation_mw' to numeric
 generator_data_tbl['reg_cap_generation_mw'] = pd.to_numeric(generator_data_tbl['reg_cap_generation_mw'])
 
+# Convert 'reg_cap_generation_mw' to numeric
+generator_data_tbl['max_cap_generation_mw'] = pd.to_numeric(generator_data_tbl['max_cap_generation_mw'])
+
 # Group by 'duid' and sum 'reg_cap_generation_mw' as 'nameplate_cap'
-generator_data_tbl['nameplate_cap'] = generator_data_tbl.groupby('duid')['reg_cap_generation_mw'].transform('sum')
+# Not sure if this is needed, as duplicate DUIDs seem to be 'Load' dispatch types (and Scheduled too). 
+# generator_data_tbl['nameplate_cap'] = generator_data_tbl.groupby('duid')['reg_cap_generation_mw'].transform('sum')
+
+# Filter to only 'Generating Unit' dispatch types to remove duplicate DUIDs, e.g. LIMOSF11
+generator_data_tbl = generator_data_tbl[generator_data_tbl['dispatch_type'] == 'Generating Unit']
 
 # Left join dispatchload with generator_data_tbl on common columns (like left_join)
 dispatchload_joined = dispatchload.merge(generator_data_tbl, how='left')
@@ -173,15 +181,36 @@ print(dispatchload_joined.head())
 
 
 # Build the list of columns to select
-selected_cols = ['settlementdate', 'duid', 'region', 'fuel_source_descriptor', 'initialmw',  'nameplate_cap']
+# More accurate to separate this calc. for solar, see here: https://wattclarity.com.au/articles/2023/03/why-capacity-factor-is-an-increasingly-simplistic-way-to-compare-solar-farm-performance/, specifically section - "Reason 2) Capacity".
+# Use 'Maximum Capacity' instead of 'Registered Capacity'.
+selected_cols = ['settlementdate', 'duid', 'region', 'fuel_source_descriptor', 'initialmw',  'reg_cap_generation_mw', 'max_cap_generation_mw']
 
 # Subset the DataFrame
 dispatchload_joined = dispatchload_joined[selected_cols]
 
-dispatchload_joined['cf'] = dispatchload_joined.apply(
-    lambda row: row['initialmw'] / row['nameplate_cap'] if row['nameplate_cap'] else None,
-    axis=1
+
+# Create a mask for Solar fuel sources
+is_solar = dispatchload_joined['fuel_source_descriptor'] == 'Solar'
+
+# Select the appropriate capacity column based on fuel source
+denominator = np.where(
+    is_solar, 
+    dispatchload_joined['max_cap_generation_mw'],
+    dispatchload_joined['reg_cap_generation_mw']
 )
+
+# Calculate cf, setting to None where reg_cap_generation_mw is false (0 or NaN)
+dispatchload_joined['cf'] = np.where(
+    dispatchload_joined['reg_cap_generation_mw'],
+    dispatchload_joined['initialmw'] / denominator,
+    None
+)
+
+# Old method
+# dispatchload_joined['cf'] = dispatchload_joined.apply(
+#     lambda row: row['initialmw'] / row['nameplate_cap'] if row['nameplate_cap'] else None,
+#     axis=1
+# )
 
 # Half-hour timestamp
 dispatchload_joined['datetime_30min'] = dispatchload_joined['settlementdate'].dt.floor('30T')
@@ -227,17 +256,8 @@ re_cf_30mins.index = re_cf_30mins.index.tz_localize(None)
 re_cf_30mins = re_cf_30mins.drop(re_cf_30mins.index[-1])
 
 # Save clean data to Feather format for import into PyPSA ready format
-re_cf_30mins.to_feather('data/nemweb/clean/re_cf_30mins_2024.feather')
-
-# # Spot check
-# filtered_df = dispatchload_prepared[
-#     (dispatchload_prepared['duid'] == "AGLHAL") &
-#     (dispatchload_prepared['date'] == pd.to_datetime("2025-06-17").date())
-# ]
+re_cf_30mins.to_feather('data/nemweb/clean/re_cf_30mins_2024_v2.feather')
 
 
-
-# # Print up to 24 rows - multiple rows reconcile to R script output.
-# filtered_df.head(24)
 
 

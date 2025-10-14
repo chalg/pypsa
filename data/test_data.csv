@@ -1,0 +1,9 @@
+initialmw,reg_cap_generation_mw,max_cap_generation_mw,fuel_source_descriptor
+100,200,150,Coal
+50,100,80,Solar
+75,150,120,Gas
+80,160,140,Solar
+90,180,200,Wind
+0,100,80,Solar
+100,200,150,Solar
+120,150,180,Gas

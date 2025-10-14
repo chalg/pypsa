@@ -35,7 +35,7 @@ loads_time_series_df.index = loads_time_series_df.index.tz_localize(None)
 # Use nemosis in similar fashion to the import_rooftop_solar script...
 
 # Load renewable energy CF data from the Feather file
-renewable_cf_df = feather.read_feather('data/nemweb/clean/re_cf_30mins_2024.feather')
+renewable_cf_df = feather.read_feather('data/nemweb/clean/re_cf_30mins_2024_v2.feather')
 
 
 # JOIN rooftop solar from import_rooftop_solar script

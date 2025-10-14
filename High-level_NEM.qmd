@@ -1,7 +1,7 @@
 ---
 title: "A High-level Open Source Model for the Australian National Electricity Market (NEM)"
 author: "Grant Chalmers"
-date: "2025-09-04"
+date: "2025-10-14"
 format:
   html:
     output-file: index.html
@@ -207,7 +207,7 @@ n.generators_t.p_max_pu = n.generators_t.p_max_pu.clip(lower=0.0, upper=1.0)
 
 Introduce a dummy 'load shedding' generator to help identify infeasible scenarios within the model. This approach is more informative than simply receiving a "not feasible" message from the solver, as it highlights which regions are affected. With this information, we can make targeted adjustments - such as increasing generation or storage in future iterations.
 
-Set the marginal cost very high so it is only used as a last resort.
+Set the marginal cost very high so it is used as a last resort.
 
 ```{python}
 # Add one unserved energy generator per load bus
@@ -337,7 +337,8 @@ plt.show()
 ### 03 Solve the network
 
 ```{python}
-# Solve the nework
+# Solve the network
+# Note: commented out to save run time..
 # Change to open source solver if required, default is HiGHS:
 # n.optimize()
 #n.optimize(solver_name = "gurobi")
@@ -1071,7 +1072,7 @@ Note: some of the scenarios have unserved energy (bold, red font), which tends t
 
 # Previously saved results generated from the generate_scenarios function in the Appendix
 # Note: 0_2024_baseline is the baseline scenario and is equivalent to 'high-level_nem'.
-df_results = pd.read_csv("results/scenarios/scenarios_summary_20250818_1534.csv")
+df_results = pd.read_csv("results/scenarios/scenarios_summary_20251013_1439.csv")
 
 # Format in a more user-friendly format for HTML
 results_tbl = df_results.copy()
@@ -1137,7 +1138,7 @@ print(html_table)
   
 In the `0_2024_baseline` scenario above, gas-powered generation - GPG (GWh) is much lower than in reality because I've set the marginal cost of gas higher than coal and there are no other influencing constraints such as carbon emissions. PyPSA is solving based on least-cost optimisation of power plant and storage dispatch within network constraints. This is much simpler than in real life, which involves a bid stack and many more constraints.  
 
-It is worth adding a comparison column to compare more realistic gas generation from [Open Electricity](https://explore.openelectricity.org.au/energy/nem/?range=1y&interval=1w&view=discrete-time&group=Simplified) to the high VRE scenario that I'm interested in: `8.3_VreCurtailReview` . This scenario has zero coal generation and an 82.5% reduction in gas generation.
+It is worth adding a comparison column to compare more realistic gas generation from [Open Electricity](https://explore.openelectricity.org.au/energy/nem/?range=1y&interval=1w&view=discrete-time&group=Simplified) to the high VRE scenario that I'm interested in: `8.3_VreCurtailReview` . This scenario has zero coal generation and an 84% reduction in gas generation.
 
 The `8.3_VreCurtailReview` is one of the more plausible scenarios found by scaling up VRE and storage from the baseline model using a csv import file with different scale-up factors. Please note that, in this scenario, battery storage capacity is 84GW vs the 56 GW forecasted for 2049-50 in the AEMO ISP *Step Change* scenario for installed capacity.
 
@@ -1383,7 +1384,7 @@ curtailment_gt = curtailment_tbl.tab_header(
             )
         ) \
         .tab_source_note(
-            source_note=md("**Scenario**: 8.3_VreCurtailReview (Zero coal & 83% reduction in GPG).<br><br> **Scale-up objective from 2024 baseline**: *NSW1-Black Coal: x0.0, NSW1-Gas: x0.5, NSW1-Rooftop Solar: x3.0, NSW1-Solar: x3.0, NSW1-Wind: x6.0, NSW1-Battery: x8.0, QLD1-Black Coal: x0.0, QLD1-Gas: x0.5, QLD1-Rooftop Solar: x3.0, QLD1-Solar: x3.0, QLD1-Wind: x6.0, QLD1-Battery: x6.0, SA1-Gas: x0.5, SA1-Rooftop Solar: x2.0, SA1-Solar: x3.0, SA1-Wind: x2.0, SA1-Battery: x5.0, TAS1-Gas: x0.5, TAS1-Rooftop Solar: x3.0, TAS1-Wind: x5.0, TAS1-Battery: x6.0, VIC1-Gas: x0.5, VIC1-Brown Coal: x0.0, VIC1-Rooftop Solar: x4.0, VIC1-Solar: x4.0, VIC1-Wind: x4.0, VIC1-Battery: x8.0*")
+            source_note=md("**Scenario**: 8.3_VreCurtailReview (Zero coal & 84% reduction in GPG).<br><br> **Scale-up objective from 2024 baseline**: *NSW1-Black Coal: x0.0, NSW1-Gas: x0.5, NSW1-Rooftop Solar: x3.0, NSW1-Solar: x3.0, NSW1-Wind: x6.0, NSW1-Battery: x8.0, QLD1-Black Coal: x0.0, QLD1-Gas: x0.5, QLD1-Rooftop Solar: x3.0, QLD1-Solar: x3.0, QLD1-Wind: x6.0, QLD1-Battery: x6.0, SA1-Gas: x0.5, SA1-Rooftop Solar: x2.0, SA1-Solar: x3.0, SA1-Wind: x2.0, SA1-Battery: x5.0, TAS1-Gas: x0.5, TAS1-Rooftop Solar: x3.0, TAS1-Wind: x5.0, TAS1-Battery: x6.0, VIC1-Gas: x0.5, VIC1-Brown Coal: x0.0, VIC1-Rooftop Solar: x4.0, VIC1-Solar: x4.0, VIC1-Wind: x4.0, VIC1-Battery: x8.0*")
         ) \
         .fmt_nanoplot("Rooftop Solar Curtailment",
                       plot_type="bar",
@@ -1507,7 +1508,7 @@ plt.show()
 
 ```
 
-There is a clear midday **plateau** in utility solar output (orange boxplots), likely resulting from **negative market prices** and/or **network constraints** such as congestion^[For detailed information on solar farm capacity factors and why considering them in isolation can be misleading, see this excellent Wattclarity article [here](https://wattclarity.com.au/articles/2023/03/why-capacity-factor-is-an-increasingly-simplistic-way-to-compare-solar-farm-performance/).
+There is a clear midday **plateau** in utility solar output (orange boxplots), likely resulting from **negative market prices** and/or **network constraints** such as congestion^[For detailed information on solar farm capacity factors and why considering them in isolation can be misleading, see this excellent Wattclarity [article](https://wattclarity.com.au/articles/2023/03/why-capacity-factor-is-an-increasingly-simplistic-way-to-compare-solar-farm-performance/).
 ].
 
 In Victoria, the curtailment plateau is especially pronounced. This is likely due to utility-scale solar farms being situated in parts of the network that experience congestion. Congestion arises when the network’s ability to transmit electricity is constrained, requiring operators to curtail solar generation despite sufficient solar resources being available.
@@ -1612,9 +1613,9 @@ During the development of the `8.3_VreCurtailReview` scenario, several scenarios
 
 The `6.1_6xVreTransitionZeroCoal` scenario achieves a 75% reduction in gas generation^[Compared to 10,919 GWh - recent 12-month Open Electricity '1Y-Simplified' view. Source: [Open Electricity](https://explore.openelectricity.org.au/energy/nem/?range=1y&interval=1w&view=discrete-time&group=Simplified)] however only results in 48.4 GW of battery capacity - less than the 56 GW of installed capacity projected for 2049–50 in the AEMO ISP *Step Change* scenario^[2024 ISP, section 6.1, page 66]. Consequently, this scenario would likely be more economical from a cost perspective compared to `8.3_VreCurtailReview`.
 
-The `8.3_VreCurtailReview` scenario results in a 44.5% curtailment rate for wind and utility-scale solar, which is more than double to the 20% level projected by the ISP for 2050 (2024 ISP, section 4.3, page 52). In addition, since some curtailment is already embedded in the source data for this scenario, the effective curtailment rate is higher again.
+The `8.3_VreCurtailReview` scenario results in a 46.7% curtailment rate for wind and utility-scale solar, which is more than double the 20% level projected by the ISP for 2050 (2024 ISP, section 4.3, page 52). In addition, since some curtailment is already embedded in the source data for this scenario, the effective curtailment rate is higher again.
 
-A key trade-off emerged when applying different assumptions under the `8.3_VreCurtailReview` scenario. Under an economic optimisation approach, curtailment of utility solar and wind reached 44.5%, but storage was used efficiently. By contrast, renewable maximisation reduced curtailment to 21.6%, though at the cost of economically inefficient storage utilisation.
+A key trade-off emerged when applying different assumptions under the `8.3_VreCurtailReview` scenario. Under an economic optimisation approach, curtailment of utility solar and wind reached 46.7%, but storage was used efficiently. By contrast, renewable maximisation reduced curtailment to ~21%, though at the cost of economically inefficient storage utilisation.
 
 Unserved energy predominantly occurred in May and June, particularly the evening of June 13.
 
@@ -1905,7 +1906,7 @@ curtailment_stats.round(2)
 
 #### Storage v Curtailment Trade-off
 
-The two plots below highlight the different storage behaviour under economic optimisation of storage versus maximising utility solar and wind by reducing curtailment. Curtailment was reduced (from 44.5% to 21.6%) by forcing more conservative discharge decisions (by setting a very small negative marginal cost and cost of storage):
+The two plots below highlight the different storage behaviour under economic optimisation of storage versus maximising utility solar and wind by reducing curtailment. Curtailment was reduced (from 47.7% to ~21%) by forcing more conservative discharge decisions (by setting a very small negative marginal cost and cost of storage):
 
 Under zero marginal and storage costs:
 
@@ -1945,7 +1946,7 @@ Under -0.01 marginal and storage costs:
 
 Marinus Link Stage 1, which has recently reached Final Investment Decision (FID), is included in all scenarios, including the baseline. If this link is removed, the VIC1 region experiences 14.3 GWh of unserved energy. Examination of the challenging winter snapshot below highlights that a portion of this shortfall occurs during that period.
 
-Whether investing in a very costly interconnector to address these rare gaps represents a justifiable business case remains open to debate.
+Whether investing in a very costly interconnector to address these rare gaps represents a justifiable business case remains open to debate according to some industry pundits.
 
 <div style="text-align: center;">
 ![Unserved energy example in VIC1 with no Marinus Link](images/vic1-unserved-energy-no-marinus-s1.png)
@@ -2018,7 +2019,7 @@ plot_dispatch(n, time="2024-05-18", days=10, regions=["VIC1"], show_imports=True
 
 The `4_4xVreTransitionZeroCoal` scenario has a zero coal and a 4x increase in wind and utility solar and storage plus a 2x increase in rooftop solar (see table below).
 
-This reduces gas-powered generation by 51% compared to Open Electricity consumption over a recent 12 month period.
+This reduces gas-powered generation by 53% compared to Open Electricity consumption over a recent 12 month period.
 
 ```{python}
 #| output: asis
