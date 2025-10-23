@@ -138,6 +138,7 @@ The **High‑Level NEM** model provides a baseline representation of the NEM’s
 - [PyPSA-PH: High-Resolution Open Source Power System Model for the Philippines](https://github.com/arizeosalac/PyPSA-PH/tree/main)  
 - [2024 Integrated System Plan (ISP)](https://aemo.com.au/energy-systems/major-publications/integrated-system-plan-isp/2024-integrated-system-plan-isp)  
 - [Open Electricity](https://openelectricity.org.au/)
+- [PyPSA dispatch scenario Streamlit app repo](https://github.com/chalg/pypsa_dispatch_app)
 
 ## View Quarto rendered HTML
 
