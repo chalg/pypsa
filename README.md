@@ -80,8 +80,6 @@ The **High‑Level NEM** model provides a baseline representation of the NEM’s
 
 ```plaintext
 
-#  Auto-generated / IDE folders (not tracked)
-#  .ipynb_checkpoints  .quarto  .vscode  __pycache__
 
 ```
 
@@ -145,7 +143,7 @@ The **High‑Level NEM** model provides a baseline representation of the NEM’s
 
 [A High-level Open Source Model for the Australian National Electricity Market (NEM)](https://chalg.github.io/pypsa/)
 
-Note: I'm rendering a single html file (with asssociated assets), which I'm renaming and moving to the `docs/` directory via the `qaurto_to_html_render.py` script. I'm not creating a full website and my project type is not Website Project. Quarto website and web app best are viewed on a larger screen (not mobile phone).
+Note: I'm rendering a single html file (with asssociated assets), which I'm renaming and moving to the `docs/` directory via the `qaurto_to_html_render.py` script. I'm not creating a full website and my project type is not Website Project. Quarto website and web app are best viewed on a larger screen (not mobile phone).
 
 
 Using `quarto render High-level_NEM.qmd --to html` will render the Quarto document to HTML in the root directory - however I need it to be in the `docs/` directory so that it can be served by GitHub Pages.
