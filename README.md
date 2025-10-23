@@ -56,20 +56,38 @@ The **High‑Level NEM** model provides a baseline representation of the NEM’s
 
 ```plaintext
 .
-├─ High-level_NEM.qmd                  # Main Quarto analysis/report
-├─ data/                               # Input datasets (already cleaned)
-│  ├─ inputs/                          # Assumption tables
-│  └─ nemweb/clean/                    # NEMWeb extracts
-├─ scripts/                            # Data prep & rendering helpers
-├─ results/
-│  └─ scenarios/                       # Scenario netCDF + summaries
-└─ docs/                               # Built site & assets for html report
+├───data
+│   ├───inputs                          # Assumption tables
+│   └───nemweb                          # NEMWeb extracts
+│       ├───clean
+│       └───raw
+│   
+├───docs                                # Built site & assets for html report
+│   ├───High-level_NEM_files
+│   │   ├───figure-html
+│   │   └───libs
+│   │       ├───bootstrap
+│   │       ├───clipboard
+│   │       └───quarto-html
+│   └───images
+├───gifs
+├───results
+│   └───scenarios                       # Scenario netCDF + summaries 
+│       └───hydro_marginal_price_8.58   # Scenario with non-zero hydro
+└───scripts                             # Data prep & rendering helper
+   
+```
+
+```plaintext
+
+#  Auto-generated / IDE folders (not tracked)
+#  .ipynb_checkpoints  .quarto  .vscode  __pycache__
 
 ```
 
 ## Prerequisites
 
-- Python 3.8+
+- Python 3.10+
 - [PyPSA](https://pypsa.readthedocs.io/en/latest/)
 - pypsa, pandas, numpy, matplotlib, cartopy, datetime, great_tables
 - (Optional) Gurobi solver (requires license)
@@ -127,7 +145,7 @@ The **High‑Level NEM** model provides a baseline representation of the NEM’s
 
 [A High-level Open Source Model for the Australian National Electricity Market (NEM)](https://chalg.github.io/pypsa/)
 
-Note: I'm rendering a single html file (with asssociated assets), which I'm renaming and moving to the `docs/` directory via the `qaurto_to_html_render.py` script. I'm not creating a full website and my project type is not Website Project. 
+Note: I'm rendering a single html file (with asssociated assets), which I'm renaming and moving to the `docs/` directory via the `qaurto_to_html_render.py` script. I'm not creating a full website and my project type is not Website Project. Quarto website and web app best are viewed on a larger screen (not mobile phone).
 
 
 Using `quarto render High-level_NEM.qmd --to html` will render the Quarto document to HTML in the root directory - however I need it to be in the `docs/` directory so that it can be served by GitHub Pages.
