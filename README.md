@@ -25,7 +25,7 @@ The **High‑Level NEM** model provides a baseline representation of the NEM’s
 - Analysis of current dispatch and grid topology
 - Exploration of high‑renewable scenarios with storage
 - Visualisation of network topology, generation mix, dispatch and curtailment
-- Streamlit [app](https://chalg-pypsa-dispatch-app-streamlit-app-4arpu2.streamlit.app/) for interactive scenario analysis
+- Streamlit web [app](https://chalg-pypsa-dispatch-app-streamlit-app-4arpu2.streamlit.app/) for interactive scenario analysis
 
 
 <div align="center">
@@ -71,7 +71,7 @@ The **High‑Level NEM** model provides a baseline representation of the NEM’s
 │   │       └───quarto-html
 │   └───images
 ├───gifs
-├───results
+├───results                             # Output results from generate_scenarios()
 │   └───scenarios                       # Scenario netCDF + summaries 
 │       └───hydro_marginal_price_8.58   # Scenario with non-zero hydro
 └───scripts                             # Data prep & rendering helper
@@ -138,7 +138,7 @@ The **High‑Level NEM** model provides a baseline representation of the NEM’s
 - [PyPSA-PH: High-Resolution Open Source Power System Model for the Philippines](https://github.com/arizeosalac/PyPSA-PH/tree/main)  
 - [2024 Integrated System Plan (ISP)](https://aemo.com.au/energy-systems/major-publications/integrated-system-plan-isp/2024-integrated-system-plan-isp)  
 - [Open Electricity](https://openelectricity.org.au/)
-- [PyPSA dispatch scenario Streamlit app repo](https://github.com/chalg/pypsa_dispatch_app)
+- [Streamlit web app repo](https://github.com/chalg/pypsa_dispatch_app)
 
 ## View Quarto rendered HTML
 
