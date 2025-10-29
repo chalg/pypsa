@@ -2257,6 +2257,15 @@ df_results = generate_scenarios(n, tech_assumptions_path="data/inputs/tech_assum
 ```
 
 
+#### ISP Wind Trace Data
+
+AEMO’s wind trace data appears somewhat optimistic, particularly during late autumn and early winter. The plot below compares 2024 wind trace data with my own figures derived from Nemweb dispatchload files and applied in PyPSA modelling. This distinction is important, as removing unserved energy across scenarios would have been considerably easier if I had used ISP wind traces rather than actual historical data.
+ 
+
+<div style="text-align: center;">
+![ISP wind trace data compared to capacity factors calculated from Nemweb dispatchload files using a 28-day moving average for smoothing](images/isp_wind_traces_vs_dispatch_cfs.png)
+</div>
+
 #### PyPSA Dispatch Streamlit App
 
 [App link](https://chalg-pypsa-dispatch-app-streamlit-app-4arpu2.streamlit.app/) 
